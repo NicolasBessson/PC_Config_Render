@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { benchmarks, catalogStats } from "@/lib/catalog";
 import { STATUS_LABELS, type OverallStatus, type Status } from "@/lib/compat";
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
@@ -64,12 +65,15 @@ export function LinkButton({ variant = "secondary", className = "", href, childr
   );
 }
 
-/** Rappel visible tant que le catalogue contient des données non vérifiées. */
+/** État réel des données : ce qui est vérifié, ce qui ne l'est pas encore. Calculé depuis le catalogue. */
 export function DemoNotice({ className = "" }: { className?: string }) {
+  const { total, verified, partial, pricesChecked } = catalogStats;
+  const demoBenchmarks = benchmarks.sources.some((source) => source.demo);
   return (
     <p className={`rounded-xl border border-warn/25 bg-warn/5 px-3 py-2 text-xs leading-relaxed text-warn/90 ${className}`}>
-      <strong className="font-semibold">Données de démonstration.</strong> Les prix en CHF et les benchmarks affichés sont des valeurs provisoires, non relevées et non mesurées. Elles servent à faire fonctionner le
-      parcours ; elles seront remplacées par des données sourcées et datées.
+      <strong className="font-semibold">État des données.</strong> Caractéristiques : {verified} fiche{verified > 1 ? "s" : ""} sur {total} vérifiée{verified > 1 ? "s" : ""} auprès des fabricants
+      {partial > 0 ? `, ${partial} partiellement` : ""}. Prix : {pricesChecked === 0 ? "aucun relevé, valeurs indicatives non datées" : `${pricesChecked} sur ${total} relevés`}.
+      {demoBenchmarks && " Performances : benchmarks de démonstration, non mesurés."} Ne pas utiliser pour décider d&apos;un achat.
     </p>
   );
 }

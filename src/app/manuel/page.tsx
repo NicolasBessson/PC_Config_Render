@@ -95,6 +95,7 @@ function Manual() {
                               {check.status === "fail" && <Badge tone="fail">Incompatible</Badge>}
                               {check.status === "warn" && <Badge tone="warn">À vérifier</Badge>}
                               {active && <Badge tone="accent">Sélectionné</Badge>}
+                              {component.verified && <Badge tone="ok" title="Caractéristiques confirmées par une source constructeur">Fiche vérifiée</Badge>}
                             </span>
                             {check.reasons.length > 0 && (
                               <span className={`mt-1.5 block text-xs leading-snug ${check.status === "fail" ? "text-fail" : "text-warn"}`}>{check.reasons.join(" ")}</span>

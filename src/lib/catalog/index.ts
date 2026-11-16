@@ -72,5 +72,15 @@ export function getGame(id: string) {
   return games.find((g) => g.id === id);
 }
 
+const allComponents = CATEGORIES.flatMap((category) => catalog[category] as AnyComponent[]);
+/** État de la vérification du catalogue, affiché tel quel dans l'interface. */
+export const catalogStats = {
+  total: allComponents.length,
+  verified: allComponents.filter((c) => c.verified).length,
+  /** Source consultée, mais au moins un champ non confirmé. */
+  partial: allComponents.filter((c) => !c.verified && c.source).length,
+  pricesChecked: allComponents.filter((c) => c.priceDate !== null).length,
+};
+
 /** Vrai tant qu'au moins une fiche n'a pas été vérifiée ou qu'un prix n'a pas été relevé. */
 export const catalogIsDemo = CATEGORIES.some((category) => catalog[category].some((c) => !c.verified || c.priceDate === null));

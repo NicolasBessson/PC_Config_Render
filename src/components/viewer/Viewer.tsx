@@ -120,7 +120,17 @@ function ComponentCard({ build, category, onClose }: { build: Build; category: C
         <p key={d.ruleId} className={`mt-1.5 leading-snug ${CARD_TONE[d.status]}`}>{d.message}</p>
       ))}
       <p className="mt-2 border-t border-line pt-2 text-[11px] leading-snug text-muted">
-        {!component.verified && "Fiche non vérifiée : caractéristiques à confirmer auprès du fabricant. "}
+        {component.verified
+          ? `Fiche vérifiée${component.verifiedAt ? ` le ${new Date(component.verifiedAt).toLocaleDateString("fr-CH")}` : ""}. `
+          : component.source
+            ? `Fiche partiellement vérifiée${component.unconfirmed?.length ? ` (non confirmé : ${component.unconfirmed.join(", ")})` : ""}. `
+            : "Fiche non vérifiée : caractéristiques à confirmer auprès du fabricant. "}
+        {component.source && (
+          <a href={component.source.url} target="_blank" rel="noreferrer" className="text-sky-300 underline">
+            {component.source.label}
+          </a>
+        )}
+        {component.source && ". "}
         {component.priceDate === null && "Prix non relevé. "}
         Modèle 3D générique, aux cotes du catalogue.
       </p>

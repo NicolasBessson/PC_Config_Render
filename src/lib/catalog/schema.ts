@@ -9,8 +9,14 @@ const base = {
   priceChf: z.number().positive(),
   /** Date du relevé de prix (ISO). `null` = prix de démonstration, non relevé. */
   priceDate: z.string().nullable(),
-  /** `true` lorsque la fiche a été vérifiée contre les spécifications constructeur. */
+  /** `true` lorsque TOUTES les caractéristiques utiles au configurateur ont été confirmées par une source constructeur. */
   verified: z.boolean(),
+  /** Date de la vérification (ISO). */
+  verifiedAt: z.string().nullable().optional(),
+  /** Source constructeur consultée. */
+  source: z.object({ label: z.string(), url: z.string().url() }).nullable().optional(),
+  /** Champs que la source ne permet pas de confirmer : la fiche reste alors non vérifiée. */
+  unconfirmed: z.array(z.string()).optional(),
   specUrl: z.string().url().nullable(),
 };
 
