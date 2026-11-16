@@ -9,7 +9,7 @@ Configurateur de PC : recommandation à partir d'un besoin, compatibilité, esti
 | Commande | Rôle |
 |---|---|
 | `npm run dev` | Serveur de développement (port 3000) |
-| `npm test` | Vitest : 32 tests unitaires et d'acceptation des moteurs |
+| `npm test` | Vitest : 50 tests (moteurs, correspondance configuration ↔ scène 3D, caméra) |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
 | `npm run build` puis `npm start` | Version de production |
@@ -19,7 +19,11 @@ Avant de considérer un changement terminé : tests, typecheck, lint et build do
 
 ## État du projet
 
-Fait : accueil, questionnaire assisté, résultats, configuration manuelle, fiche détaillée, comparateur, sauvegarde locale, partage par URL, routes d'API. Les scénarios A à G du cahier des charges (section 19) ont été vérifiés dans un navigateur.
+Fait (MVP) : accueil, questionnaire assisté, résultats, configuration manuelle, fiche détaillée, comparateur, sauvegarde locale, partage par URL, routes d'API. Les scénarios A à G du cahier des charges (section 19) ont été vérifiés dans un navigateur.
+
+Fait (roadmap V2, sprint 1 — qualité visuelle 3D) : boîtier détaillé, composants intérieurs réalistes, câbles, matériaux partagés, ombres, halo lumineux, quatre vues de caméra avec transitions, qualité haute ou légère.
+
+Prochaine étape selon la roadmap V2 : **sprint 2 — 3D interactive** (clic sur un composant avec fiche et contour lumineux, couleur secondaire, intensité et effet « respiration » de l'éclairage). Puis sprint 3 (catalogue vérifié) et sprint 4 (benchmarks réels). Ne pas démarrer plusieurs chantiers à la fois.
 
 Non fait, à ne pas présenter comme existant :
 
@@ -51,10 +55,28 @@ src/lib/build.ts         Build, prix, consommation, encodage pour l'URL
 src/lib/insights.ts      Capacité d'évolution
 src/lib/query.ts         Lecture et écriture de l'état dans l'URL
 src/lib/saved.ts         Sauvegarde localStorage
-src/components/viewer/   PcScene (géométrie), PcCanvas (Canvas), Viewer (contrôles), styles.ts
+src/components/viewer/   Visualiseur 3D (détail ci-dessous)
 src/components/          Panneaux partagés, en-tête, useViewState
 src/app/                 Pages et routes d'API
 ```
+
+### Visualiseur 3D
+
+```
+viewer/layout.ts         PUR et testé : traduit une configuration en description de scène (quoi, où, combien)
+viewer/camera.ts         PUR et testé : vues prédéfinies et limites de navigation
+viewer/styles.ts         Palettes des quatre styles
+viewer/PcScene.tsx       Assemble la scène à partir de layout.ts
+viewer/PcCanvas.tsx      Canvas, lumières, ombres, post-traitement, contrôleur de caméra, repli WebGL
+viewer/Viewer.tsx        Interface : vues, vitre, étiquettes, qualité, capture, sélecteurs de style et d'éclairage
+viewer/scene/            Un fichier par élément : Chassis, Motherboard, Gpu, Ram, Cooler, Psu, Cables, Fan
+viewer/scene/materials.ts   Une vingtaine de matériaux partagés par style
+viewer/scene/geometry.ts    Géométries mises en cache (tôles percées, rotor, cadre de ventilateur…)
+viewer/scene/textures.ts    Textures procédurales dessinées dans un canvas
+viewer/scene/context.tsx    Contexte de scène, Glow, Part, Repeat (instanciation), Label
+```
+
+Règle de conception : **toute décision sur ce qui est affiché se prend dans `layout.ts`**, pas dans les composants de `scene/`. C'est ce qui rend la correspondance configuration ↔ rendu testable sans navigateur (`layout.test.ts`). Les modèles sont génériques, aux cotes du catalogue ; le badge « Rendu illustratif · modèles génériques » doit rester affiché.
 
 Points d'entrée utiles :
 
@@ -80,6 +102,12 @@ Points d'entrée utiles :
 - **Le visualiseur est chargé avec `next/dynamic` et `ssr: false`** depuis un composant client. La détection WebGL et la limite d'erreur sont dans `PcCanvas.tsx` : une panne 3D ne doit jamais casser la page.
 - **Cotes de la scène en millimètres**, groupe racine à l'échelle 0,01. Axes : x = largeur (vitre côté +x), y = hauteur, z = profondeur (façade côté +z).
 - **Les aperçus des résultats et du comparateur utilisent `animate={false}`** (`frameloop="demand"`) pour ne pas faire tourner trois boucles de rendu.
+- **Post-traitement** (`@react-three/postprocessing`) : le halo n'apparaît que sur les matériaux `Glow`, dont l'intensité émissive dépasse le seuil du `Bloom`. Une surface blanche trop éclairée franchit aussi ce seuil : c'est pourquoi le style blanc a une `exposure` réduite. Avec le compositeur, le fond de scène est une texture opaque (`backdropTexture`), pas un canvas transparent.
+- **Qualité** : « haute » = ombres + halo + haute densité de pixels ; « légère » = rien de tout cela. Les appareils tactiles démarrent en légère ; `PerformanceMonitor` y bascule si la fluidité est insuffisante ; un choix manuel prime. Coût mesuré sur une configuration complète : environ 280 appels de rendu par image en haute, 195 en légère.
+- **Sous SwiftShader (tests sans carte graphique), la mesure automatique bascule toujours en qualité légère.** Pour capturer la qualité haute, cliquer sur le bouton « Qualité » jusqu'à lire « haute » : le clic verrouille le choix.
+- **Lumière principale basse et latérale** (`PcCanvas.tsx`) : elle entre par la vitre. Placée plus haut, le dessus du boîtier plonge tout l'intérieur dans l'ombre.
+- **Ailettes, condensateurs, vis** passent par `Repeat` (instanciation) ; les rotors sont des géométries fusionnées. Ne pas revenir à un maillage par ailette.
+- **Tôles percées** : `panel(largeur, hauteur, épaisseur, trous)` produit de vraies ouvertures. Après `rotateY(π/2)`, l'axe x de la forme devient −z.
 - **Tailwind 4** : les couleurs sont des jetons définis dans `src/app/globals.css` (`bg-surface`, `text-muted`, `border-line`, `bg-accent`…). Les réutiliser plutôt que d'écrire des valeurs en dur.
 - **Colonnes de grille** : ajouter `min-w-0`, sinon un texte tronqué fait déborder la page sur mobile.
 

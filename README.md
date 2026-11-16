@@ -64,7 +64,7 @@ src/lib/compat/           Moteur de compatibilité : règles déterministes et v
 src/lib/perf/             Modèle d'estimation des FPS (section 6.4)
 src/lib/recommend/        Énumération, classement et sélection des propositions (section 5.4)
 src/lib/build.ts          Configuration, prix, consommation, encodage pour l'URL
-src/components/viewer/    Visualiseur 3D (React Three Fiber), boîtier paramétrique
+src/components/viewer/    Visualiseur 3D (React Three Fiber) : layout.ts, camera.ts, scene/
 src/app/                  Pages et routes d'API
 ```
 
@@ -91,6 +91,16 @@ Toutes les combinaisons du catalogue sont énumérées pour le style choisi, les
 - **Équilibrée** : le meilleur rapport performances/prix, pondéré par la capacité d'évolution, entre les deux autres.
 
 Deux propositions diffèrent au moins par le CPU ou le GPU ; sinon le moteur en affiche moins de trois. Si la cible est hors d'atteinte, il le dit et propose des compromis calculés (budget, résolution, FPS, style).
+
+### Visualiseur 3D
+
+Boîtier moyen-tour générique modélisé en géométrie paramétrique, décliné en quatre styles. Les composants reprennent les cotes du catalogue (longueur, épaisseur et ventilateurs du GPU, hauteur du ventirad, taille et emplacement du radiateur, nombre de barrettes), pas l'apparence exacte des produits : le rendu est signalé « illustratif · modèles génériques ».
+
+- Quatre vues (trois-quarts, côté, intérieur, arrière) avec transitions, rotation, zoom, réinitialisation, commandes tactiles.
+- Vitre amovible, étiquettes des composants, capture d'image.
+- Éclairage : éteint, couleur fixe ou arc-en-ciel.
+- Deux niveaux de qualité (haute : ombres et halo lumineux ; légère), avec bascule automatique si la fluidité est insuffisante.
+- Si WebGL est indisponible, la page reste utilisable et affiche les données de la configuration.
 
 ### API
 
