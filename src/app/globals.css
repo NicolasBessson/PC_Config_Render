@@ -45,6 +45,32 @@ input[type="range"] {
   accent-color: var(--color-accent);
 }
 
+/* Export PDF : la fiche s'imprime sur fond clair, sans navigation ni commandes. */
+@media print {
+  :root {
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-raised: #ffffff;
+    --color-line: #c9ccd2;
+    --color-ink: #111318;
+    --color-muted: #4b5160;
+    --color-accent: #1f4fd6;
+    --color-accent-soft: #1f4fd6;
+  }
+  html {
+    color-scheme: light;
+  }
+  header,
+  footer,
+  button,
+  .no-print {
+    display: none !important;
+  }
+  section {
+    break-inside: avoid;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition-duration: 0.01ms !important;

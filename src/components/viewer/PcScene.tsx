@@ -9,7 +9,7 @@ import { ANCHOR, frontFanHeights, layoutScene, REAR_FAN } from "./layout";
 import { Cables } from "./scene/Cables";
 import { Chassis } from "./scene/Chassis";
 import { Cooler } from "./scene/Cooler";
-import { Ctx, glowColor, glowLevel, Pick, useScene } from "./scene/context";
+import { Ctx, glowColor, glowLevel, Label, Pick, useScene, useTint } from "./scene/context";
 import { Fan } from "./scene/Fan";
 import { Gpu } from "./scene/Gpu";
 import { createMaterials, disposeMaterials } from "./scene/materials";
@@ -46,6 +46,28 @@ function InnerLights() {
       <pointLight ref={a} position={[x, 200, 30]} color={glowColor(lighting, 0.1)} intensity={base * level} distance={7} decay={1.6} />
       <pointLight ref={b} position={[x, layout.frame.shroudTop + 56, 70]} color={glowColor(lighting, 0.6)} intensity={base * 0.8 * level} distance={6} decay={1.6} />
     </>
+  );
+}
+
+/** Ventilateurs supplémentaires : en façade à la suite de ceux du boîtier, puis sous le dessus. */
+function ExtraFans({ build }: { build: Build }) {
+  const { layout, mat } = useScene();
+  const extra = layout.extraFans;
+  const tint = useTint(extra?.color, mat.plastic, 0.05, 0.55);
+  if (!extra || !build.fans || extra.front + extra.top === 0) return null;
+  const { frame, fans } = layout;
+  const frontY = frontFanHeights(fans.front + extra.front, extra.size).slice(fans.front);
+  const topZ = Array.from({ length: extra.top }, (_, i) => -196 + extra.size / 2 + i * (extra.size + 2));
+  return (
+    <Pick category="fans">
+      {frontY.map((y, i) => (
+        <Fan key={`f${y}`} position={[frame.cx, y, frame.frontFanZ]} axis="z" size={extra.size} lit={extra.rgb} offset={0.2 + i * 0.1} material={tint} />
+      ))}
+      {topZ.map((z, i) => (
+        <Fan key={`t${z}`} position={[30, ANCHOR.top - 17, z]} axis="-y" size={extra.size} lit={extra.rgb} offset={0.4 + i * 0.1} material={tint} />
+      ))}
+      <Label category="fans" name={`${extra.front + extra.top} × ${build.fans.name}`} position={extra.top > 0 ? [30, ANCHOR.top - 40, topZ[0]] : [frame.cx, frontY[0], frame.frontFanZ - 30]} />
+    </Pick>
   );
 }
 
@@ -102,6 +124,7 @@ export function PcScene({ build, style, lighting, showPanel = true, showLabels =
               <Fan key={y} position={[frame.cx, y, frame.frontFanZ]} axis="z" size={fans.frontSize} lit={frontLit} offset={0.5 + i * 0.1} />
             ))}
           </Pick>
+          <ExtraFans build={build} />
           <InnerLights />
         </group>
       </group>

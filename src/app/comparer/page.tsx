@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState, type ReactNode } from "react";
 import { Badge, Card, DemoNotice, LinkButton, PageShell, StatusBadge } from "@/components/ui";
 import { Viewer } from "@/components/viewer/Viewer";
-import { buildPrice, estimatePower, formatChf, isComplete, resolveBuild } from "@/lib/build";
+import { buildPrice, componentPrice, estimatePower, fanCountOf, formatChf, isComplete, resolveBuild, type Build } from "@/lib/build";
 import { CATEGORIES, CATEGORY_LABELS, games, type Resolution } from "@/lib/catalog";
 import { checkBuild } from "@/lib/compat";
 import { evaluateUpgradability } from "@/lib/insights";
@@ -157,8 +157,10 @@ function Compare() {
                 <Row label="Compatibilité" differs={a.report.status !== b.report.status} a={<StatusBadge status={a.report.status} />} b={<StatusBadge status={b.report.status} />} />
                 {CATEGORIES.map((category) => {
                   const ca = a.build[category], cb = b.build[category];
-                  const cell = (c: typeof ca) => (c ? <>{c.brand} {c.name}<span className="block font-mono text-xs text-muted">{formatChf(c.priceChf)}</span></> : <span className="text-muted">Non choisi</span>);
-                  return <Row key={category} label={CATEGORY_LABELS[category]} differs={ca?.id !== cb?.id} a={cell(ca)} b={cell(cb)} />;
+                  const cell = (build: Build, c: typeof ca) =>
+                    c ? <>{category === "fans" ? `${fanCountOf(build)} × ` : ""}{c.brand} {c.name}<span className="block font-mono text-xs text-muted">{formatChf(componentPrice(build, category))}</span></> : <span className="text-muted">{category === "fans" ? "Aucun" : "Non choisi"}</span>;
+                  const differs = ca?.id !== cb?.id || (category === "fans" && fanCountOf(a.build) !== fanCountOf(b.build));
+                  return <Row key={category} label={CATEGORY_LABELS[category]} differs={differs} a={cell(a.build, ca)} b={cell(b.build, cb)} />;
                 })}
                 <tr>
                   <th colSpan={3} className="bg-white/5 px-3 py-2 text-left">

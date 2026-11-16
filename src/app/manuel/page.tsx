@@ -7,8 +7,8 @@ import { Badge, Button, Card, CardTitle, DemoNotice, LinkButton, PageShell, STAT
 import { useViewState } from "@/components/useViewState";
 import { LightingPicker, StylePicker, Viewer } from "@/components/viewer/Viewer";
 import { STYLES } from "@/components/viewer/styles";
-import { formatChf, resolveBuild, type BuildIds } from "@/lib/build";
-import { catalog, CATEGORIES, CATEGORY_LABELS, type AnyComponent, type Category } from "@/lib/catalog";
+import { componentPrice, fanCountOf, formatChf, MAX_EXTRA_FANS, resolveBuild, type BuildIds } from "@/lib/build";
+import { catalog, CATEGORIES, CATEGORY_LABELS, CORE_CATEGORIES, type AnyComponent, type Category } from "@/lib/catalog";
 import { describeComponent } from "@/lib/catalog/describe";
 import { CATEGORY_HELP } from "@/lib/catalog/help";
 import { checkBuild, checkCandidate } from "@/lib/compat";
@@ -27,17 +27,22 @@ function Manual() {
     const ids: BuildIds = { ...state.ids };
     if (ids[category] === component.id) {
       delete ids[category];
+      if (category === "fans") delete ids.fanCount;
       update({ ids });
       return;
     }
     ids[category] = component.id;
+    if (category === "fans") ids.fanCount = ids.fanCount ?? 1;
     // Choisir un boîtier applique son style au rendu ; il reste modifiable ensuite.
     if (category === "case" && "style" in component) update({ ids, style: component.style, lighting: STYLES[component.style].lighting });
     else update({ ids });
-    setOpen(CATEGORIES.find((c) => !ids[c]) ?? null);
+    // Les ventilateurs restent ouverts après le choix : on règle ensuite leur nombre.
+    if (category !== "fans") setOpen(CATEGORIES.find((c) => !ids[c]) ?? null);
   };
 
-  const chosen = CATEGORIES.filter((c) => state.ids[c]).length;
+  const chosen = CORE_CATEGORIES.filter((c) => state.ids[c]).length;
+  const fanCount = fanCountOf(build);
+  const setFanCount = (count: number) => update({ ids: { ...state.ids, fanCount: Math.min(MAX_EXTRA_FANS, Math.max(1, count)) } });
 
   return (
     <PageShell
@@ -61,7 +66,7 @@ function Manual() {
         {/* Sélection des composants */}
         <div className={`${zone("composants")} min-w-0 space-y-2.5 xl:block xl:max-h-[calc(100vh-9.5rem)] xl:overflow-y-auto xl:pr-1`}>
           <div className="flex items-center justify-between px-1 text-sm">
-            <span className="text-muted">{chosen} / {CATEGORIES.length} composants choisis</span>
+            <span className="text-muted">{chosen} / {CORE_CATEGORIES.length} composants choisis</span>
             <label className="flex cursor-pointer items-center gap-2 text-muted">
               <input type="checkbox" checked={hideIncompatible} onChange={(e) => setHideIncompatible(e.target.checked)} className="accent-[var(--color-accent)]" />
               Masquer les incompatibles
@@ -80,9 +85,9 @@ function Manual() {
                   <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${worst ? STATUS_DOT[worst] : "bg-white/15"}`} />
                   <span className="min-w-0 flex-1">
                     <span className="block text-[11px] uppercase tracking-wider text-muted">{CATEGORY_LABELS[category]}</span>
-                    <span className={`block truncate text-sm ${current ? "font-medium text-ink" : "text-muted"}`}>{current ? `${current.brand} ${current.name}` : "À choisir"}</span>
+                    <span className={`block truncate text-sm ${current ? "font-medium text-ink" : "text-muted"}`}>{current ? `${category === "fans" ? `${fanCount} × ` : ""}${current.brand} ${current.name}` : category === "fans" ? "Facultatif" : "À choisir"}</span>
                   </span>
-                  {current && <span className="shrink-0 font-mono text-xs text-muted">{formatChf(current.priceChf)}</span>}
+                  {current && <span className="shrink-0 font-mono text-xs text-muted">{formatChf(componentPrice(build, category))}</span>}
                   <span className={`shrink-0 text-muted transition ${isOpen ? "rotate-180" : ""}`} aria-hidden>⌄</span>
                 </button>
                 {isOpen && (
@@ -90,6 +95,16 @@ function Manual() {
                     <li className="rounded-xl bg-white/5 px-3 py-2 text-xs leading-relaxed text-muted">
                       <span className="text-ink">{CATEGORY_HELP[category].role}</span> {CATEGORY_HELP[category].tip}
                     </li>
+                    {category === "fans" && current && (
+                      <li className="flex items-center justify-between gap-3 rounded-xl border border-line px-3 py-2 text-sm">
+                        <span className="text-muted">Nombre de ventilateurs</span>
+                        <span className="flex items-center gap-2">
+                          <button type="button" onClick={() => setFanCount(fanCount - 1)} disabled={fanCount <= 1} aria-label="Retirer un ventilateur" className="grid h-7 w-7 place-items-center rounded-lg border border-line text-base disabled:opacity-40">−</button>
+                          <span className="w-5 text-center font-mono" aria-live="polite">{fanCount}</span>
+                          <button type="button" onClick={() => setFanCount(fanCount + 1)} disabled={fanCount >= MAX_EXTRA_FANS} aria-label="Ajouter un ventilateur" className="grid h-7 w-7 place-items-center rounded-lg border border-line text-base disabled:opacity-40">+</button>
+                        </span>
+                      </li>
+                    )}
                     {visible.map(({ component, check }) => {
                       const active = component.id === current?.id;
                       return (
@@ -124,7 +139,6 @@ function Manual() {
               </section>
             );
           })}
-          <p className="px-1 text-xs text-muted">Les ventilateurs supplémentaires ne font pas encore partie du catalogue : le rendu affiche ceux du style choisi.</p>
         </div>
 
         {/* Rendu et diagnostics */}

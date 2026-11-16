@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { formatChf, type Build } from "@/lib/build";
+import { componentPrice, fanCountOf, formatChf, type Build } from "@/lib/build";
 import { CATEGORY_LABELS, type Category, type Style } from "@/lib/catalog";
 import { describeComponent } from "@/lib/catalog/describe";
 import { checkBuild } from "@/lib/compat";
@@ -112,7 +112,7 @@ function ComponentCard({ build, category, onClose }: { build: Build; category: C
       <p className="mt-0.5 text-sm font-medium leading-snug text-ink">{component.name}</p>
       <dl className="mt-2 space-y-1 text-muted">
         <div className="flex justify-between gap-3"><dt>Fabricant</dt><dd className="text-ink">{component.brand}</dd></div>
-        <div className="flex justify-between gap-3"><dt>Prix indicatif</dt><dd className="font-mono text-ink">{formatChf(component.priceChf)}</dd></div>
+        <div className="flex justify-between gap-3"><dt>Prix indicatif</dt><dd className="font-mono text-ink">{category === "fans" ? `${fanCountOf(build)} × ${formatChf(component.priceChf)}` : formatChf(componentPrice(build, category))}</dd></div>
         <div className="flex justify-between gap-3"><dt>Compatibilité</dt><dd className={diagnostics.length ? CARD_TONE[worst] : ""}>{diagnostics.length ? CARD_STATUS[worst] : "Non évaluée"}</dd></div>
       </dl>
       <p className="mt-2 text-ink">{describeComponent(category, component as never)}</p>

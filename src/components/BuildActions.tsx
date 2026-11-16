@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { buildPrice, formatChf, type Build } from "@/lib/build";
+import { buildPrice, componentPrice, fanCountOf, formatChf, type Build } from "@/lib/build";
 import { CATEGORIES, CATEGORY_LABELS } from "@/lib/catalog";
 import { useSavedBuilds } from "@/lib/saved";
 import { Button } from "./ui";
@@ -11,7 +11,8 @@ import { Button } from "./ui";
 export function buildAsText(build: Build, url: string): string {
   const lines = CATEGORIES.filter((category) => build[category]).map((category) => {
     const component = build[category]!;
-    return `${CATEGORY_LABELS[category]} : ${component.brand} ${component.name} — ${formatChf(component.priceChf)}`;
+    const quantity = category === "fans" ? `${fanCountOf(build)} × ` : "";
+    return `${CATEGORY_LABELS[category]} : ${quantity}${component.brand} ${component.name} — ${formatChf(componentPrice(build, category))}`;
   });
   return [...lines, `Total indicatif : ${formatChf(buildPrice(build))} (prix non relevés)`, url].join("\n");
 }
@@ -63,6 +64,7 @@ export function BuildActions({ query, path = "/config", build }: { query: string
           <Button onClick={() => setNaming(true)}>Enregistrer</Button>
           <Button onClick={share}>Partager le lien</Button>
           {build && <Button onClick={copyList}>Copier la liste</Button>}
+          {build && path === "/config" && <Button onClick={() => window.print()} title="Choisissez « Enregistrer au format PDF » dans la fenêtre d'impression">Exporter en PDF</Button>}
         </>
       )}
       {feedback && <span role="status" className="text-xs text-ok">{feedback}</span>}

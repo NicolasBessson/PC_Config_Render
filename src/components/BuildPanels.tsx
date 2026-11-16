@@ -1,4 +1,4 @@
-import { buildPrice, estimatePower, formatChf, isComplete, type Build } from "@/lib/build";
+import { buildPrice, componentPrice, estimatePower, fanCountOf, formatChf, isComplete, type Build } from "@/lib/build";
 import { CATEGORIES, CATEGORY_LABELS, games, type Resolution } from "@/lib/catalog";
 import type { CompatibilityReport } from "@/lib/compat";
 import { GLOSSARY } from "@/lib/catalog/help";
@@ -15,9 +15,11 @@ export function ComponentList({ build, dense = false }: { build: Build; dense?: 
           <li key={category} className={`flex items-baseline justify-between gap-3 ${dense ? "py-1.5" : "py-2"}`}>
             <div className="min-w-0">
               <span className="block text-[11px] uppercase tracking-wider text-muted">{CATEGORY_LABELS[category]}</span>
-              <span className={component ? "text-ink" : "text-muted"}>{component ? `${component.brand} ${component.name}` : "Non choisi"}</span>
+              <span className={component ? "text-ink" : "text-muted"}>
+                {component ? `${category === "fans" ? `${fanCountOf(build)} × ` : ""}${component.brand} ${component.name}` : category === "fans" ? "Aucun (ceux du boîtier)" : "Non choisi"}
+              </span>
             </div>
-            {component && <span className="shrink-0 font-mono text-xs text-muted">{formatChf(component.priceChf)}</span>}
+            {component && <span className="shrink-0 font-mono text-xs text-muted">{formatChf(componentPrice(build, category))}</span>}
           </li>
         );
       })}
@@ -40,7 +42,7 @@ export function PriceTotal({ build }: { build: Build }) {
  */
 export function BudgetBreakdown({ build }: { build: Build }) {
   const total = buildPrice(build);
-  const rows = CATEGORIES.filter((category) => build[category]).map((category) => ({ category, price: build[category]!.priceChf })).sort((a, b) => b.price - a.price);
+  const rows = CATEGORIES.filter((category) => build[category]).map((category) => ({ category, price: componentPrice(build, category) })).sort((a, b) => b.price - a.price);
   if (rows.length === 0) return null;
   const max = rows[0].price;
   return (

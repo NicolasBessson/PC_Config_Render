@@ -7,18 +7,22 @@ import storageJson from "../../../data/storage.json";
 import psusJson from "../../../data/psus.json";
 import coolersJson from "../../../data/coolers.json";
 import casesJson from "../../../data/cases.json";
+import fansJson from "../../../data/fans.json";
 import gamesJson from "../../../data/games.json";
 import benchmarksJson from "../../../data/benchmarks.json";
 import {
-  benchmarksSchema, caseSchema, coolerSchema, cpuSchema, gameSchema, gpuSchema, motherboardSchema,
+  benchmarksSchema, caseSchema, coolerSchema, cpuSchema, fanSchema, gameSchema, gpuSchema, motherboardSchema,
   psuSchema, ramSchema, storageSchema,
-  type Case, type Cooler, type Cpu, type Gpu, type Motherboard, type Psu, type Ram, type Storage,
+  type Case, type CaseFan, type Cooler, type Cpu, type Gpu, type Motherboard, type Psu, type Ram, type Storage,
 } from "./schema";
 
 export * from "./schema";
 
-/** Les huit catégories d'une configuration, dans l'ordre d'affichage. */
-export const CATEGORIES = ["cpu", "gpu", "motherboard", "ram", "storage", "psu", "cooler", "case"] as const;
+/** Les catégories d'une configuration, dans l'ordre d'affichage. */
+export const CATEGORIES = ["cpu", "gpu", "motherboard", "ram", "storage", "psu", "cooler", "case", "fans"] as const;
+/** Catégories indispensables : les ventilateurs supplémentaires sont facultatifs. */
+export const CORE_CATEGORIES = ["cpu", "gpu", "motherboard", "ram", "storage", "psu", "cooler", "case"] as const;
+export type CoreCategory = (typeof CORE_CATEGORIES)[number];
 export type Category = (typeof CATEGORIES)[number];
 
 export const CATEGORY_LABELS: Record<Category, string> = {
@@ -30,6 +34,7 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   psu: "Alimentation",
   cooler: "Refroidissement",
   case: "Boîtier",
+  fans: "Ventilateurs supplémentaires",
 };
 
 export interface ComponentByCategory {
@@ -41,6 +46,7 @@ export interface ComponentByCategory {
   psu: Psu;
   cooler: Cooler;
   case: Case;
+  fans: CaseFan;
 }
 export type AnyComponent = ComponentByCategory[Category];
 
@@ -55,6 +61,7 @@ export const catalog: { [K in Category]: ComponentByCategory[K][] } = {
   psu: z.array(psuSchema).parse(psusJson),
   cooler: z.array(coolerSchema).parse(coolersJson),
   case: z.array(caseSchema).parse(casesJson),
+  fans: z.array(fanSchema).parse(fansJson),
 };
 
 export const games = z.array(gameSchema).parse(gamesJson);

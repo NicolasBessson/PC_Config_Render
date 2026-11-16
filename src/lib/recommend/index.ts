@@ -91,7 +91,7 @@ export function enumerateCandidates(style: Style): Candidate[] {
   const cached = candidateCache.get(style);
   if (cached) return cached;
   const candidates: Candidate[] = [];
-  const empty: Build = { cpu: null, gpu: null, motherboard: null, ram: null, storage: null, psu: null, cooler: null, case: null };
+  const empty: Build = { cpu: null, gpu: null, motherboard: null, ram: null, storage: null, psu: null, cooler: null, case: null, fans: null };
   for (const pcCase of catalog.case.filter((c) => c.style === style)) {
     for (const cpu of catalog.cpu) {
       for (const motherboard of catalog.motherboard) {

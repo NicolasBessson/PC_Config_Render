@@ -1,0 +1,82 @@
+[
+  {
+    "id": "arctic-p12-pwm-pst",
+    "brand": "Arctic",
+    "name": "P12 PWM PST 120 mm",
+    "sizeMm": 120,
+    "rgb": false,
+    "connector": "PWM 4 broches",
+    "priceChf": 8,
+    "priceDate": null,
+    "verified": true,
+    "specUrl": "https://www.arctic.de/en/P12-PWM-PST/ACFAN00120A",
+    "visual": {
+      "frame": "#111214"
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Arctic — fiche produit",
+      "url": "https://www.arctic.de/en/P12-PWM-PST/ACFAN00120A"
+    }
+  },
+  {
+    "id": "arctic-p14-pwm-pst",
+    "brand": "Arctic",
+    "name": "P14 PWM PST 140 mm",
+    "sizeMm": 140,
+    "rgb": false,
+    "connector": "PWM 4 broches",
+    "priceChf": 10,
+    "priceDate": null,
+    "verified": true,
+    "specUrl": "https://www.arctic.de/en/P14-PWM-PST/ACFAN00221A/",
+    "visual": {
+      "frame": "#111214"
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Arctic — fiche produit",
+      "url": "https://www.arctic.de/en/P14-PWM-PST/ACFAN00221A/"
+    }
+  },
+  {
+    "id": "arctic-p12-argb",
+    "brand": "Arctic",
+    "name": "P12 PWM PST A-RGB 120 mm",
+    "sizeMm": 120,
+    "rgb": true,
+    "connector": "PWM 4 broches + A-RGB 3 broches",
+    "priceChf": 14,
+    "priceDate": null,
+    "verified": true,
+    "specUrl": "https://www.arctic.de/us/P12-PWM-PST-A-RGB/ACFAN00231A",
+    "visual": {
+      "frame": "#111214"
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Arctic — fiche produit",
+      "url": "https://www.arctic.de/us/P12-PWM-PST-A-RGB/ACFAN00231A"
+    }
+  },
+  {
+    "id": "noctua-nf-a12x25",
+    "brand": "Noctua",
+    "name": "NF-A12x25 PWM chromax.black.swap 120 mm",
+    "sizeMm": 120,
+    "rgb": false,
+    "connector": "PWM 4 broches",
+    "priceChf": 35,
+    "priceDate": null,
+    "verified": true,
+    "specUrl": "https://www.noctua.at/en/products/nf-a12x25-pwm-chromax-black-swap/specifications",
+    "visual": {
+      "frame": "#0e0f11"
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Noctua — spécifications",
+      "url": "https://www.noctua.at/en/products/nf-a12x25-pwm-chromax-black-swap/specifications"
+    }
+  }
+]

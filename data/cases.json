@@ -50,7 +50,17 @@
       "formFactors",
       "psuFormFactor",
       "visual.psu"
-    ]
+    ],
+    "fanSlots": {
+      "front": {
+        "120": 3,
+        "140": 2
+      },
+      "top": {
+        "120": 2,
+        "140": 2
+      }
+    }
   },
   {
     "id": "h5-flow-white",
@@ -102,7 +112,17 @@
       "visual.frontFanSize",
       "psuFormFactor",
       "visual.psu"
-    ]
+    ],
+    "fanSlots": {
+      "front": {
+        "120": 2,
+        "140": 2
+      },
+      "top": {
+        "120": 2,
+        "140": 0
+      }
+    }
   },
   {
     "id": "ap201-tg",
@@ -150,8 +170,19 @@
     "unconfirmed": [
       "visual.psu",
       "visual.shroud",
-      "visual.fansRgb"
-    ]
+      "visual.fansRgb",
+      "fanSlots"
+    ],
+    "fanSlots": {
+      "front": {
+        "120": 0,
+        "140": 0
+      },
+      "top": {
+        "120": 3,
+        "140": 2
+      }
+    }
   },
   {
     "id": "lancool-216-rgb",
@@ -203,6 +234,16 @@
     },
     "unconfirmed": [
       "visual.psu"
-    ]
+    ],
+    "fanSlots": {
+      "front": {
+        "120": 3,
+        "140": 2
+      },
+      "top": {
+        "120": 3,
+        "140": 2
+      }
+    }
   }
 ]

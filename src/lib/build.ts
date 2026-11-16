@@ -1,17 +1,25 @@
-import { CATEGORIES, getComponent, styleSchema, type Category, type ComponentByCategory, type Style } from "./catalog";
+import { CATEGORIES, CORE_CATEGORIES, getComponent, styleSchema, type Category, type ComponentByCategory, type CoreCategory, type Style } from "./catalog";
 
 /** Une configuration : un composant (ou rien) par catégorie. */
-export type Build = { [K in Category]: ComponentByCategory[K] | null };
-export type BuildIds = Partial<Record<Category, string>>;
-export type CompleteBuild = { [K in Category]: ComponentByCategory[K] };
+export type Build = { [K in Category]: ComponentByCategory[K] | null } & {
+  /** Nombre de ventilateurs supplémentaires (1 par défaut lorsqu'un modèle est choisi). */
+  fanCount?: number;
+};
+export type BuildIds = Partial<Record<Category, string>> & { fanCount?: number };
+/** Complète : les huit catégories indispensables sont choisies ; les ventilateurs restent facultatifs. */
+export type CompleteBuild = { [K in CoreCategory]: ComponentByCategory[K] } & Pick<Build, "fans" | "fanCount">;
 
-export const EMPTY_BUILD: Build = { cpu: null, gpu: null, motherboard: null, ram: null, storage: null, psu: null, cooler: null, case: null };
+export const MAX_EXTRA_FANS = 6;
+export const EMPTY_BUILD: Build = { cpu: null, gpu: null, motherboard: null, ram: null, storage: null, psu: null, cooler: null, case: null, fans: null };
+
+export const fanCountOf = (build: Pick<Build, "fans" | "fanCount">) => (build.fans ? Math.min(MAX_EXTRA_FANS, Math.max(1, build.fanCount ?? 1)) : 0);
 
 export function resolveBuild(ids: BuildIds): Build {
   const build = { ...EMPTY_BUILD };
   for (const category of CATEGORIES) {
     (build as Record<Category, unknown>)[category] = getComponent(category, ids[category]) ?? null;
   }
+  if (build.fans) build.fanCount = fanCountOf({ fans: build.fans, fanCount: ids.fanCount });
   return build;
 }
 
@@ -21,15 +29,23 @@ export function buildIds(build: Build): BuildIds {
     const component = build[category];
     if (component) ids[category] = component.id;
   }
+  if (build.fans) ids.fanCount = fanCountOf(build);
   return ids;
 }
 
 export function isComplete(build: Build): build is CompleteBuild {
-  return CATEGORIES.every((category) => build[category] !== null);
+  return CORE_CATEGORIES.every((category) => build[category] !== null);
+}
+
+/** Prix d'une ligne : les ventilateurs supplémentaires sont multipliés par leur nombre. */
+export function componentPrice(build: Build, category: Category): number {
+  const component = build[category];
+  if (!component) return 0;
+  return category === "fans" ? component.priceChf * fanCountOf(build) : component.priceChf;
 }
 
 export function buildPrice(build: Build): number {
-  return CATEGORIES.reduce((sum, category) => sum + (build[category]?.priceChf ?? 0), 0);
+  return CATEGORIES.reduce((sum, category) => sum + componentPrice(build, category), 0);
 }
 
 /**
@@ -37,7 +53,10 @@ export function buildPrice(build: Build): number {
  * catégories, séparés par des points. Court, lisible et sans état serveur.
  */
 export function encodeBuild(ids: BuildIds): string {
-  return CATEGORIES.map((category) => ids[category] ?? "").join(".");
+  const tokens: string[] = CORE_CATEGORIES.map((category) => ids[category] ?? "");
+  // Les ventilateurs, facultatifs, n'allongent le lien que s'ils sont choisis.
+  if (ids.fans) tokens.push(ids.fans, String(ids.fanCount ?? 1));
+  return tokens.join(".");
 }
 
 /** Décode et valide : un identifiant inconnu est ignoré, jamais deviné. */
@@ -49,6 +68,10 @@ export function decodeBuild(encoded: string | null | undefined): BuildIds {
     const id = parts[i];
     if (id && getComponent(category, id)) ids[category] = id;
   });
+  if (ids.fans) {
+    const count = Number(parts[CATEGORIES.length]);
+    ids.fanCount = Number.isInteger(count) && count >= 1 && count <= MAX_EXTRA_FANS ? count : 1;
+  }
   return ids;
 }
 

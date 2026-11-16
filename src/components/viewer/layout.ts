@@ -1,4 +1,4 @@
-import type { Build } from "@/lib/build";
+import { fanCountOf, type Build } from "@/lib/build";
 import type { Style } from "@/lib/catalog";
 
 /*
@@ -120,6 +120,8 @@ export interface SceneLayout {
   psu: { wattage: number; color: string | null } | null;
   /** Ventilateurs de boîtier, hors refroidissement du processeur. `rgb: null` = selon le style. */
   fans: { front: number; frontSize: number; rear: number; rearSize: number; rgb: boolean | null };
+  /** Ventilateurs supplémentaires choisis : d'abord en façade sous ceux du boîtier, puis en haut. */
+  extraFans: { front: number; top: number; size: 120 | 140; rgb: boolean; color: string | null } | null;
   cables: { atx24: boolean; eps: boolean; gpu: number };
 }
 
@@ -178,6 +180,21 @@ export function layoutScene(build: Build, style: Style): SceneLayout {
 
   const frontRadiator = coolerLayout?.kind === "aio" && coolerLayout.mount === "front" ? coolerLayout : null;
   const caseFans = pcCase?.visual;
+  const frontCount = frontRadiator ? frontRadiator.fans : caseFans ? caseFans.frontFans : style === "minimaliste" ? 2 : 3;
+  const frontSize = frontRadiator ? frontRadiator.fanSize : caseFans?.frontFanSize ?? 120;
+
+  let extraFans: SceneLayout["extraFans"] = null;
+  if (build.fans) {
+    const size = build.fans.sizeMm;
+    const slots = pcCase?.fanSlots;
+    const topTaken = coolerLayout?.kind === "aio" && coolerLayout.mount === "top";
+    // En façade : seulement à la suite de ventilateurs de même taille, dans la limite des emplacements.
+    const frontFree = frontRadiator || frontSize !== size ? 0 : Math.max(0, (slots ? slots.front[String(size) as "120" | "140"] : 3) - frontCount);
+    const topFree = topTaken ? 0 : slots ? slots.top[String(size) as "120" | "140"] : 2;
+    const count = fanCountOf(build);
+    const front = Math.min(count, frontFree);
+    extraFans = { front, top: Math.min(count - front, topFree), size, rgb: build.fans.rgb, color: build.fans.visual?.frame ?? null };
+  }
 
   return {
     generic: true,
@@ -191,12 +208,13 @@ export function layoutScene(build: Build, style: Style): SceneLayout {
     psu: psu ? { wattage: psu.wattage, color: psu.visual?.body ?? null } : null,
     fans: {
       // Un radiateur en façade utilise ses propres ventilateurs à la place de ceux du boîtier.
-      front: frontRadiator ? frontRadiator.fans : caseFans ? caseFans.frontFans : style === "minimaliste" ? 2 : 3,
-      frontSize: frontRadiator ? frontRadiator.fanSize : caseFans?.frontFanSize ?? 120,
+      front: frontCount,
+      frontSize,
       rear: 1,
       rearSize: caseFans?.rearFanSize ?? 120,
       rgb: caseFans ? caseFans.fansRgb : null,
     },
+    extraFans,
     cables: { atx24: Boolean(motherboard && psu), eps: Boolean(motherboard && psu), gpu: gpu && psu ? gpu.power.count : 0 },
   };
 }

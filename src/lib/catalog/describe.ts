@@ -10,6 +10,7 @@ const DESCRIBE: { [K in Category]: (c: ComponentByCategory[K]) => string } = {
   storage: (c) => `${c.interface} · ${capacity(c.capacityGb)}`,
   psu: (c) => `${c.wattage} W · ${c.efficiency} · ${c.has12v2x6 ? "12V-2x6" : `${c.pcie8pin} × 8 broches`}`,
   cooler: (c) => (c.type === "aio" ? `Watercooling AIO · radiateur ${c.radiatorMm} mm` : `Ventirad · ${c.heightMm} mm de haut`) + (c.rgb ? " · RGB" : ""),
+  fans: (c) => `${c.sizeMm} mm · ${c.connector}${c.rgb ? " · RGB" : ""}`,
   case: (c) => `${c.formFactors.join(" / ")} · GPU ≤ ${c.gpuMaxLengthMm} mm · style ${c.style}`,
 };
 

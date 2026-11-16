@@ -1,4 +1,4 @@
-import { estimatePower, PSU_MARGIN, type Build } from "../build";
+import { estimatePower, fanCountOf, PSU_MARGIN, type Build } from "../build";
 import type { Category } from "../catalog";
 
 export type Status = "ok" | "warn" | "fail";
@@ -195,6 +195,29 @@ export const RULES: Rule[] = [
         return { status: "warn", message: `L'alimentation n'a pas de connecteur 12V-2x6. Un adaptateur vers ${adapter8pin} connecteurs 8 broches est en général fourni avec la carte : à vérifier.` };
       }
       return { status: "fail", message: `La carte demande un connecteur 12V-2x6 (16 broches) : l'alimentation n'en a pas et ne dispose pas d'assez de connecteurs 8 broches pour un adaptateur.` };
+    },
+  },
+  {
+    id: "fans-case",
+    version: 1,
+    title: "Emplacements des ventilateurs supplémentaires",
+    involves: ["fans", "case", "cooler"],
+    check(build) {
+      const { fans, case: pcCase, cooler } = build;
+      if (!fans || !pcCase) return null;
+      const count = fanCountOf(build);
+      if (!pcCase.fanSlots) return { status: "warn", message: "Les emplacements de ventilateurs de ce boîtier ne sont pas documentés : à vérifier." };
+      const size = String(fans.sizeMm) as "120" | "140";
+      // Un radiateur occupe toute sa position ; les ventilateurs fournis en façade occupent la leur.
+      const radiator = cooler?.type === "aio" && cooler.radiatorMm ? (pcCase.radiators.top.includes(cooler.radiatorMm) ? "top" : "front") : null;
+      const included = pcCase.visual?.frontFans ?? 0;
+      const front = radiator === "front" ? 0 : Math.max(0, pcCase.fanSlots.front[size] - included);
+      const top = radiator === "top" ? 0 : pcCase.fanSlots.top[size];
+      const free = front + top;
+      if (count > free) {
+        return { status: "fail", message: `Le ${pcCase.name} n'a que ${free} emplacement(s) libre(s) de ${fans.sizeMm} mm (${front} en façade, ${top} en haut) pour ${count} ventilateur(s).` };
+      }
+      return { status: "ok", message: `${count} ventilateur(s) de ${fans.sizeMm} mm pour ${free} emplacement(s) libre(s). Prévoir un connecteur par ventilateur sur la carte mère, ou un répartiteur.` };
     },
   },
   {

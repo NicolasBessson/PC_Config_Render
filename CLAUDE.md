@@ -9,7 +9,7 @@ Configurateur de PC : recommandation à partir d'un besoin, compatibilité, esti
 | Commande | Rôle |
 |---|---|
 | `npm run dev` | Serveur de développement (port 3000) |
-| `npm test` | Vitest : 53 tests (moteurs, correspondance configuration ↔ scène 3D, caméra) |
+| `npm test` | Vitest : 61 tests (moteurs, ventilateurs, correspondance configuration ↔ scène 3D, caméra) |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
 | `npm run build` puis `npm start` | Version de production |
@@ -44,7 +44,7 @@ Limites de cette campagne, à lever avant de parler de catalogue fiable :
 
 Pour une nouvelle campagne : produire des fichiers de résultats au format décrit en tête de `scripts/apply-verification.mjs`, puis `node scripts/apply-verification.mjs AAAA-MM-JJ resultats.json`. Une fiche ne passe à `verified: true` que si tous ses champs utiles sont confirmés.
 
-Fait (sprint 5 — expérience utilisateur, en partie) : configurateur manuel en trois zones (composants / aperçu 3D / prix et détails) qui deviennent trois onglets sous 1280 px ; répartition du budget par catégorie (`BudgetBreakdown`) ; bouton « Copier la liste » ; aides pour débutants (`src/lib/catalog/help.ts`) ; encart « En bref » du comparateur. Aussi faits : section « Ce que vous pouvez faire » sur l'accueil et graphique des FPS par résolution (`FpsByResolution`). Non fait dans ce sprint : export PDF, catégorie « ventilateurs supplémentaires ».
+Fait (sprint 5 — expérience utilisateur, en partie) : configurateur manuel en trois zones (composants / aperçu 3D / prix et détails) qui deviennent trois onglets sous 1280 px ; répartition du budget par catégorie (`BudgetBreakdown`) ; bouton « Copier la liste » ; aides pour débutants (`src/lib/catalog/help.ts`) ; encart « En bref » du comparateur. Aussi faits : section « Ce que vous pouvez faire » sur l'accueil et graphique des FPS par résolution (`FpsByResolution`). Aussi faits : export PDF (bouton « Exporter en PDF » de la fiche, feuille de style d'impression dans `globals.css`) et catégorie « ventilateurs supplémentaires ».
 
 Sprint 4 (benchmarks réels) **non commencé, volontairement** : il exige des FPS exacts relevés un par un avec leurs conditions de test. Depuis une session sans accès aux pages sources, seuls des extraits de recherche sont disponibles, ce qui ne permet pas de garantir les chiffres. À faire par saisie manuelle, ou avec un accès direct aux sources.
 
@@ -55,7 +55,6 @@ Prochaines étapes : finir le sprint 3 (prix relevés, champs non confirmés), l
 Non fait, à ne pas présenter comme existant :
 
 - **Les données ne sont que partiellement vérifiées.** 20 fiches sur 40 sont `verified: true` ; aucun prix n'est relevé (`priceDate: null`) ; les benchmarks sont synthétiques (`demo: true`).
-- Catégorie « ventilateurs supplémentaires » du mode manuel.
 - Tout ce qui est hors MVP : comptes, assistant IA, prix en temps réel, modèles 3D de produits réels, ray tracing, upscaling, usages autres que le gaming.
 
 ## Règles produit à ne pas enfreindre
@@ -108,6 +107,8 @@ Repère : il est ancré au coin haut-arrière côté carte mère (`ANCHOR`). La 
 Couleurs : celles du produit (`visual`) priment sur celles du style via `useTint` ; un produit sans `visual` retombe sur la palette du style. Seuls les produits réellement RGB (`rgb: true`, `fansRgb`) s'illuminent.
 
 Règle de conception : **toute décision sur ce qui est affiché se prend dans `layout.ts`**, pas dans les composants de `scene/`. C'est ce qui rend la correspondance configuration ↔ rendu testable sans navigateur (`layout.test.ts`). Les modèles sont génériques, aux cotes du catalogue ; le badge « Rendu illustratif · modèles génériques » doit rester affiché.
+
+Ventilateurs supplémentaires : neuvième catégorie, **facultative** (`CORE_CATEGORIES` liste les huit indispensables ; `isComplete` ne regarde que celles-là). Le nombre est porté par `fanCount` (1 à 6) dans `Build` et `BuildIds`, et par deux jetons en fin de lien, absents quand aucun ventilateur n'est choisi : les anciens liens restent valides. Prix via `componentPrice`. Règle `fans-case` : emplacements libres = emplacements du boîtier (`fanSlots`) moins les ventilateurs fournis en façade, une position occupée par un radiateur comptant pour zéro. Le moteur de recommandation n'en propose jamais.
 
 Points d'entrée utiles :
 

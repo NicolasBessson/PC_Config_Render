@@ -114,6 +114,8 @@ export const coolerSchema = z.object({
   visual: z.object({ fin: hex, top: hex, fan: hex, fans: z.number().int().min(1).max(3), fanSize: z.union([z.literal(120), z.literal(140)]), radiatorThicknessMm: z.number().positive().optional() }).optional(),
 });
 
+const slotCount = z.object({ "120": z.number().int().min(0), "140": z.number().int().min(0) });
+
 export const caseSchema = z.object({
   ...base,
   style: styleSchema,
@@ -122,6 +124,8 @@ export const caseSchema = z.object({
   coolerMaxHeightMm: z.number().positive(),
   radiators: z.object({ front: z.array(z.number()), top: z.array(z.number()) }),
   psuFormFactor: z.enum(["ATX", "SFX"]),
+  /** Emplacements de ventilateurs en façade et en haut, par taille. Absent = inconnu. */
+  fanSlots: z.object({ front: slotCount, top: slotCount }).optional(),
   /** Dimensions extérieures, utilisées par le rendu 3D. */
   dimensionsMm: z.object({ width: z.number().positive(), height: z.number().positive(), depth: z.number().positive() }).optional(),
   visual: z
@@ -137,6 +141,14 @@ export const caseSchema = z.object({
       fansRgb: z.boolean(),
     })
     .optional(),
+});
+
+export const fanSchema = z.object({
+  ...base,
+  sizeMm: z.union([z.literal(120), z.literal(140)]),
+  rgb: z.boolean(),
+  connector: z.string(),
+  visual: z.object({ frame: hex }).optional(),
 });
 
 export const gameSchema = z.object({
@@ -177,6 +189,7 @@ export type Storage = z.infer<typeof storageSchema>;
 export type Psu = z.infer<typeof psuSchema>;
 export type Cooler = z.infer<typeof coolerSchema>;
 export type Case = z.infer<typeof caseSchema>;
+export type CaseFan = z.infer<typeof fanSchema>;
 export type Game = z.infer<typeof gameSchema>;
 export type Benchmarks = z.infer<typeof benchmarksSchema>;
 export type Style = z.infer<typeof styleSchema>;

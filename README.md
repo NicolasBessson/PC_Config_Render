@@ -119,4 +119,4 @@ Les entrées sont validées côté serveur avec Zod.
 
 ## Hors périmètre de cette version
 
-Conformément au MVP : pas de comptes, pas d'assistant IA, pas de prix en temps réel, pas de modèles 3D de produits réels (le boîtier est un modèle générique, signalé « rendu illustratif »), pas de catégorie « ventilateurs supplémentaires », gaming uniquement, un preset graphique par jeu, ray tracing et upscaling désactivés.
+Pas de comptes, pas d'assistant IA, pas de prix en temps réel, pas de répliques exactes ni de logos des produits (modèles génériques aux cotes du catalogue, signalés « rendu illustratif »), gaming uniquement, un preset graphique par jeu, ray tracing et upscaling désactivés.

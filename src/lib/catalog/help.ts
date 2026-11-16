@@ -30,6 +30,10 @@ export const CATEGORY_HELP: Record<Category, { role: string; tip: string }> = {
     role: "Le refroidissement évacue la chaleur du processeur.",
     tip: "Un ventirad (à air) est simple et fiable ; un watercooling (liquide) déporte la chaleur vers un radiateur. Vérifiez qu'il entre dans le boîtier.",
   },
+  fans: {
+    role: "Les ventilateurs supplémentaires renouvellent l'air du boîtier, en plus de ceux qu'il fournit déjà.",
+    tip: "Facultatifs. Leur taille doit correspondre aux emplacements libres du boîtier ; chacun demande un connecteur sur la carte mère ou un répartiteur.",
+  },
   case: {
     role: "Le boîtier accueille et protège l'ensemble, et détermine l'allure du PC.",
     tip: "Il limite la taille de la carte mère, la longueur de la carte graphique et la hauteur du refroidissement.",
