@@ -9,7 +9,8 @@ Configurateur de PC : recommandation à partir d'un besoin, compatibilité, esti
 | Commande | Rôle |
 |---|---|
 | `npm run dev` | Serveur de développement (port 3000) |
-| `npm test` | Vitest : 61 tests (moteurs, ventilateurs, correspondance configuration ↔ scène 3D, caméra) |
+| `npm test` | Vitest : 65 tests (moteurs, ventilateurs, offres, correspondance configuration ↔ scène 3D, caméra) |
+| `npm run e2e` | 10 tests navigateur (Playwright) sur un site déjà lancé ; `BASE_URL` pour l'adresse, `PW_CHROMIUM` pour un Chromium existant |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
 | `npm run build` puis `npm start` | Version de production |
@@ -110,6 +111,8 @@ Règle de conception : **toute décision sur ce qui est affiché se prend dans `
 
 Ventilateurs supplémentaires : neuvième catégorie, **facultative** (`CORE_CATEGORIES` liste les huit indispensables ; `isComplete` ne regarde que celles-là). Le nombre est porté par `fanCount` (1 à 6) dans `Build` et `BuildIds`, et par deux jetons en fin de lien, absents quand aucun ventilateur n'est choisi : les anciens liens restent valides. Prix via `componentPrice`. Règle `fans-case` : emplacements libres = emplacements du boîtier (`fanSlots`) moins les ventilateurs fournis en façade, une position occupée par un radiateur comptant pour zéro. Le moteur de recommandation n'en propose jamais.
 
+Offres vendeurs (`src/lib/offers`, `data/offers.json`) : structure prête, fichier vide, **aucune interface**. À brancher lorsque des prix auront été relevés avec leur date ; un prix de plus de 14 jours n'est pas « actuel » (`isFresh`), et le classement ne dépend que du prix.
+
 Points d'entrée utiles :
 
 - **Ajouter un composant** : une entrée dans le bon fichier `data/*.json`. L'identifiant est en minuscules avec tirets, **sans point** (le point sépare les identifiants dans l'URL). Un schéma invalide fait échouer le chargement, volontairement.
@@ -145,7 +148,7 @@ Points d'entrée utiles :
 
 ## Vérifier dans un navigateur
 
-Les tests Vitest ne couvrent que `src/lib`. Pour l'interface, lancer le site et le piloter avec Playwright (Chromium est préinstallé dans les sessions cloud). Le rendu WebGL sans carte graphique demande ces options :
+Les tests Vitest ne couvrent que la logique. Pour l'interface, `npm run e2e` (script `scripts/e2e.mjs`) couvre les parcours principaux : dans une session cloud, `npm run build && npx next start -p 3210 &` puis `BASE_URL=http://localhost:3210 PW_CHROMIUM=/opt/pw-browsers/chromium npm run e2e`. Pour une vérification visuelle, piloter le site avec Playwright (Chromium est préinstallé dans les sessions cloud). Le rendu WebGL sans carte graphique demande ces options :
 
 ```js
 chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] })

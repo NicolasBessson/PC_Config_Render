@@ -23,6 +23,7 @@ Autres commandes :
 | Commande | Rôle |
 |---|---|
 | `npm test` | Tests unitaires et tests d'acceptation des moteurs |
+| `npm run e2e` | Tests navigateur des parcours principaux (site lancé au préalable ; `npx playwright install chromium` la première fois) |
 | `npm run typecheck` | Vérification TypeScript |
 | `npm run lint` | ESLint |
 | `npm run build` puis `npm start` | Version de production |
