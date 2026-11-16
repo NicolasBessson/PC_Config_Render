@@ -191,6 +191,62 @@ export function PerfPanel({ build, resolution, targetFps, gameIds, onResolution 
   );
 }
 
+const RESOLUTIONS = ["1080p", "1440p", "4K"] as const;
+
+/**
+ * FPS estimés par jeu et par résolution, en petits multiples : une ligne par
+ * jeu, trois barres sur la même échelle. Une cellule sans donnée reste vide.
+ */
+export function FpsByResolution({ build, targetFps }: { build: Build; targetFps?: number | null }) {
+  if (!build.cpu || !build.gpu) return null;
+  const rows = games.map((game) => ({
+    game,
+    cells: RESOLUTIONS.map((resolution) => estimateFps({ cpuId: build.cpu!.id, gpuId: build.gpu!.id, gameId: game.id, resolution })),
+  }));
+  const documented = rows.filter((row) => row.cells.some((cell) => cell.kind === "estimate"));
+  if (documented.length === 0) return null;
+  return (
+    <Card>
+      <CardTitle>FPS estimés par résolution</CardTitle>
+      <div className="space-y-4">
+        {documented.map(({ game, cells }) => {
+          // Échelle propre à chaque jeu : les jeux ne se comparent pas entre eux.
+          const max = Math.max(...cells.map((cell) => (cell.kind === "estimate" ? cell.high : 0)), targetFps ?? 0);
+          return (
+            <div key={game.id}>
+              <p className="mb-1.5 text-sm font-medium">{game.name}</p>
+              <ul className="space-y-1.5">
+                {cells.map((cell, i) => (
+                  <li key={RESOLUTIONS[i]} className="grid grid-cols-[3.2rem_1fr_auto] items-center gap-2 text-xs" title={cell.kind === "estimate" ? `${game.name} en ${RESOLUTIONS[i]} : environ ${cell.fps} FPS (${cell.low}–${cell.high}), confiance ${cell.confidence}` : cell.reason}>
+                    <span className="font-mono text-muted">{RESOLUTIONS[i]}</span>
+                    {cell.kind === "estimate" ? (
+                      <>
+                        <span className="relative h-2 rounded-r bg-white/5">
+                          <span className="absolute inset-y-0 left-0 rounded-r bg-accent/35" style={{ width: `${(cell.high / max) * 100}%` }} />
+                          <span className="absolute inset-y-0 left-0 rounded-r bg-accent" style={{ width: `${(cell.fps / max) * 100}%` }} />
+                          {targetFps ? <span className="absolute -inset-y-1 w-0.5 rounded bg-white" style={{ left: `${Math.min(100, (targetFps / max) * 100)}%` }} /> : null}
+                        </span>
+                        <span className="w-32 whitespace-nowrap text-right font-mono text-ink">
+                          ≈ {cell.fps} <span className="text-muted">({cell.low}–{cell.high})</span>
+                        </span>
+                      </>
+                    ) : (
+                      <span className="col-span-2 text-muted">Données insuffisantes</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+      <p className="mt-3 text-xs leading-relaxed text-muted">
+        Barre pleine : estimation ; zone claire : haut de la fourchette{targetFps ? ` ; trait blanc : cible de ${targetFps} FPS` : ""}. Chaque jeu a sa propre échelle. Sources de démonstration.
+      </p>
+    </Card>
+  );
+}
+
 export function PowerPanel({ build }: { build: Build }) {
   const power = estimatePower(build);
   const upgradability = isComplete(build) ? evaluateUpgradability(build) : null;

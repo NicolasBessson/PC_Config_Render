@@ -1,12 +1,21 @@
 import Link from "next/link";
 import { HeroViewer } from "@/components/HeroViewer";
-import { LinkButton } from "@/components/ui";
+import { DemoNotice, LinkButton } from "@/components/ui";
 import { catalog, CATEGORIES, games } from "@/lib/catalog";
 
 const STEPS = [
   { n: "01", title: "Décrivez votre besoin", text: "Budget, jeux, résolution, fréquence d'images et style. Aucune connaissance des composants n'est nécessaire." },
   { n: "02", title: "Recevez jusqu'à trois configurations", text: "Économique, équilibrée, performance. Toutes vérifiées par un moteur de compatibilité déterministe." },
   { n: "03", title: "Voyez votre PC avant de l'acheter", text: "Chaque proposition s'affiche en 3D dans le style choisi. Tournez, zoomez, changez l'éclairage." },
+];
+
+const FEATURES = [
+  { title: "Explorer le PC en 3D", text: "Quatre vues, rotation et zoom libres, vitre amovible. Chaque boîtier est à ses dimensions, chaque composant à son gabarit." },
+  { title: "Cliquer sur une pièce", text: "Fabricant, modèle, caractéristiques, prix indicatif et compatibilité s'affichent, avec la source lorsqu'elle est vérifiée." },
+  { title: "Personnaliser l'éclairage", text: "Deux couleurs, intensité, effets fixe, respiration ou cycle. Les animations se coupent d'un clic." },
+  { title: "Vérifier la compatibilité", text: "Socket, mémoire, format, encombrement, alimentation : chaque règle est expliquée, avec les valeurs utilisées." },
+  { title: "Comparer deux configurations", text: "Composants, prix, consommation et performances estimées côte à côte, avec un résumé des écarts." },
+  { title: "Partager et exporter", text: "Un lien suffit à retrouver une configuration. La liste des composants se copie en un clic." },
 ];
 
 const PILLARS = [
@@ -37,10 +46,10 @@ export default function Home() {
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <LinkButton href="/assiste" variant="primary" className="px-6 py-3 text-base">
-                Configuration assistée →
+                Créer avec l&apos;assistant →
               </LinkButton>
               <LinkButton href="/manuel" className="px-6 py-3 text-base">
-                Je choisis mes composants
+                Configurer manuellement
               </LinkButton>
             </div>
             <dl className="mt-8 flex gap-8 text-sm">
@@ -95,6 +104,19 @@ export default function Home() {
           </Link>
           .
         </p>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-10">
+        <h2 className="text-2xl font-semibold tracking-tight">Ce que vous pouvez faire</h2>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((feature) => (
+            <div key={feature.title} className="rounded-2xl border border-line bg-surface p-5">
+              <h3 className="font-medium">{feature.title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted">{feature.text}</p>
+            </div>
+          ))}
+        </div>
+        <DemoNotice className="mt-5" />
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-10">

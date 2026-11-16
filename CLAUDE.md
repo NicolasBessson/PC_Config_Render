@@ -44,7 +44,7 @@ Limites de cette campagne, à lever avant de parler de catalogue fiable :
 
 Pour une nouvelle campagne : produire des fichiers de résultats au format décrit en tête de `scripts/apply-verification.mjs`, puis `node scripts/apply-verification.mjs AAAA-MM-JJ resultats.json`. Une fiche ne passe à `verified: true` que si tous ses champs utiles sont confirmés.
 
-Fait (sprint 5 — expérience utilisateur, en partie) : configurateur manuel en trois zones (composants / aperçu 3D / prix et détails) qui deviennent trois onglets sous 1280 px ; répartition du budget par catégorie (`BudgetBreakdown`) ; bouton « Copier la liste » ; aides pour débutants (`src/lib/catalog/help.ts`) ; encart « En bref » du comparateur. Non fait dans ce sprint : refonte de la page d'accueil, graphiques de FPS détaillés, export PDF, catégorie « ventilateurs supplémentaires ».
+Fait (sprint 5 — expérience utilisateur, en partie) : configurateur manuel en trois zones (composants / aperçu 3D / prix et détails) qui deviennent trois onglets sous 1280 px ; répartition du budget par catégorie (`BudgetBreakdown`) ; bouton « Copier la liste » ; aides pour débutants (`src/lib/catalog/help.ts`) ; encart « En bref » du comparateur. Aussi faits : section « Ce que vous pouvez faire » sur l'accueil et graphique des FPS par résolution (`FpsByResolution`). Non fait dans ce sprint : export PDF, catégorie « ventilateurs supplémentaires ».
 
 Sprint 4 (benchmarks réels) **non commencé, volontairement** : il exige des FPS exacts relevés un par un avec leurs conditions de test. Depuis une session sans accès aux pages sources, seuls des extraits de recherche sont disponibles, ce qui ne permet pas de garantir les chiffres. À faire par saisie manuelle, ou avec un accès direct aux sources.
 

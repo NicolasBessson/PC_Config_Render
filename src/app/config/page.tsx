@@ -2,7 +2,7 @@
 
 import { Suspense, useMemo } from "react";
 import { BuildActions } from "@/components/BuildActions";
-import { BudgetBreakdown, CompatPanel, ComponentList, PerfPanel, PowerPanel, PriceTotal } from "@/components/BuildPanels";
+import { BudgetBreakdown, CompatPanel, ComponentList, FpsByResolution, PerfPanel, PowerPanel, PriceTotal } from "@/components/BuildPanels";
 import { Card, CardTitle, DemoNotice, LinkButton, PageShell, StatusBadge } from "@/components/ui";
 import { useViewState } from "@/components/useViewState";
 import { LightingPicker, StylePicker, Viewer } from "@/components/viewer/Viewer";
@@ -65,6 +65,7 @@ function Config() {
           </Card>
           <CompatPanel report={report} />
           <PerfPanel build={build} resolution={state.resolution} targetFps={state.targetFps} onResolution={(resolution) => update({ resolution })} />
+          <FpsByResolution build={build} targetFps={state.targetFps} />
           <BudgetBreakdown build={build} />
           <PowerPanel build={build} />
           <DemoNotice />
