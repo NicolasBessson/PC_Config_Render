@@ -14,6 +14,8 @@ const base = {
   specUrl: z.string().url().nullable(),
 };
 
+const hex = z.string().regex(/^#[0-9a-f]{6}$/i);
+
 export const socketSchema = z.enum(["AM5", "LGA1700"]);
 export const ramTypeSchema = z.enum(["DDR4", "DDR5"]);
 export const formFactorSchema = z.enum(["ATX", "mATX", "ITX"]);
@@ -45,6 +47,8 @@ export const gpuSchema = z.object({
     /** Nombre de connecteurs 8 broches requis par l'adaptateur, s'il existe. */
     adapter8pin: z.number().int().positive().nullable(),
   }),
+  /** Apparence du modèle 3D : couleurs et largeur de la carte. Aucun logo. */
+  visual: z.object({ shroud: hex, accent: hex, backplate: hex, widthMm: z.number().positive() }).optional(),
 });
 
 export const motherboardSchema = z.object({
@@ -59,6 +63,7 @@ export const motherboardSchema = z.object({
   biosUpdateFor: z.array(z.string()),
   /** La plateforme accepte-t-elle encore de futures générations de processeurs ? */
   upgradePath: z.boolean(),
+  visual: z.object({ pcb: hex, heatsink: hex, accent: hex }).optional(),
 });
 
 export const ramSchema = z.object({
@@ -70,6 +75,7 @@ export const ramSchema = z.object({
   cl: z.number().positive(),
   heightMm: z.number().positive(),
   rgb: z.boolean(),
+  visual: z.object({ spreader: hex }).optional(),
 });
 
 export const storageSchema = z.object({
@@ -86,6 +92,7 @@ export const psuSchema = z.object({
   pcie8pin: z.number().int().nonnegative(),
   has12v2x6: z.boolean(),
   modular: z.boolean(),
+  visual: z.object({ body: hex }).optional(),
 });
 
 export const coolerSchema = z.object({
@@ -98,6 +105,7 @@ export const coolerSchema = z.object({
   /** Hauteur de RAM admise sous le ventirad ; `null` = inconnue ou sans objet. */
   ramClearanceMm: z.number().positive().nullable(),
   rgb: z.boolean(),
+  visual: z.object({ fin: hex, top: hex, fan: hex, fans: z.number().int().min(1).max(3), fanSize: z.union([z.literal(120), z.literal(140)]), radiatorThicknessMm: z.number().positive().optional() }).optional(),
 });
 
 export const caseSchema = z.object({
@@ -108,6 +116,21 @@ export const caseSchema = z.object({
   coolerMaxHeightMm: z.number().positive(),
   radiators: z.object({ front: z.array(z.number()), top: z.array(z.number()) }),
   psuFormFactor: z.enum(["ATX", "SFX"]),
+  /** Dimensions extérieures, utilisées par le rendu 3D. */
+  dimensionsMm: z.object({ width: z.number().positive(), height: z.number().positive(), depth: z.number().positive() }).optional(),
+  visual: z
+    .object({
+      front: z.enum(["mesh", "solid"]),
+      /** Cache d'alimentation en bas du boîtier. */
+      shroud: z.boolean(),
+      psu: z.enum(["rear", "front"]),
+      /** Ventilateurs fournis avec le boîtier. */
+      frontFans: z.number().int().min(0).max(3),
+      frontFanSize: z.union([z.literal(120), z.literal(140), z.literal(160)]),
+      rearFanSize: z.union([z.literal(120), z.literal(140)]),
+      fansRgb: z.boolean(),
+    })
+    .optional(),
 });
 
 export const gameSchema = z.object({

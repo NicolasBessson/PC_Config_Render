@@ -1,11 +1,236 @@
 [
-  { "id": "rtx-5060", "brand": "MSI", "name": "GeForce RTX 5060 Ventus 2X OC 8 Go", "chipset": "GeForce RTX 5060", "vramGb": 8, "powerW": 145, "lengthMm": 200, "slots": 2, "fans": 2, "power": { "connector": "8pin", "count": 1, "adapter8pin": null }, "priceChf": 290, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "rtx-5060ti", "brand": "Gigabyte", "name": "GeForce RTX 5060 Ti Windforce OC 16 Go", "chipset": "GeForce RTX 5060 Ti 16 Go", "vramGb": 16, "powerW": 180, "lengthMm": 210, "slots": 2, "fans": 2, "power": { "connector": "8pin", "count": 1, "adapter8pin": null }, "priceChf": 420, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "rx-9060xt", "brand": "Sapphire", "name": "Radeon RX 9060 XT Pulse 16 Go", "chipset": "Radeon RX 9060 XT 16 Go", "vramGb": 16, "powerW": 160, "lengthMm": 240, "slots": 2, "fans": 2, "power": { "connector": "8pin", "count": 1, "adapter8pin": null }, "priceChf": 350, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "rtx-5070", "brand": "ASUS", "name": "GeForce RTX 5070 Prime OC 12 Go", "chipset": "GeForce RTX 5070", "vramGb": 12, "powerW": 250, "lengthMm": 304, "slots": 2.5, "fans": 3, "power": { "connector": "12v-2x6", "count": 1, "adapter8pin": 2 }, "priceChf": 550, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "rx-9070", "brand": "Sapphire", "name": "Radeon RX 9070 Pulse 16 Go", "chipset": "Radeon RX 9070", "vramGb": 16, "powerW": 220, "lengthMm": 280, "slots": 2.5, "fans": 2, "power": { "connector": "8pin", "count": 2, "adapter8pin": null }, "priceChf": 550, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "rx-9070xt", "brand": "Sapphire", "name": "Radeon RX 9070 XT Pulse 16 Go", "chipset": "Radeon RX 9070 XT", "vramGb": 16, "powerW": 304, "lengthMm": 320, "slots": 2.5, "fans": 3, "power": { "connector": "8pin", "count": 2, "adapter8pin": null }, "priceChf": 650, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "rtx-5070ti", "brand": "MSI", "name": "GeForce RTX 5070 Ti Ventus 3X OC 16 Go", "chipset": "GeForce RTX 5070 Ti", "vramGb": 16, "powerW": 300, "lengthMm": 303, "slots": 2.5, "fans": 3, "power": { "connector": "12v-2x6", "count": 1, "adapter8pin": 3 }, "priceChf": 780, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "rtx-5080", "brand": "Gigabyte", "name": "GeForce RTX 5080 Gaming OC 16 Go", "chipset": "GeForce RTX 5080", "vramGb": 16, "powerW": 360, "lengthMm": 340, "slots": 3.5, "fans": 3, "power": { "connector": "12v-2x6", "count": 1, "adapter8pin": 3 }, "priceChf": 1050, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "arc-b580", "brand": "Intel", "name": "Arc B580 Limited Edition 12 Go", "chipset": "Arc B580", "vramGb": 12, "powerW": 190, "lengthMm": 272, "slots": 2, "fans": 2, "power": { "connector": "8pin", "count": 1, "adapter8pin": null }, "priceChf": 250, "priceDate": null, "verified": false, "specUrl": null }
+  {
+    "id": "rtx-5060",
+    "brand": "MSI",
+    "name": "GeForce RTX 5060 Ventus 2X OC 8 Go",
+    "chipset": "GeForce RTX 5060",
+    "vramGb": 8,
+    "powerW": 145,
+    "lengthMm": 200,
+    "slots": 2,
+    "fans": 2,
+    "power": {
+      "connector": "8pin",
+      "count": 1,
+      "adapter8pin": null
+    },
+    "priceChf": 290,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "shroud": "#1b1c1f",
+      "accent": "#5d6066",
+      "backplate": "#2a2c30",
+      "widthMm": 120
+    }
+  },
+  {
+    "id": "rtx-5060ti",
+    "brand": "Gigabyte",
+    "name": "GeForce RTX 5060 Ti Windforce OC 16 Go",
+    "chipset": "GeForce RTX 5060 Ti 16 Go",
+    "vramGb": 16,
+    "powerW": 180,
+    "lengthMm": 210,
+    "slots": 2,
+    "fans": 2,
+    "power": {
+      "connector": "8pin",
+      "count": 1,
+      "adapter8pin": null
+    },
+    "priceChf": 420,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "shroud": "#141518",
+      "accent": "#3a3d42",
+      "backplate": "#1c1d21",
+      "widthMm": 118
+    }
+  },
+  {
+    "id": "rx-9060xt",
+    "brand": "Sapphire",
+    "name": "Radeon RX 9060 XT Pulse 16 Go",
+    "chipset": "Radeon RX 9060 XT 16 Go",
+    "vramGb": 16,
+    "powerW": 160,
+    "lengthMm": 240,
+    "slots": 2,
+    "fans": 2,
+    "power": {
+      "connector": "8pin",
+      "count": 1,
+      "adapter8pin": null
+    },
+    "priceChf": 350,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "shroud": "#17181b",
+      "accent": "#c1272d",
+      "backplate": "#232428",
+      "widthMm": 121
+    }
+  },
+  {
+    "id": "rtx-5070",
+    "brand": "ASUS",
+    "name": "GeForce RTX 5070 Prime OC 12 Go",
+    "chipset": "GeForce RTX 5070",
+    "vramGb": 12,
+    "powerW": 250,
+    "lengthMm": 304,
+    "slots": 2.5,
+    "fans": 3,
+    "power": {
+      "connector": "12v-2x6",
+      "count": 1,
+      "adapter8pin": 2
+    },
+    "priceChf": 550,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "shroud": "#1c1d20",
+      "accent": "#a9adb3",
+      "backplate": "#35373c",
+      "widthMm": 126
+    }
+  },
+  {
+    "id": "rx-9070",
+    "brand": "Sapphire",
+    "name": "Radeon RX 9070 Pulse 16 Go",
+    "chipset": "Radeon RX 9070",
+    "vramGb": 16,
+    "powerW": 220,
+    "lengthMm": 280,
+    "slots": 2.5,
+    "fans": 2,
+    "power": {
+      "connector": "8pin",
+      "count": 2,
+      "adapter8pin": null
+    },
+    "priceChf": 550,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "shroud": "#17181b",
+      "accent": "#c1272d",
+      "backplate": "#232428",
+      "widthMm": 122
+    }
+  },
+  {
+    "id": "rx-9070xt",
+    "brand": "Sapphire",
+    "name": "Radeon RX 9070 XT Pulse 16 Go",
+    "chipset": "Radeon RX 9070 XT",
+    "vramGb": 16,
+    "powerW": 304,
+    "lengthMm": 320,
+    "slots": 2.5,
+    "fans": 3,
+    "power": {
+      "connector": "8pin",
+      "count": 2,
+      "adapter8pin": null
+    },
+    "priceChf": 650,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "shroud": "#17181b",
+      "accent": "#c1272d",
+      "backplate": "#232428",
+      "widthMm": 128
+    }
+  },
+  {
+    "id": "rtx-5070ti",
+    "brand": "MSI",
+    "name": "GeForce RTX 5070 Ti Ventus 3X OC 16 Go",
+    "chipset": "GeForce RTX 5070 Ti",
+    "vramGb": 16,
+    "powerW": 300,
+    "lengthMm": 303,
+    "slots": 2.5,
+    "fans": 3,
+    "power": {
+      "connector": "12v-2x6",
+      "count": 1,
+      "adapter8pin": 3
+    },
+    "priceChf": 780,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "shroud": "#1b1c1f",
+      "accent": "#5d6066",
+      "backplate": "#2a2c30",
+      "widthMm": 121
+    }
+  },
+  {
+    "id": "rtx-5080",
+    "brand": "Gigabyte",
+    "name": "GeForce RTX 5080 Gaming OC 16 Go",
+    "chipset": "GeForce RTX 5080",
+    "vramGb": 16,
+    "powerW": 360,
+    "lengthMm": 340,
+    "slots": 3.5,
+    "fans": 3,
+    "power": {
+      "connector": "12v-2x6",
+      "count": 1,
+      "adapter8pin": 3
+    },
+    "priceChf": 1050,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "shroud": "#141518",
+      "accent": "#8a8f97",
+      "backplate": "#1c1d21",
+      "widthMm": 140
+    }
+  },
+  {
+    "id": "arc-b580",
+    "brand": "Intel",
+    "name": "Arc B580 Limited Edition 12 Go",
+    "chipset": "Arc B580",
+    "vramGb": 12,
+    "powerW": 190,
+    "lengthMm": 272,
+    "slots": 2,
+    "fans": 2,
+    "power": {
+      "connector": "8pin",
+      "count": 1,
+      "adapter8pin": null
+    },
+    "priceChf": 250,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "shroud": "#0f1012",
+      "accent": "#2a2c30",
+      "backplate": "#141518",
+      "widthMm": 115
+    }
+  }
 ]

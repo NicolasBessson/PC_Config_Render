@@ -132,8 +132,11 @@ export interface PcCanvasProps extends PcSceneProps {
   onDecline?: () => void;
 }
 
-export default function PcCanvas({ interactive = true, autoRotate = false, animate = true, view = DEFAULT_VIEW, viewNonce = 0, quality = "high", onDecline, ...scene }: PcCanvasProps) {
+export default function PcCanvas({ interactive = true, autoRotate = false, animate: animateProp = true, view = DEFAULT_VIEW, viewNonce = 0, quality = "high", onDecline, ...scene }: PcCanvasProps) {
   const [supported] = useState(detectWebGL);
+  // « Animations désactivées » : plus aucun mouvement, et le rendu ne se fait qu'à la demande.
+  const animate = animateProp && scene.lighting.animated;
+  useEffect(() => () => void (document.body.style.cursor = ""), []);
   const exposure = STYLES[scene.style].exposure;
   if (!supported) return <ViewerFallback reason="Votre navigateur ou votre appareil ne prend pas en charge WebGL." />;
   const high = quality === "high";
@@ -145,6 +148,7 @@ export default function PcCanvas({ interactive = true, autoRotate = false, anima
         frameloop={animate ? "always" : "demand"}
         camera={{ position: VIEWS[DEFAULT_VIEW].position, fov: 30, near: 0.5, far: 80 }}
         gl={{ antialias: !high, preserveDrawingBuffer: true, powerPreference: "high-performance" }}
+        onPointerMissed={() => scene.onSelect?.(null)}
       >
         <primitive attach="background" object={backdropTexture()} />
         {animate && onDecline && <PerformanceMonitor onDecline={onDecline} flipflops={2} />}

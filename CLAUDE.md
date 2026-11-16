@@ -9,7 +9,7 @@ Configurateur de PC : recommandation à partir d'un besoin, compatibilité, esti
 | Commande | Rôle |
 |---|---|
 | `npm run dev` | Serveur de développement (port 3000) |
-| `npm test` | Vitest : 50 tests (moteurs, correspondance configuration ↔ scène 3D, caméra) |
+| `npm test` | Vitest : 53 tests (moteurs, correspondance configuration ↔ scène 3D, caméra) |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
 | `npm run build` puis `npm start` | Version de production |
@@ -23,7 +23,17 @@ Fait (MVP) : accueil, questionnaire assisté, résultats, configuration manuelle
 
 Fait (roadmap V2, sprint 1 — qualité visuelle 3D) : boîtier détaillé, composants intérieurs réalistes, câbles, matériaux partagés, ombres, halo lumineux, quatre vues de caméra avec transitions, qualité haute ou légère.
 
-Prochaine étape selon la roadmap V2 : **sprint 2 — 3D interactive** (clic sur un composant avec fiche et contour lumineux, couleur secondaire, intensité et effet « respiration » de l'éclairage). Puis sprint 3 (catalogue vérifié) et sprint 4 (benchmarks réels). Ne pas démarrer plusieurs chantiers à la fois.
+Fait (sprint 2 — 3D interactive, élargi à la demande de l'utilisateur) :
+
+- Clic sur un composant : fiche (fabricant, modèle, caractéristiques, prix indicatif, compatibilité, mentions « non vérifié ») et étiquette surlignée.
+- Éclairage : couleur principale et secondaire, intensité, effets fixe / respiration / cycle, case « Animations » qui fige tout. État porté par l'URL (`lum`, `c`, `c2`, `li`, `anim`).
+- **Apparence propre à chaque produit** : champ `visual` des fiches (couleurs, largeur du GPU, nombre et taille des ventilateurs, épaisseur du radiateur) et `dimensionsMm` des boîtiers. Le boîtier est rendu à ses dimensions extérieures, avec ou sans cache d'alimentation, alimentation à l'arrière ou à l'avant, et les ventilateurs qu'il fournit.
+
+Non fait dans le sprint 2 : **le contour lumineux du composant sélectionné**. L'effet `Outline` de `@react-three/postprocessing` a été essayé (composants `Selection` / `Select`) et ne s'affichait pas ; il a été retiré. À reprendre, par exemple avec un maillage de surbrillance dédié.
+
+Limite assumée : pas de logos ni de répliques exactes des produits (droits des marques, section 16.5 du cahier des charges). Les valeurs `visual` et `dimensionsMm` sont saisies de mémoire, comme le reste du catalogue : à vérifier au sprint 3.
+
+Prochaine étape selon la roadmap V2 : **sprint 3 — catalogue vérifié**, puis sprint 4 (benchmarks réels). Ne pas démarrer plusieurs chantiers à la fois.
 
 Non fait, à ne pas présenter comme existant :
 
@@ -76,6 +86,10 @@ viewer/scene/textures.ts    Textures procédurales dessinées dans un canvas
 viewer/scene/context.tsx    Contexte de scène, Glow, Part, Repeat (instanciation), Label
 ```
 
+Repère : il est ancré au coin haut-arrière côté carte mère (`ANCHOR`). La carte mère, le GPU et le ventilateur arrière ne bougent pas ; la vitre, la façade et le fond suivent les dimensions du boîtier (`frameFor`, type `Frame`). `PcScene` recentre ensuite le tout sur le socle.
+
+Couleurs : celles du produit (`visual`) priment sur celles du style via `useTint` ; un produit sans `visual` retombe sur la palette du style. Seuls les produits réellement RGB (`rgb: true`, `fansRgb`) s'illuminent.
+
 Règle de conception : **toute décision sur ce qui est affiché se prend dans `layout.ts`**, pas dans les composants de `scene/`. C'est ce qui rend la correspondance configuration ↔ rendu testable sans navigateur (`layout.test.ts`). Les modèles sont génériques, aux cotes du catalogue ; le badge « Rendu illustratif · modèles génériques » doit rester affiché.
 
 Points d'entrée utiles :
@@ -124,7 +138,7 @@ Après un `next build`, arrêter l'ancien serveur avec `pkill -f next-server` av
 ## Git
 
 - Branche de travail : `claude/intelligent-clarke-50yvp1`. Pas de pull request sans demande explicite.
-- **Le push est bloqué** : Claude n'a pas d'accès en écriture à `NicolasBessson/PC_Config_Render` (erreur 403). L'utilisateur doit reconnecter GitHub et installer l'application Claude GitHub sur le dépôt. Tant que ce n'est pas fait, le travail n'existe que dans la session : lui fournir une archive (`git archive --format=zip --prefix=PC_Config_Render/ HEAD`).
+- Le push fonctionne depuis que l'application Claude GitHub est installée sur le dépôt. En cas d'erreur 403, c'est cette installation qu'il faut vérifier ; en attendant, fournir une archive (`git archive --format=zip --prefix=PC_Config_Render/ HEAD`).
 - `next dev` réécrit `AGENTS.md` : le committer avec le reste.
 
 ## Suite logique

@@ -1,6 +1,100 @@
 [
-  { "id": "b650-tomahawk", "brand": "MSI", "name": "MAG B650 Tomahawk WiFi", "socket": "AM5", "chipset": "B650", "formFactor": "ATX", "ramType": "DDR5", "ramSlots": 4, "m2Slots": 3, "biosUpdateFor": ["r5-9600x", "r7-9800x3d"], "upgradePath": true, "priceChf": 180, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "b650m-ds3h", "brand": "Gigabyte", "name": "B650M DS3H", "socket": "AM5", "chipset": "B650", "formFactor": "mATX", "ramType": "DDR5", "ramSlots": 4, "m2Slots": 2, "biosUpdateFor": ["r5-9600x", "r7-9800x3d"], "upgradePath": true, "priceChf": 120, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "b760m-ddr4", "brand": "MSI", "name": "PRO B760M-A WiFi DDR4", "socket": "LGA1700", "chipset": "B760", "formFactor": "mATX", "ramType": "DDR4", "ramSlots": 4, "m2Slots": 2, "biosUpdateFor": ["i5-14600kf"], "upgradePath": false, "priceChf": 115, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "z790-tomahawk", "brand": "MSI", "name": "MAG Z790 Tomahawk WiFi", "socket": "LGA1700", "chipset": "Z790", "formFactor": "ATX", "ramType": "DDR5", "ramSlots": 4, "m2Slots": 4, "biosUpdateFor": ["i5-14600kf"], "upgradePath": false, "priceChf": 230, "priceDate": null, "verified": false, "specUrl": null }
+  {
+    "id": "b650-tomahawk",
+    "brand": "MSI",
+    "name": "MAG B650 Tomahawk WiFi",
+    "socket": "AM5",
+    "chipset": "B650",
+    "formFactor": "ATX",
+    "ramType": "DDR5",
+    "ramSlots": 4,
+    "m2Slots": 3,
+    "biosUpdateFor": [
+      "r5-9600x",
+      "r7-9800x3d"
+    ],
+    "upgradePath": true,
+    "priceChf": 180,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "pcb": "#101114",
+      "heatsink": "#2e3138",
+      "accent": "#b7d334"
+    }
+  },
+  {
+    "id": "b650m-ds3h",
+    "brand": "Gigabyte",
+    "name": "B650M DS3H",
+    "socket": "AM5",
+    "chipset": "B650",
+    "formFactor": "mATX",
+    "ramType": "DDR5",
+    "ramSlots": 4,
+    "m2Slots": 2,
+    "biosUpdateFor": [
+      "r5-9600x",
+      "r7-9800x3d"
+    ],
+    "upgradePath": true,
+    "priceChf": 120,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "pcb": "#15171b",
+      "heatsink": "#7f848c",
+      "accent": "#7f848c"
+    }
+  },
+  {
+    "id": "b760m-ddr4",
+    "brand": "MSI",
+    "name": "PRO B760M-A WiFi DDR4",
+    "socket": "LGA1700",
+    "chipset": "B760",
+    "formFactor": "mATX",
+    "ramType": "DDR4",
+    "ramSlots": 4,
+    "m2Slots": 2,
+    "biosUpdateFor": [
+      "i5-14600kf"
+    ],
+    "upgradePath": false,
+    "priceChf": 115,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "pcb": "#121316",
+      "heatsink": "#a2a6ad",
+      "accent": "#a2a6ad"
+    }
+  },
+  {
+    "id": "z790-tomahawk",
+    "brand": "MSI",
+    "name": "MAG Z790 Tomahawk WiFi",
+    "socket": "LGA1700",
+    "chipset": "Z790",
+    "formFactor": "ATX",
+    "ramType": "DDR5",
+    "ramSlots": 4,
+    "m2Slots": 4,
+    "biosUpdateFor": [
+      "i5-14600kf"
+    ],
+    "upgradePath": false,
+    "priceChf": 230,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "pcb": "#101114",
+      "heatsink": "#2e3138",
+      "accent": "#b7d334"
+    }
+  }
 ]

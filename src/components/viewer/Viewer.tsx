@@ -1,9 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useRef, useState, useSyncExternalStore } from "react";
-import type { Build } from "@/lib/build";
-import type { Style } from "@/lib/catalog";
+import { useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { formatChf, type Build } from "@/lib/build";
+import { CATEGORY_LABELS, type Category, type Style } from "@/lib/catalog";
+import { describeComponent } from "@/lib/catalog/describe";
+import { checkBuild } from "@/lib/compat";
 import { DEFAULT_VIEW, VIEW_ORDER, VIEWS, type ViewId } from "./camera";
 import type { Quality } from "./PcCanvas";
 import { LIGHT_COLORS, STYLE_ORDER, STYLES, type Lighting, type LightMode } from "./styles";
@@ -34,6 +36,7 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
   const container = useRef<HTMLDivElement>(null);
   const [showPanel, setShowPanel] = useState(true);
   const [showLabels, setShowLabels] = useState(false);
+  const [selected, setSelected] = useState<Category | null>(null);
   const [view, setView] = useState<{ id: ViewId; nonce: number }>({ id: DEFAULT_VIEW, nonce: 0 });
   const touch = useSyncExternalStore(subscribeNever, isTouchDevice, () => false);
   /** Fluidité mesurée insuffisante : on allège, sauf si l'utilisateur a choisi lui-même. */
@@ -62,7 +65,10 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
         interactive={interactive} autoRotate={autoRotate} animate={animate}
         view={view.id} viewNonce={view.nonce} quality={quality}
         onDecline={choice ? undefined : () => setDeclined(true)}
+        selected={toolbar ? selected : null}
+        onSelect={toolbar && interactive ? setSelected : undefined}
       />
+      {toolbar && selected && build[selected] && <ComponentCard build={build} category={selected} onClose={() => setSelected(null)} />}
       <span className="pointer-events-none absolute left-3 top-3 rounded-full border border-line bg-black/50 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-muted backdrop-blur" title="Les modèles 3D sont génériques : ils reprennent les dimensions du catalogue, pas l'apparence exacte des produits.">
         Rendu illustratif · modèles génériques
       </span>
@@ -85,6 +91,40 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
         </>
       )}
     </div>
+  );
+}
+
+const CARD_TONE = { ok: "text-ok", warn: "text-warn", fail: "text-fail" } as const;
+const CARD_STATUS = { ok: "Compatible", warn: "À vérifier", fail: "Incompatible" } as const;
+
+/** Fiche du composant cliqué : uniquement des données du catalogue, signalées comme non vérifiées le cas échéant. */
+function ComponentCard({ build, category, onClose }: { build: Build; category: Category; onClose: () => void }) {
+  const component = build[category]!;
+  const diagnostics = useMemo(() => checkBuild(build).diagnostics.filter((d) => d.involves.includes(category)), [build, category]);
+  const worst = diagnostics.some((d) => d.status === "fail") ? "fail" : diagnostics.some((d) => d.status === "warn") ? "warn" : "ok";
+  const issues = diagnostics.filter((d) => d.status !== "ok");
+  return (
+    <aside className="absolute left-3 top-12 z-10 w-64 max-w-[calc(100%-1.5rem)] rounded-xl border border-line bg-black/75 p-3 text-xs backdrop-blur max-sm:top-20" aria-label="Composant sélectionné">
+      <div className="flex items-start justify-between gap-2">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-sky-300">{CATEGORY_LABELS[category]}</span>
+        <button type="button" onClick={onClose} aria-label="Fermer la fiche" className="-mr-1 -mt-1 rounded px-1.5 text-base leading-none text-muted hover:text-ink">×</button>
+      </div>
+      <p className="mt-0.5 text-sm font-medium leading-snug text-ink">{component.name}</p>
+      <dl className="mt-2 space-y-1 text-muted">
+        <div className="flex justify-between gap-3"><dt>Fabricant</dt><dd className="text-ink">{component.brand}</dd></div>
+        <div className="flex justify-between gap-3"><dt>Prix indicatif</dt><dd className="font-mono text-ink">{formatChf(component.priceChf)}</dd></div>
+        <div className="flex justify-between gap-3"><dt>Compatibilité</dt><dd className={diagnostics.length ? CARD_TONE[worst] : ""}>{diagnostics.length ? CARD_STATUS[worst] : "Non évaluée"}</dd></div>
+      </dl>
+      <p className="mt-2 text-ink">{describeComponent(category, component as never)}</p>
+      {issues.map((d) => (
+        <p key={d.ruleId} className={`mt-1.5 leading-snug ${CARD_TONE[d.status]}`}>{d.message}</p>
+      ))}
+      <p className="mt-2 border-t border-line pt-2 text-[11px] leading-snug text-muted">
+        {!component.verified && "Fiche non vérifiée : caractéristiques à confirmer auprès du fabricant. "}
+        {component.priceDate === null && "Prix non relevé. "}
+        Modèle 3D générique, aux cotes du catalogue.
+      </p>
+    </aside>
   );
 }
 
@@ -122,39 +162,49 @@ export function StylePicker({ value, onChange, compact = false }: { value: Style
 
 const MODES: { id: LightMode; label: string }[] = [
   { id: "off", label: "Éteint" },
-  { id: "fixed", label: "Couleur fixe" },
-  { id: "rainbow", label: "Arc-en-ciel" },
+  { id: "fixed", label: "Fixe" },
+  { id: "breath", label: "Respiration" },
+  { id: "rainbow", label: "Cycle" },
 ];
 
-export function LightingPicker({ value, onChange }: { value: Lighting; onChange: (lighting: Lighting) => void }) {
+function Swatches({ label, value, onPick }: { label: string; value: string; onPick: (color: string) => void }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-      <div className="flex rounded-full border border-line bg-surface p-0.5 text-xs">
+    <div className="flex flex-wrap items-center gap-1.5">
+      <span className="w-20 text-xs text-muted">{label}</span>
+      {LIGHT_COLORS.map((color) => (
+        <button key={color} type="button" aria-label={`${label} ${color}`} onClick={() => onPick(color)} className={`h-6 w-6 rounded-full border-2 transition ${value === color ? "border-white" : "border-white/15 hover:border-white/50"}`} style={{ background: color }} />
+      ))}
+      <label className="relative h-6 w-6 cursor-pointer overflow-hidden rounded-full border-2 border-white/15" title="Couleur personnalisée" style={{ background: "conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" }}>
+        <input type="color" value={value} onChange={(e) => onPick(e.target.value)} className="absolute inset-0 h-full w-full cursor-pointer opacity-0" aria-label={`${label} personnalisée`} />
+      </label>
+    </div>
+  );
+}
+
+/** Éclairage : effet, deux couleurs, intensité, et possibilité de couper les animations. */
+export function LightingPicker({ value, onChange }: { value: Lighting; onChange: (lighting: Lighting) => void }) {
+  // Choisir une couleur en mode « éteint » ou « cycle » repasse en couleur fixe, pour que l'effet soit visible.
+  const colored = (patch: Partial<Lighting>): Lighting => ({ ...value, ...patch, mode: value.mode === "off" || value.mode === "rainbow" ? "fixed" : value.mode });
+  return (
+    <div className="space-y-3">
+      <div className="flex w-fit max-w-full overflow-x-auto rounded-full border border-line bg-surface p-0.5 text-xs">
         {MODES.map((mode) => (
-          <button
-            key={mode.id}
-            type="button"
-            onClick={() => onChange({ ...value, mode: mode.id })}
-            aria-pressed={value.mode === mode.id}
-            className={`rounded-full px-3 py-1.5 transition ${value.mode === mode.id ? "bg-accent text-white" : "text-muted hover:text-ink"}`}
-          >
+          <button key={mode.id} type="button" onClick={() => onChange({ ...value, mode: mode.id })} aria-pressed={value.mode === mode.id} className={`whitespace-nowrap rounded-full px-3 py-1.5 transition ${value.mode === mode.id ? "bg-accent text-white" : "text-muted hover:text-ink"}`}>
             {mode.label}
           </button>
         ))}
       </div>
-      <div className="flex items-center gap-1.5">
-        {LIGHT_COLORS.map((color) => (
-          <button
-            key={color}
-            type="button"
-            aria-label={`Couleur ${color}`}
-            onClick={() => onChange({ mode: "fixed", color })}
-            className={`h-6 w-6 rounded-full border-2 transition ${value.mode === "fixed" && value.color === color ? "border-white" : "border-white/15 hover:border-white/50"}`}
-            style={{ background: color }}
-          />
-        ))}
-        <label className="relative h-6 w-6 cursor-pointer overflow-hidden rounded-full border-2 border-white/15" title="Couleur personnalisée" style={{ background: "conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" }}>
-          <input type="color" value={value.color} onChange={(e) => onChange({ mode: "fixed", color: e.target.value })} className="absolute inset-0 h-full w-full cursor-pointer opacity-0" aria-label="Couleur personnalisée" />
+      <Swatches label="Principale" value={value.color} onPick={(color) => onChange(colored({ color, color2: value.color2 === value.color ? color : value.color2 }))} />
+      <Swatches label="Secondaire" value={value.color2} onPick={(color2) => onChange(colored({ color2 }))} />
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted">
+        <label className="flex items-center gap-2">
+          Intensité
+          <input type="range" min={30} max={150} step={10} value={Math.round(value.intensity * 100)} onChange={(e) => onChange({ ...value, intensity: Number(e.target.value) / 100 })} className="w-32" aria-label="Intensité de l'éclairage" />
+          <span className="w-9 font-mono text-ink">{Math.round(value.intensity * 100)} %</span>
+        </label>
+        <label className="flex cursor-pointer items-center gap-2">
+          <input type="checkbox" checked={value.animated} onChange={(e) => onChange({ ...value, animated: e.target.checked })} className="accent-[var(--color-accent)]" />
+          Animations
         </label>
       </div>
     </div>

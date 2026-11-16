@@ -1,6 +1,169 @@
 [
-  { "id": "4000d-airflow", "brand": "Corsair", "name": "4000D Airflow (noir)", "style": "noir", "formFactors": ["ATX", "mATX", "ITX"], "gpuMaxLengthMm": 360, "coolerMaxHeightMm": 170, "radiators": { "front": [240, 280, 360], "top": [240, 280] }, "psuFormFactor": "ATX", "priceChf": 95, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "h5-flow-white", "brand": "NZXT", "name": "H5 Flow (blanc)", "style": "blanc", "formFactors": ["ATX", "mATX", "ITX"], "gpuMaxLengthMm": 365, "coolerMaxHeightMm": 165, "radiators": { "front": [240, 280], "top": [240] }, "psuFormFactor": "ATX", "priceChf": 90, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "ap201-tg", "brand": "ASUS", "name": "Prime AP201 Tempered Glass (noir)", "style": "minimaliste", "formFactors": ["mATX", "ITX"], "gpuMaxLengthMm": 338, "coolerMaxHeightMm": 170, "radiators": { "front": [], "top": [240, 280, 360] }, "psuFormFactor": "ATX", "priceChf": 80, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "lancool-216-rgb", "brand": "Lian Li", "name": "Lancool 216 RGB (noir)", "style": "rgb", "formFactors": ["ATX", "mATX", "ITX"], "gpuMaxLengthMm": 392, "coolerMaxHeightMm": 180, "radiators": { "front": [240, 280, 360], "top": [240, 280, 360] }, "psuFormFactor": "ATX", "priceChf": 105, "priceDate": null, "verified": false, "specUrl": null }
+  {
+    "id": "4000d-airflow",
+    "brand": "Corsair",
+    "name": "4000D Airflow (noir)",
+    "style": "noir",
+    "formFactors": [
+      "ATX",
+      "mATX",
+      "ITX"
+    ],
+    "gpuMaxLengthMm": 360,
+    "coolerMaxHeightMm": 170,
+    "radiators": {
+      "front": [
+        240,
+        280,
+        360
+      ],
+      "top": [
+        240,
+        280
+      ]
+    },
+    "psuFormFactor": "ATX",
+    "priceChf": 95,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "dimensionsMm": {
+      "width": 230,
+      "height": 466,
+      "depth": 453
+    },
+    "visual": {
+      "front": "mesh",
+      "shroud": true,
+      "psu": "rear",
+      "frontFans": 1,
+      "frontFanSize": 120,
+      "rearFanSize": 120,
+      "fansRgb": false
+    }
+  },
+  {
+    "id": "h5-flow-white",
+    "brand": "NZXT",
+    "name": "H5 Flow (blanc)",
+    "style": "blanc",
+    "formFactors": [
+      "ATX",
+      "mATX",
+      "ITX"
+    ],
+    "gpuMaxLengthMm": 365,
+    "coolerMaxHeightMm": 165,
+    "radiators": {
+      "front": [
+        240,
+        280
+      ],
+      "top": [
+        240
+      ]
+    },
+    "psuFormFactor": "ATX",
+    "priceChf": 90,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "dimensionsMm": {
+      "width": 227,
+      "height": 460,
+      "depth": 446
+    },
+    "visual": {
+      "front": "mesh",
+      "shroud": true,
+      "psu": "rear",
+      "frontFans": 1,
+      "frontFanSize": 120,
+      "rearFanSize": 120,
+      "fansRgb": false
+    }
+  },
+  {
+    "id": "ap201-tg",
+    "brand": "ASUS",
+    "name": "Prime AP201 Tempered Glass (noir)",
+    "style": "minimaliste",
+    "formFactors": [
+      "mATX",
+      "ITX"
+    ],
+    "gpuMaxLengthMm": 338,
+    "coolerMaxHeightMm": 170,
+    "radiators": {
+      "front": [],
+      "top": [
+        240,
+        280,
+        360
+      ]
+    },
+    "psuFormFactor": "ATX",
+    "priceChf": 80,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "dimensionsMm": {
+      "width": 205,
+      "height": 350,
+      "depth": 460
+    },
+    "visual": {
+      "front": "mesh",
+      "shroud": false,
+      "psu": "front",
+      "frontFans": 0,
+      "frontFanSize": 120,
+      "rearFanSize": 120,
+      "fansRgb": false
+    }
+  },
+  {
+    "id": "lancool-216-rgb",
+    "brand": "Lian Li",
+    "name": "Lancool 216 RGB (noir)",
+    "style": "rgb",
+    "formFactors": [
+      "ATX",
+      "mATX",
+      "ITX"
+    ],
+    "gpuMaxLengthMm": 392,
+    "coolerMaxHeightMm": 180,
+    "radiators": {
+      "front": [
+        240,
+        280,
+        360
+      ],
+      "top": [
+        240,
+        280,
+        360
+      ]
+    },
+    "psuFormFactor": "ATX",
+    "priceChf": 105,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "dimensionsMm": {
+      "width": 235,
+      "height": 492,
+      "depth": 481
+    },
+    "visual": {
+      "front": "mesh",
+      "shroud": true,
+      "psu": "rear",
+      "frontFans": 2,
+      "frontFanSize": 160,
+      "rearFanSize": 140,
+      "fansRgb": true
+    }
+  }
 ]

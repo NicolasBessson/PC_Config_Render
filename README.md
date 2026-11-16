@@ -98,7 +98,9 @@ Boîtier moyen-tour générique modélisé en géométrie paramétrique, déclin
 
 - Quatre vues (trois-quarts, côté, intérieur, arrière) avec transitions, rotation, zoom, réinitialisation, commandes tactiles.
 - Vitre amovible, étiquettes des composants, capture d'image.
-- Éclairage : éteint, couleur fixe ou arc-en-ciel.
+- Clic sur un composant : fiche avec fabricant, modèle, caractéristiques, prix indicatif et compatibilité.
+- Chaque produit a son apparence (couleurs, ventilateurs, épaisseur du radiateur) et chaque boîtier ses dimensions extérieures. Pas de logos ni de répliques exactes.
+- Éclairage : couleur principale et secondaire, intensité, effets fixe, respiration ou cycle ; les animations peuvent être coupées.
 - Deux niveaux de qualité (haute : ombres et halo lumineux ; légère), avec bascule automatique si la fluidité est insuffisante.
 - Si WebGL est indisponible, la page reste utilisable et affiche les données de la configuration.
 

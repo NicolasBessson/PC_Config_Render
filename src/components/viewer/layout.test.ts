@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { resolveBuild, type BuildIds } from "@/lib/build";
 import { catalog } from "@/lib/catalog";
-import { BOARD, CASE, FRONT_FAN_BACK, frontFanHeights, GPU_TOP, layoutScene, SHROUD_TOP } from "./layout";
+import { ANCHOR, BOARD, CASE, frameFor, frontFanHeights, GPU_TOP, layoutScene } from "./layout";
 
 const BASE: BuildIds = {
   cpu: "r5-7600", gpu: "rtx-5070", motherboard: "b650-tomahawk", ram: "ddr5-32-vengeance",
@@ -37,13 +37,51 @@ describe("correspondance entre la configuration et la scène 3D", () => {
     expect(scene({ gpu: "rtx-5080" }).gpu!.slots).toBe(4); // 3,5 emplacements arrondis au supérieur
   });
 
-  it("aucune carte graphique du catalogue ne traverse le boîtier générique", () => {
-    for (const gpu of catalog.gpu) {
-      const layout = scene({ gpu: gpu.id }).gpu!;
-      // Reste la place d'un radiateur de façade derrière les ventilateurs.
-      expect(layout.frontZ).toBeLessThan(FRONT_FAN_BACK - 55);
-      expect(GPU_TOP - layout.thickness).toBeGreaterThan(SHROUD_TOP + 10);
+  it("une carte graphique que le boîtier accepte ne le traverse jamais", () => {
+    for (const pcCase of catalog.case) {
+      const frame = frameFor(pcCase);
+      for (const gpu of catalog.gpu.filter((g) => g.lengthMm <= pcCase.gpuMaxLengthMm)) {
+        const layout = scene({ gpu: gpu.id, case: pcCase.id }).gpu!;
+        expect(layout.frontZ, `${gpu.id} dans ${pcCase.id}`).toBeLessThan(frame.frontFanBack);
+        expect(BOARD.x + layout.width, `${gpu.id} dans ${pcCase.id}`).toBeLessThan(frame.right - 4);
+      }
     }
+    // Sous la carte la plus épaisse, il reste le cache d'alimentation du boîtier générique.
+    expect(GPU_TOP - 70).toBeGreaterThan(frameFor(null).shroudTop + 10);
+  });
+
+  it("donne au boîtier ses dimensions extérieures", () => {
+    const generic = frameFor(null);
+    expect(generic).toMatchObject({ width: CASE.width, height: CASE.height, depth: CASE.depth, cx: 0, cy: 0, cz: 0, shroud: true, slots: 7 });
+    for (const pcCase of catalog.case) {
+      const frame = frameFor(pcCase);
+      expect(frame).toMatchObject(pcCase.dimensionsMm!);
+      expect(frame.right - ANCHOR.tray).toBe(pcCase.dimensionsMm!.width);
+      expect(ANCHOR.top - frame.bottom).toBe(pcCase.dimensionsMm!.height);
+      expect(frame.front - ANCHOR.back).toBe(pcCase.dimensionsMm!.depth);
+      // L'alimentation reste à l'intérieur de l'enveloppe.
+      expect(frame.psu.x + 75).toBeLessThan(frame.right);
+      expect(frame.psu.y - 43).toBeGreaterThanOrEqual(frame.bottom);
+    }
+    const lancool = frameFor(catalog.case.find((c) => c.id === "lancool-216-rgb")!);
+    const ap201 = frameFor(catalog.case.find((c) => c.id === "ap201-tg")!);
+    expect(lancool.height).toBeGreaterThan(ap201.height);
+    // Boîtier mATX sans cache : alimentation à l'avant, quatre emplacements.
+    expect(ap201).toMatchObject({ shroud: false, slots: 4 });
+    expect(ap201.psu.mount).toBe("front");
+  });
+
+  it("reprend l'apparence propre à chaque produit", () => {
+    expect(scene({ gpu: "rx-9070xt" }).gpu!.colors).toEqual({ shroud: "#17181b", accent: "#c1272d", backplate: "#232428" });
+    expect(scene({ gpu: "rtx-5080" }).gpu!.width).toBeGreaterThan(scene({ gpu: "rtx-5060" }).gpu!.width);
+    expect(scene({ cooler: "nh-d15" }).cooler).toMatchObject({ fans: 2, fanSize: 140 });
+    expect(scene({ cooler: "pure-rock-2" }).cooler).toMatchObject({ fans: 1, fanSize: 120 });
+    expect(scene({ cooler: "lf3-240", case: "lancool-216-rgb" }).cooler).toMatchObject({ thickness: 38 });
+    expect(scene({ ram: "ddr5-32-tridentz5-rgb" }).ram!.color).toBe("#8d9299");
+    expect(scene().board!.colors).not.toBeNull();
+    // Un produit sans profil visuel retombe sur l'apparence du style.
+    const plain = { ...catalog.gpu[0], visual: undefined };
+    expect(layoutScene({ ...resolveBuild(BASE), gpu: plain }, "noir").gpu).toMatchObject({ colors: null, width: 126 });
   });
 
   it("aucun ventirad du catalogue ne traverse la vitre", () => {
@@ -75,8 +113,13 @@ describe("correspondance entre la configuration et la scène 3D", () => {
   });
 
   it("adapte les ventilateurs de façade au style et au radiateur", () => {
-    expect(scene({}, "rgb").fans).toEqual({ front: 3, rear: 1 });
-    expect(scene({}, "minimaliste").fans.front).toBe(2);
+    // Sans boîtier choisi : selon le style.
+    const noCase = (style: "rgb" | "minimaliste") => layoutScene(resolveBuild({ ...BASE, case: undefined }), style).fans;
+    expect(noCase("rgb")).toMatchObject({ front: 3, rear: 1, rgb: null });
+    expect(noCase("minimaliste").front).toBe(2);
+    // Avec un boîtier : les ventilateurs qu'il fournit.
+    expect(scene({ case: "lancool-216-rgb" }).fans).toEqual({ front: 2, frontSize: 160, rear: 1, rearSize: 140, rgb: true });
+    expect(scene({ case: "4000d-airflow" }).fans).toMatchObject({ front: 1, frontSize: 120, rgb: false });
     // Un radiateur en façade apporte ses propres ventilateurs, quel que soit le style.
     expect(scene({ cooler: "lf3-360-argb", case: "4000d-airflow" }, "minimaliste").fans.front).toBe(3);
   });
@@ -99,15 +142,24 @@ describe("correspondance entre la configuration et la scène 3D", () => {
     expect(scene({ gpu: "rx-9070xt" }).cables.gpu).toBe(2);
     const noPsu = layoutScene(resolveBuild({ ...BASE, psu: undefined }), "noir");
     expect(noPsu.cables).toEqual({ atx24: false, eps: false, gpu: 0 });
-    expect(scene().psu).toEqual({ wattage: 750 });
+    expect(scene().psu).toMatchObject({ wattage: 750 });
+  });
+
+  it("garde les ventilateurs fournis à l'intérieur de chaque boîtier", () => {
+    for (const pcCase of catalog.case) {
+      const frame = frameFor(pcCase);
+      const { front, frontSize } = scene({ case: pcCase.id }).fans;
+      for (const y of frontFanHeights(front, frontSize)) expect(y - frontSize / 2, pcCase.id).toBeGreaterThanOrEqual(frame.bottom + 4);
+      expect(frontSize + 20, pcCase.id).toBeLessThanOrEqual(frame.width);
+    }
   });
 
   it("garde les ventilateurs de façade à l'intérieur du boîtier", () => {
     for (const [count, size] of [[3, 120], [2, 120], [2, 140]] as const) {
       const heights = frontFanHeights(count, size);
       expect(heights).toHaveLength(count);
-      expect(Math.max(...heights) + size / 2).toBeLessThanOrEqual(CASE.height / 2 - 4);
-      expect(Math.min(...heights) - size / 2).toBeGreaterThanOrEqual(-CASE.height / 2 + 4);
+      expect(Math.max(...heights) + size / 2).toBeLessThanOrEqual(ANCHOR.top - 4);
+      expect(Math.min(...heights) - size / 2).toBeGreaterThanOrEqual(ANCHOR.top - CASE.height + 4);
     }
   });
 

@@ -1,6 +1,74 @@
 [
-  { "id": "cx550", "brand": "Corsair", "name": "CX550 550 W 80+ Bronze", "wattage": 550, "efficiency": "80+ Bronze", "formFactor": "ATX", "pcie8pin": 2, "has12v2x6": false, "modular": false, "priceChf": 60, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "pp12m-650", "brand": "be quiet!", "name": "Pure Power 12 M 650 W 80+ Gold", "wattage": 650, "efficiency": "80+ Gold", "formFactor": "ATX", "pcie8pin": 2, "has12v2x6": true, "modular": true, "priceChf": 95, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "rm750e", "brand": "Corsair", "name": "RM750e 750 W 80+ Gold (ATX 3.1)", "wattage": 750, "efficiency": "80+ Gold", "formFactor": "ATX", "pcie8pin": 3, "has12v2x6": true, "modular": true, "priceChf": 105, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "rm850x", "brand": "Corsair", "name": "RM850x 850 W 80+ Gold (ATX 3.1)", "wattage": 850, "efficiency": "80+ Gold", "formFactor": "ATX", "pcie8pin": 4, "has12v2x6": true, "modular": true, "priceChf": 140, "priceDate": null, "verified": false, "specUrl": null }
+  {
+    "id": "cx550",
+    "brand": "Corsair",
+    "name": "CX550 550 W 80+ Bronze",
+    "wattage": 550,
+    "efficiency": "80+ Bronze",
+    "formFactor": "ATX",
+    "pcie8pin": 2,
+    "has12v2x6": false,
+    "modular": false,
+    "priceChf": 60,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "body": "#131417"
+    }
+  },
+  {
+    "id": "pp12m-650",
+    "brand": "be quiet!",
+    "name": "Pure Power 12 M 650 W 80+ Gold",
+    "wattage": 650,
+    "efficiency": "80+ Gold",
+    "formFactor": "ATX",
+    "pcie8pin": 2,
+    "has12v2x6": true,
+    "modular": true,
+    "priceChf": 95,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "body": "#131417"
+    }
+  },
+  {
+    "id": "rm750e",
+    "brand": "Corsair",
+    "name": "RM750e 750 W 80+ Gold (ATX 3.1)",
+    "wattage": 750,
+    "efficiency": "80+ Gold",
+    "formFactor": "ATX",
+    "pcie8pin": 3,
+    "has12v2x6": true,
+    "modular": true,
+    "priceChf": 105,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "body": "#131417"
+    }
+  },
+  {
+    "id": "rm850x",
+    "brand": "Corsair",
+    "name": "RM850x 850 W 80+ Gold (ATX 3.1)",
+    "wattage": 850,
+    "efficiency": "80+ Gold",
+    "formFactor": "ATX",
+    "pcie8pin": 4,
+    "has12v2x6": true,
+    "modular": true,
+    "priceChf": 140,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": null,
+    "visual": {
+      "body": "#131417"
+    }
+  }
 ]
