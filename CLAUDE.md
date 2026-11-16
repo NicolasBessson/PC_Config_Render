@@ -29,7 +29,7 @@ Fait (sprint 2 — 3D interactive, élargi à la demande de l'utilisateur) :
 - Éclairage : couleur principale et secondaire, intensité, effets fixe / respiration / cycle, case « Animations » qui fige tout. État porté par l'URL (`lum`, `c`, `c2`, `li`, `anim`).
 - **Apparence propre à chaque produit** : champ `visual` des fiches (couleurs, largeur du GPU, nombre et taille des ventilateurs, épaisseur du radiateur) et `dimensionsMm` des boîtiers. Le boîtier est rendu à ses dimensions extérieures, avec ou sans cache d'alimentation, alimentation à l'arrière ou à l'avant, et les ventilateurs qu'il fournit.
 
-Non fait dans le sprint 2 : **le contour lumineux du composant sélectionné**. L'effet `Outline` de `@react-three/postprocessing` a été essayé (composants `Selection` / `Select`) et ne s'affichait pas ; il a été retiré. À reprendre, par exemple avec un maillage de surbrillance dédié.
+Sélection : le composant cliqué est entouré d'un cadre lumineux (`Highlight` dans `scene/context.tsx`), calculé sur son encombrement. L'effet `Outline` de `@react-three/postprocessing` a été essayé et ne s'affichait pas : ne pas y revenir sans raison.
 
 Limite assumée : pas de logos ni de répliques exactes des produits (droits des marques, section 16.5 du cahier des charges). Les valeurs `visual` et `dimensionsMm` sont saisies de mémoire, comme le reste du catalogue : à vérifier au sprint 3.
 

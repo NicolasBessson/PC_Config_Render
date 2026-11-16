@@ -96,12 +96,37 @@ export function Repeat({ g, m, items }: { g: THREE.BufferGeometry; m: THREE.Mate
   return <instancedMesh key={items.length} ref={ref} args={[g, m, items.length]} castShadow receiveShadow />;
 }
 
-/** Rend un composant cliquable. La sélection est signalée par son étiquette et par la fiche. */
+const unitEdges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1));
+// Couleur au-delà du seuil du halo : le cadre rayonne en qualité haute, reste net en qualité légère.
+const highlightMaterial = new THREE.LineBasicMaterial({ color: new THREE.Color("#8fb4ff").multiplyScalar(5), toneMapped: false });
+const bounds = new THREE.Box3();
+const inverse = new THREE.Matrix4();
+
+/** Cadre lumineux épousant l'encombrement du composant sélectionné. */
+function Highlight({ target }: { target: React.RefObject<THREE.Group | null> }) {
+  const frame = useRef<THREE.LineSegments>(null);
+  const { layout, labels } = useScene();
+  useLayoutEffect(() => {
+    const group = target.current, lines = frame.current;
+    if (!group || !lines || !group.parent) return;
+    group.updateWorldMatrix(true, true);
+    // Encombrement mesuré dans le repère du parent, où le cadre est dessiné.
+    bounds.setFromObject(group).applyMatrix4(inverse.copy(group.parent.matrixWorld).invert());
+    bounds.getCenter(lines.position);
+    bounds.getSize(lines.scale).addScalar(6);
+  }, [target, layout, labels]);
+  return <lineSegments ref={frame} geometry={unitEdges} material={highlightMaterial} raycast={() => null} />;
+}
+
+/** Rend un composant cliquable et l'entoure d'un cadre lumineux lorsqu'il est sélectionné. */
 export function Pick({ category, children }: { category: Category; children: ReactNode }) {
   const { selected, onSelect } = useScene();
+  const group = useRef<THREE.Group>(null);
   if (!onSelect) return <group>{children}</group>;
   return (
+    <>
       <group
+        ref={group}
         onClick={(event) => {
           event.stopPropagation();
           onSelect(selected === category ? null : category);
@@ -116,6 +141,8 @@ export function Pick({ category, children }: { category: Category; children: Rea
       >
         {children}
       </group>
+      {selected === category && <Highlight target={group} />}
+    </>
   );
 }
 
