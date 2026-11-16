@@ -33,11 +33,22 @@ Sélection : le composant cliqué est entouré d'un cadre lumineux (`Highlight` 
 
 Limite assumée : pas de logos ni de répliques exactes des produits (droits des marques, section 16.5 du cahier des charges). Les valeurs `visual` et `dimensionsMm` sont saisies de mémoire, comme le reste du catalogue : à vérifier au sprint 3.
 
-Prochaine étape selon la roadmap V2 : **sprint 3 — catalogue vérifié**, puis sprint 4 (benchmarks réels). Ne pas démarrer plusieurs chantiers à la fois.
+Fait (sprint 3 — catalogue vérifié, première campagne du 16 novembre 2026) : les 40 fiches ont été confrontées aux sites des fabricants. 20 sont `verified: true`, 20 partiellement vérifiées (source consultée, champs listés dans `unconfirmed`). Neuf corrections appliquées. Chaque fiche porte `source`, `verifiedAt` et `specUrl`.
+
+Limites de cette campagne, à lever avant de parler de catalogue fiable :
+
+- Les pages des fabricants n'ont pas pu être ouvertes directement (hôtes hors du réseau autorisé) : la vérification repose sur des extraits de recherche restreints aux domaines officiels. Autoriser ces hôtes permettrait de trancher les champs `unconfirmed`.
+- **Aucun prix n'est relevé** (`priceDate: null` partout). Tâche 3.2 non faite.
+- Points à recontrôler à la main : hauteur du NH-D15 (165 ou 168 mm selon les pages Noctua ; 168 retenu par prudence), largeur de la RX 9060 XT (deux valeurs chez Sapphire), connecteurs PCIe de la RM750e, ventilateur frontal du H5 Flow 2022, position de l'alimentation dans les boîtiers.
+- Les champs `visual` (couleurs) ne sont pas vérifiés.
+
+Pour une nouvelle campagne : produire des fichiers de résultats au format décrit en tête de `scripts/apply-verification.mjs`, puis `node scripts/apply-verification.mjs AAAA-MM-JJ resultats.json`. Une fiche ne passe à `verified: true` que si tous ses champs utiles sont confirmés.
+
+Prochaine étape selon la roadmap V2 : finir le sprint 3 (prix relevés, champs non confirmés), puis sprint 4 (benchmarks réels). Ne pas démarrer plusieurs chantiers à la fois.
 
 Non fait, à ne pas présenter comme existant :
 
-- **Aucune donnée n'est vérifiée.** Les fiches composants portent `verified: false` ; les prix ont `priceDate: null` ; les benchmarks sont synthétiques (`demo: true`). C'est le chantier prioritaire avant toute mise en ligne.
+- **Les données ne sont que partiellement vérifiées.** 20 fiches sur 40 sont `verified: true` ; aucun prix n'est relevé (`priceDate: null`) ; les benchmarks sont synthétiques (`demo: true`).
 - Catégorie « ventilateurs supplémentaires » du mode manuel.
 - Tout ce qui est hors MVP : comptes, assistant IA, prix en temps réel, modèles 3D de produits réels, ray tracing, upscaling, usages autres que le gaming.
 

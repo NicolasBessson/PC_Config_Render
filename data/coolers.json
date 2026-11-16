@@ -15,14 +15,19 @@
     "rgb": false,
     "priceChf": 40,
     "priceDate": null,
-    "verified": false,
-    "specUrl": null,
+    "verified": true,
+    "specUrl": "https://www.bequiet.com/en/cpucooler/1842",
     "visual": {
       "fin": "#b9bdc4",
       "top": "#17181b",
       "fan": "#151619",
       "fans": 1,
       "fanSize": 120
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "be quiet! — fiche produit Pure Rock 2",
+      "url": "https://www.bequiet.com/en/cpucooler/1842"
     }
   },
   {
@@ -42,21 +47,30 @@
     "priceChf": 40,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://www.thermalright.com/product/peerless-assassin-120-se/",
     "visual": {
       "fin": "#c4c8ce",
       "top": "#b0b4ba",
       "fan": "#4a4d53",
       "fans": 2,
       "fanSize": 120
-    }
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Thermalright — fiche produit Peerless Assassin 120 SE",
+      "url": "https://www.thermalright.com/product/peerless-assassin-120-se/"
+    },
+    "unconfirmed": [
+      "tdpRatingW",
+      "visual.fans"
+    ]
   },
   {
     "id": "nh-d15",
     "brand": "Noctua",
     "name": "NH-D15 chromax.black",
     "type": "air",
-    "heightMm": 165,
+    "heightMm": 168,
     "radiatorMm": null,
     "sockets": [
       "AM5",
@@ -68,14 +82,23 @@
     "priceChf": 105,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://www.noctua.at/en/products/nh-d15-chromax-black/specifications",
     "visual": {
       "fin": "#1a1b1e",
       "top": "#121315",
       "fan": "#101113",
       "fans": 2,
       "fanSize": 140
-    }
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Noctua — spécifications NH-D15 chromax.black et fiche d'information PDF",
+      "url": "https://www.noctua.at/en/products/nh-d15-chromax-black/specifications"
+    },
+    "unconfirmed": [
+      "heightMm",
+      "tdpRatingW"
+    ]
   },
   {
     "id": "lf3-240",
@@ -94,7 +117,7 @@
     "priceChf": 80,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://www.arctic.de/us/Liquid-Freezer-III-240/ACFRE00134A",
     "visual": {
       "fin": "#141518",
       "top": "#101113",
@@ -102,7 +125,15 @@
       "fans": 2,
       "fanSize": 120,
       "radiatorThicknessMm": 38
-    }
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Arctic — fiche produit Liquid Freezer III 240 (ACFRE00134A)",
+      "url": "https://www.arctic.de/us/Liquid-Freezer-III-240/ACFRE00134A"
+    },
+    "unconfirmed": [
+      "tdpRatingW"
+    ]
   },
   {
     "id": "lf3-360-argb",
@@ -121,7 +152,7 @@
     "priceChf": 110,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://www.arctic.de/en/Liquid-Freezer-III-360-A-RGB-Black/ACFRE00144A",
     "visual": {
       "fin": "#141518",
       "top": "#101113",
@@ -129,6 +160,14 @@
       "fans": 3,
       "fanSize": 120,
       "radiatorThicknessMm": 38
-    }
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Arctic — fiche produit et fiche technique PDF Liquid Freezer III 360 A-RGB",
+      "url": "https://www.arctic.de/en/Liquid-Freezer-III-360-A-RGB-Black/ACFRE00144A"
+    },
+    "unconfirmed": [
+      "tdpRatingW"
+    ]
   }
 ]

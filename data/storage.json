@@ -1,6 +1,66 @@
 [
-  { "id": "nv3-1tb", "brand": "Kingston", "name": "NV3 1 To", "interface": "M.2 NVMe", "capacityGb": 1000, "priceChf": 75, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "sn850x-1tb", "brand": "WD", "name": "Black SN850X 1 To", "interface": "M.2 NVMe", "capacityGb": 1000, "priceChf": 95, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "p3plus-2tb", "brand": "Crucial", "name": "P3 Plus 2 To", "interface": "M.2 NVMe", "capacityGb": 2000, "priceChf": 135, "priceDate": null, "verified": false, "specUrl": null },
-  { "id": "990pro-2tb", "brand": "Samsung", "name": "990 Pro 2 To", "interface": "M.2 NVMe", "capacityGb": 2000, "priceChf": 190, "priceDate": null, "verified": false, "specUrl": null }
+  {
+    "id": "nv3-1tb",
+    "brand": "Kingston",
+    "name": "NV3 1 To",
+    "interface": "M.2 NVMe",
+    "capacityGb": 1000,
+    "priceChf": 75,
+    "priceDate": null,
+    "verified": true,
+    "specUrl": "https://www.kingston.com/datasheets/SNV3S_en.pdf",
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Kingston — fiche technique NV3 (SNV3S)",
+      "url": "https://www.kingston.com/datasheets/SNV3S_en.pdf"
+    }
+  },
+  {
+    "id": "sn850x-1tb",
+    "brand": "WD",
+    "name": "Black SN850X 1 To",
+    "interface": "M.2 NVMe",
+    "capacityGb": 1000,
+    "priceChf": 95,
+    "priceDate": null,
+    "verified": true,
+    "specUrl": "https://www.sandisk.com/products/ssd/internal-ssd/wd-black-sn850x-nvme-ssd?sku=wds100t2x0e",
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Sandisk / Western Digital — fiche produit WD_BLACK SN850X 1 To (WDS100T2X0E)",
+      "url": "https://www.sandisk.com/products/ssd/internal-ssd/wd-black-sn850x-nvme-ssd?sku=wds100t2x0e"
+    }
+  },
+  {
+    "id": "p3plus-2tb",
+    "brand": "Crucial",
+    "name": "P3 Plus 2 To",
+    "interface": "M.2 NVMe",
+    "capacityGb": 2000,
+    "priceChf": 135,
+    "priceDate": null,
+    "verified": true,
+    "specUrl": "https://www.crucial.com/ssd/p3-plus/ct2000p3pssd8",
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Crucial — fiche produit P3 Plus 2 To (CT2000P3PSSD8)",
+      "url": "https://www.crucial.com/ssd/p3-plus/ct2000p3pssd8"
+    }
+  },
+  {
+    "id": "990pro-2tb",
+    "brand": "Samsung",
+    "name": "990 Pro 2 To",
+    "interface": "M.2 NVMe",
+    "capacityGb": 2000,
+    "priceChf": 190,
+    "priceDate": null,
+    "verified": true,
+    "specUrl": "https://www.samsung.com/us/business/memory-storage/nvme-ssd/990-pro-pcie-4-0-nvme-ssd-2tb-sku-mz-v9p2t0b-am/",
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Samsung — fiche produit 990 PRO 2 To (MZ-V9P2T0B)",
+      "url": "https://www.samsung.com/us/business/memory-storage/nvme-ssd/990-pro-pcie-4-0-nvme-ssd-2tb-sku-mz-v9p2t0b-am/"
+    }
+  }
 ]

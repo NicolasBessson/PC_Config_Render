@@ -16,12 +16,17 @@
     "upgradePath": true,
     "priceChf": 180,
     "priceDate": null,
-    "verified": false,
-    "specUrl": null,
+    "verified": true,
+    "specUrl": "https://www.msi.com/Motherboard/MAG-B650-TOMAHAWK-WIFI/Specification",
     "visual": {
       "pcb": "#101114",
       "heatsink": "#2e3138",
       "accent": "#b7d334"
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "MSI — spécifications produit",
+      "url": "https://www.msi.com/Motherboard/MAG-B650-TOMAHAWK-WIFI/Specification"
     }
   },
   {
@@ -41,12 +46,17 @@
     "upgradePath": true,
     "priceChf": 120,
     "priceDate": null,
-    "verified": false,
-    "specUrl": null,
+    "verified": true,
+    "specUrl": "https://www.gigabyte.com/Motherboard/B650M-DS3H-rev-10-11-12/sp",
     "visual": {
       "pcb": "#15171b",
       "heatsink": "#7f848c",
       "accent": "#7f848c"
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Gigabyte — spécifications produit",
+      "url": "https://www.gigabyte.com/Motherboard/B650M-DS3H-rev-10-11-12/sp"
     }
   },
   {
@@ -65,12 +75,17 @@
     "upgradePath": false,
     "priceChf": 115,
     "priceDate": null,
-    "verified": false,
-    "specUrl": null,
+    "verified": true,
+    "specUrl": "https://www.msi.com/Motherboard/PRO-B760M-A-WIFI-DDR4/Specification",
     "visual": {
       "pcb": "#121316",
       "heatsink": "#a2a6ad",
       "accent": "#a2a6ad"
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "MSI — spécifications produit",
+      "url": "https://www.msi.com/Motherboard/PRO-B760M-A-WIFI-DDR4/Specification"
     }
   },
   {
@@ -89,12 +104,17 @@
     "upgradePath": false,
     "priceChf": 230,
     "priceDate": null,
-    "verified": false,
-    "specUrl": null,
+    "verified": true,
+    "specUrl": "https://www.msi.com/Motherboard/MAG-Z790-TOMAHAWK-WIFI/Specification",
     "visual": {
       "pcb": "#101114",
       "heatsink": "#2e3138",
       "accent": "#b7d334"
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "MSI — spécifications produit",
+      "url": "https://www.msi.com/Motherboard/MAG-Z790-TOMAHAWK-WIFI/Specification"
     }
   }
 ]

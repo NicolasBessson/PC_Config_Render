@@ -44,7 +44,7 @@ Une configuration est entièrement décrite par son URL : le lien se partage tel
 
 Le catalogue et les benchmarks livrés ici servent à faire fonctionner le parcours. **Ils ne sont pas vérifiés.**
 
-- **Composants** (`data/*.json`) : références réelles, mais caractéristiques saisies de mémoire. Chaque fiche porte `verified: false` et `specUrl: null` tant qu'elle n'a pas été contrôlée contre la fiche constructeur.
+- **Composants** (`data/*.json`) : une première campagne de vérification auprès des fabricants a eu lieu le 16 novembre 2026. 20 fiches sur 40 sont `verified: true` ; les 20 autres ont une source mais des champs non confirmés, listés dans `unconfirmed`. La vérification s'appuie sur des extraits de recherche des sites officiels, pas sur une lecture complète des pages.
 - **Prix** : ordres de grandeur, pas des relevés. `priceDate: null` signifie « prix non relevé ».
 - **Benchmarks** (`data/benchmarks.json`) : valeurs **synthétiques**, produites par `scripts/generate-demo-benchmarks.mjs`. Ce ne sont pas des mesures. Les deux sources portent `demo: true`, et l'interface affiche « Source de démonstration » sur chaque estimation.
 

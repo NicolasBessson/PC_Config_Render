@@ -6,7 +6,7 @@
     "chipset": "GeForce RTX 5060",
     "vramGb": 8,
     "powerW": 145,
-    "lengthMm": 200,
+    "lengthMm": 197,
     "slots": 2,
     "fans": 2,
     "power": {
@@ -16,13 +16,18 @@
     },
     "priceChf": 290,
     "priceDate": null,
-    "verified": false,
-    "specUrl": null,
+    "verified": true,
+    "specUrl": "https://www.msi.com/Graphics-Card/GeForce-RTX-5060-8G-VENTUS-2X-OC/Specification",
     "visual": {
       "shroud": "#1b1c1f",
       "accent": "#5d6066",
       "backplate": "#2a2c30",
       "widthMm": 120
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "MSI — fiche produit (spécifications)",
+      "url": "https://www.msi.com/Graphics-Card/GeForce-RTX-5060-8G-VENTUS-2X-OC/Specification"
     }
   },
   {
@@ -32,7 +37,7 @@
     "chipset": "GeForce RTX 5060 Ti 16 Go",
     "vramGb": 16,
     "powerW": 180,
-    "lengthMm": 210,
+    "lengthMm": 208,
     "slots": 2,
     "fans": 2,
     "power": {
@@ -43,13 +48,21 @@
     "priceChf": 420,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://www.gigabyte.com/Graphics-Card/GV-N506TWF2OC-16GD/sp",
     "visual": {
       "shroud": "#141518",
       "accent": "#3a3d42",
       "backplate": "#1c1d21",
       "widthMm": 118
-    }
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Gigabyte — fiche produit (spécifications)",
+      "url": "https://www.gigabyte.com/Graphics-Card/GV-N506TWF2OC-16GD/sp"
+    },
+    "unconfirmed": [
+      "fans"
+    ]
   },
   {
     "id": "rx-9060xt",
@@ -57,9 +70,9 @@
     "name": "Radeon RX 9060 XT Pulse 16 Go",
     "chipset": "Radeon RX 9060 XT 16 Go",
     "vramGb": 16,
-    "powerW": 160,
+    "powerW": 170,
     "lengthMm": 240,
-    "slots": 2,
+    "slots": 2.3,
     "fans": 2,
     "power": {
       "connector": "8pin",
@@ -69,13 +82,21 @@
     "priceChf": 350,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://www.sapphiretech.com/en/consumer/pulse-radeon-rx-9060-xt-16g-gddr6",
     "visual": {
       "shroud": "#17181b",
       "accent": "#c1272d",
       "backplate": "#232428",
-      "widthMm": 121
-    }
+      "widthMm": 111
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Sapphire — fiche produit",
+      "url": "https://www.sapphiretech.com/en/consumer/pulse-radeon-rx-9060-xt-16g-gddr6"
+    },
+    "unconfirmed": [
+      "fans"
+    ]
   },
   {
     "id": "rtx-5070",
@@ -94,13 +115,18 @@
     },
     "priceChf": 550,
     "priceDate": null,
-    "verified": false,
-    "specUrl": null,
+    "verified": true,
+    "specUrl": "https://www.asus.com/us/motherboards-components/graphics-cards/prime/prime-rtx5070-o12g/techspec/",
     "visual": {
       "shroud": "#1c1d20",
       "accent": "#a9adb3",
       "backplate": "#35373c",
       "widthMm": 126
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "ASUS — fiche produit (spécifications techniques)",
+      "url": "https://www.asus.com/us/motherboards-components/graphics-cards/prime/prime-rtx5070-o12g/techspec/"
     }
   },
   {
@@ -121,13 +147,21 @@
     "priceChf": 550,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://www.sapphiretech.com/en/consumer/pulse-radeon-rx-9070-16g-gddr6",
     "visual": {
       "shroud": "#17181b",
       "accent": "#c1272d",
       "backplate": "#232428",
       "widthMm": 122
-    }
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Sapphire — fiche produit",
+      "url": "https://www.sapphiretech.com/en/consumer/pulse-radeon-rx-9070-16g-gddr6"
+    },
+    "unconfirmed": [
+      "fans"
+    ]
   },
   {
     "id": "rx-9070xt",
@@ -137,7 +171,7 @@
     "vramGb": 16,
     "powerW": 304,
     "lengthMm": 320,
-    "slots": 2.5,
+    "slots": 3,
     "fans": 3,
     "power": {
       "connector": "8pin",
@@ -147,13 +181,21 @@
     "priceChf": 650,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://www.sapphiretech.com/en/consumer/pulse-radeon-rx-9070-xt-16g-gddr6",
     "visual": {
       "shroud": "#17181b",
       "accent": "#c1272d",
       "backplate": "#232428",
-      "widthMm": 128
-    }
+      "widthMm": 120
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Sapphire — fiche produit",
+      "url": "https://www.sapphiretech.com/en/consumer/pulse-radeon-rx-9070-xt-16g-gddr6"
+    },
+    "unconfirmed": [
+      "fans"
+    ]
   },
   {
     "id": "rtx-5070ti",
@@ -172,13 +214,18 @@
     },
     "priceChf": 780,
     "priceDate": null,
-    "verified": false,
-    "specUrl": null,
+    "verified": true,
+    "specUrl": "https://storage-asset.msi.com/datasheet/vga/global/GeForce-RTX-5070-Ti-16G-VENTUS-3X-OC.pdf",
     "visual": {
       "shroud": "#1b1c1f",
       "accent": "#5d6066",
       "backplate": "#2a2c30",
       "widthMm": 121
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "MSI — fiche technique PDF",
+      "url": "https://storage-asset.msi.com/datasheet/vga/global/GeForce-RTX-5070-Ti-16G-VENTUS-3X-OC.pdf"
     }
   },
   {
@@ -199,13 +246,21 @@
     "priceChf": 1050,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://www.gigabyte.com/Graphics-Card/GV-N5080GAMING-OC-16GD/sp",
     "visual": {
       "shroud": "#141518",
       "accent": "#8a8f97",
       "backplate": "#1c1d21",
       "widthMm": 140
-    }
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Gigabyte — fiche produit (spécifications)",
+      "url": "https://www.gigabyte.com/Graphics-Card/GV-N5080GAMING-OC-16GD/sp"
+    },
+    "unconfirmed": [
+      "fans"
+    ]
   },
   {
     "id": "arc-b580",
@@ -224,13 +279,18 @@
     },
     "priceChf": 250,
     "priceDate": null,
-    "verified": false,
-    "specUrl": null,
+    "verified": true,
+    "specUrl": "https://www.intel.com/content/www/us/en/products/sku/241598/intel-arc-b580-graphics/specifications.html",
     "visual": {
       "shroud": "#0f1012",
       "accent": "#2a2c30",
       "backplate": "#141518",
       "widthMm": 115
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Intel — spécifications produit",
+      "url": "https://www.intel.com/content/www/us/en/products/sku/241598/intel-arc-b580-graphics/specifications.html"
     }
   }
 ]

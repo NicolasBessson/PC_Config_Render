@@ -26,7 +26,7 @@
     "priceChf": 95,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://www.corsair.com/us/en/p/pc-cases/cc-9011200-ww/4000d-airflow-tempered-glass-mid-tower-atx-case-black-cc-9011200-ww",
     "dimensionsMm": {
       "width": 230,
       "height": 466,
@@ -40,12 +40,22 @@
       "frontFanSize": 120,
       "rearFanSize": 120,
       "fansRgb": false
-    }
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Corsair — fiche produit 4000D Airflow (CC-9011200-WW) et guide de démarrage rapide (PDF)",
+      "url": "https://www.corsair.com/us/en/p/pc-cases/cc-9011200-ww/4000d-airflow-tempered-glass-mid-tower-atx-case-black-cc-9011200-ww"
+    },
+    "unconfirmed": [
+      "formFactors",
+      "psuFormFactor",
+      "visual.psu"
+    ]
   },
   {
     "id": "h5-flow-white",
     "brand": "NZXT",
-    "name": "H5 Flow (blanc)",
+    "name": "H5 Flow 2022 (blanc)",
     "style": "blanc",
     "formFactors": [
       "ATX",
@@ -67,10 +77,10 @@
     "priceChf": 90,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://support.nzxt.com/hc/en-us/articles/37734705208347-H5-2022-Series-Specs",
     "dimensionsMm": {
       "width": 227,
-      "height": 460,
+      "height": 464,
       "depth": 446
     },
     "visual": {
@@ -81,7 +91,18 @@
       "frontFanSize": 120,
       "rearFanSize": 120,
       "fansRgb": false
-    }
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "NZXT — fiche technique H5 (2022) Series (support) et page produit H5 Flow (2022)",
+      "url": "https://support.nzxt.com/hc/en-us/articles/37734705208347-H5-2022-Series-Specs"
+    },
+    "unconfirmed": [
+      "visual.frontFans",
+      "visual.frontFanSize",
+      "psuFormFactor",
+      "visual.psu"
+    ]
   },
   {
     "id": "ap201-tg",
@@ -106,7 +127,7 @@
     "priceChf": 80,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://www.asus.com/motherboards-components/cases/prime/asus-prime-ap201-tempered-glass-microatx-case/techspec/",
     "dimensionsMm": {
       "width": 205,
       "height": 350,
@@ -120,7 +141,17 @@
       "frontFanSize": 120,
       "rearFanSize": 120,
       "fansRgb": false
-    }
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "ASUS — spécifications techniques Prime AP201 Tempered Glass",
+      "url": "https://www.asus.com/motherboards-components/cases/prime/asus-prime-ap201-tempered-glass-microatx-case/techspec/"
+    },
+    "unconfirmed": [
+      "visual.psu",
+      "visual.shroud",
+      "visual.fansRgb"
+    ]
   },
   {
     "id": "lancool-216-rgb",
@@ -150,7 +181,7 @@
     "priceChf": 105,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://lian-li.com/product/lancool-216/",
     "dimensionsMm": {
       "width": 235,
       "height": 492,
@@ -164,6 +195,14 @@
       "frontFanSize": 160,
       "rearFanSize": 140,
       "fansRgb": true
-    }
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Lian Li — fiche produit Lancool 216",
+      "url": "https://lian-li.com/product/lancool-216/"
+    },
+    "unconfirmed": [
+      "visual.psu"
+    ]
   }
 ]

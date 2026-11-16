@@ -11,10 +11,15 @@
     "modular": false,
     "priceChf": 60,
     "priceDate": null,
-    "verified": false,
-    "specUrl": null,
+    "verified": true,
+    "specUrl": "https://www.corsair.com/us/en/p/psu/cp-9020277-na/cx-series-cx550-550-watt-80-plus-bronze-atx-power-supply-cp-9020277-na",
     "visual": {
       "body": "#131417"
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Corsair — fiche produit CX550 (CP-9020277)",
+      "url": "https://www.corsair.com/us/en/p/psu/cp-9020277-na/cx-series-cx550-550-watt-80-plus-bronze-atx-power-supply-cp-9020277-na"
     }
   },
   {
@@ -29,10 +34,15 @@
     "modular": true,
     "priceChf": 95,
     "priceDate": null,
-    "verified": false,
-    "specUrl": null,
+    "verified": true,
+    "specUrl": "https://www.bequiet.com/en/powersupply/4074",
     "visual": {
       "body": "#131417"
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "be quiet! — fiche produit Pure Power 12 M 650W (BN503)",
+      "url": "https://www.bequiet.com/en/powersupply/4074"
     }
   },
   {
@@ -48,10 +58,18 @@
     "priceChf": 105,
     "priceDate": null,
     "verified": false,
-    "specUrl": null,
+    "specUrl": "https://www.corsair.com/us/en/p/psu/cp-9020295-na/rme-series-rm750e-fully-modular-low-noise-atx-power-supply-cp-9020295-na",
     "visual": {
       "body": "#131417"
-    }
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Corsair — fiche produit RM750e ATX 3.1 (CP-9020295)",
+      "url": "https://www.corsair.com/us/en/p/psu/cp-9020295-na/rme-series-rm750e-fully-modular-low-noise-atx-power-supply-cp-9020295-na"
+    },
+    "unconfirmed": [
+      "pcie8pin"
+    ]
   },
   {
     "id": "rm850x",
@@ -60,15 +78,20 @@
     "wattage": 850,
     "efficiency": "80+ Gold",
     "formFactor": "ATX",
-    "pcie8pin": 4,
+    "pcie8pin": 3,
     "has12v2x6": true,
     "modular": true,
     "priceChf": 140,
     "priceDate": null,
-    "verified": false,
-    "specUrl": null,
+    "verified": true,
+    "specUrl": "https://www.corsair.com/us/en/p/psu/cp-9020270-na/rmx-series-rm850x-fully-modular-power-supply-cp-9020270-na",
     "visual": {
       "body": "#131417"
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Corsair — fiche produit RM850x ATX 3.1 (CP-9020270)",
+      "url": "https://www.corsair.com/us/en/p/psu/cp-9020270-na/rmx-series-rm850x-fully-modular-power-supply-cp-9020270-na"
     }
   }
 ]
