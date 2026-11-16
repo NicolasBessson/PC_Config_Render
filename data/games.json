@@ -1,0 +1,7 @@
+[
+  { "id": "cyberpunk-2077", "name": "Cyberpunk 2077", "preset": "Élevé", "genre": "RPG / monde ouvert" },
+  { "id": "fortnite", "name": "Fortnite", "preset": "Élevé", "genre": "Battle royale" },
+  { "id": "counter-strike-2", "name": "Counter-Strike 2", "preset": "Élevé", "genre": "FPS compétitif" },
+  { "id": "baldurs-gate-3", "name": "Baldur's Gate 3", "preset": "Élevé", "genre": "RPG" },
+  { "id": "monster-hunter-wilds", "name": "Monster Hunter Wilds", "preset": "Élevé", "genre": "Action" }
+]

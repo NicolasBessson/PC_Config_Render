@@ -1,0 +1,8 @@
+[
+  { "id": "r5-7600", "brand": "AMD", "name": "Ryzen 5 7600", "socket": "AM5", "cores": 6, "threads": 12, "tdpW": 65, "powerW": 88, "priceChf": 180, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "r5-9600x", "brand": "AMD", "name": "Ryzen 5 9600X", "socket": "AM5", "cores": 6, "threads": 12, "tdpW": 65, "powerW": 88, "priceChf": 210, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "r7-7800x3d", "brand": "AMD", "name": "Ryzen 7 7800X3D", "socket": "AM5", "cores": 8, "threads": 16, "tdpW": 120, "powerW": 162, "priceChf": 360, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "r7-9800x3d", "brand": "AMD", "name": "Ryzen 7 9800X3D", "socket": "AM5", "cores": 8, "threads": 16, "tdpW": 120, "powerW": 162, "priceChf": 450, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "i5-12400f", "brand": "Intel", "name": "Core i5-12400F", "socket": "LGA1700", "cores": 6, "threads": 12, "tdpW": 65, "powerW": 117, "priceChf": 110, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "i5-14600kf", "brand": "Intel", "name": "Core i5-14600KF", "socket": "LGA1700", "cores": 14, "threads": 20, "tdpW": 125, "powerW": 181, "priceChf": 200, "priceDate": null, "verified": false, "specUrl": null }
+]

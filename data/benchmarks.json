@@ -1,0 +1,695 @@
+{
+  "notice": "Jeu de données de démonstration : valeurs synthétiques, non mesurées. À remplacer par des benchmarks réels saisis manuellement avec source, date et conditions.",
+  "referenceGpuId": "rtx-5070",
+  "referenceCpuId": "r7-7800x3d",
+  "sources": [
+    {
+      "id": "demo-a",
+      "name": "Données de démonstration A",
+      "url": null,
+      "demo": true
+    },
+    {
+      "id": "demo-b",
+      "name": "Données de démonstration B",
+      "url": null,
+      "demo": true
+    }
+  ],
+  "gpuSeries": [
+    {
+      "id": "demo-a-cyberpunk-2077-1080p",
+      "sourceId": "demo-a",
+      "gameId": "cyberpunk-2077",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060": 81,
+        "rtx-5060ti": 95,
+        "rx-9060xt": 90,
+        "rtx-5070": 135,
+        "rx-9070": 136,
+        "rx-9070xt": 151,
+        "rtx-5070ti": 159,
+        "rtx-5080": 178
+      }
+    },
+    {
+      "id": "demo-b-cyberpunk-2077-1080p",
+      "sourceId": "demo-b",
+      "gameId": "cyberpunk-2077",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060ti": 86,
+        "rtx-5070": 119,
+        "rx-9070": 115,
+        "rx-9070xt": 139,
+        "rtx-5070ti": 136,
+        "rtx-5080": 162
+      }
+    },
+    {
+      "id": "demo-a-cyberpunk-2077-1440p",
+      "sourceId": "demo-a",
+      "gameId": "cyberpunk-2077",
+      "resolution": "1440p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060": 50,
+        "rtx-5060ti": 60,
+        "rx-9060xt": 58,
+        "rtx-5070": 90,
+        "rx-9070": 93,
+        "rx-9070xt": 104,
+        "rtx-5070ti": 110,
+        "rtx-5080": 126
+      }
+    },
+    {
+      "id": "demo-b-cyberpunk-2077-1440p",
+      "sourceId": "demo-b",
+      "gameId": "cyberpunk-2077",
+      "resolution": "1440p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060ti": 55,
+        "rtx-5070": 79,
+        "rx-9070": 78,
+        "rx-9070xt": 96,
+        "rtx-5070ti": 94,
+        "rtx-5080": 114
+      }
+    },
+    {
+      "id": "demo-a-cyberpunk-2077-4K",
+      "sourceId": "demo-a",
+      "gameId": "cyberpunk-2077",
+      "resolution": "4K",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060": 21,
+        "rtx-5060ti": 27,
+        "rx-9060xt": 25,
+        "rtx-5070": 42,
+        "rx-9070": 44,
+        "rx-9070xt": 50,
+        "rtx-5070ti": 53,
+        "rtx-5080": 62
+      }
+    },
+    {
+      "id": "demo-b-cyberpunk-2077-4K",
+      "sourceId": "demo-b",
+      "gameId": "cyberpunk-2077",
+      "resolution": "4K",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060ti": 25,
+        "rtx-5070": 37,
+        "rx-9070": 37,
+        "rx-9070xt": 46,
+        "rtx-5070ti": 45,
+        "rtx-5080": 56
+      }
+    },
+    {
+      "id": "demo-a-fortnite-1080p",
+      "sourceId": "demo-a",
+      "gameId": "fortnite",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060": 126,
+        "rtx-5060ti": 147,
+        "rx-9060xt": 145,
+        "rtx-5070": 210,
+        "rx-9070": 218,
+        "rx-9070xt": 241,
+        "rtx-5070ti": 248,
+        "rtx-5080": 277
+      }
+    },
+    {
+      "id": "demo-b-fortnite-1080p",
+      "sourceId": "demo-b",
+      "gameId": "fortnite",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060ti": 135,
+        "rtx-5070": 185,
+        "rx-9070": 185,
+        "rx-9070xt": 223,
+        "rtx-5070ti": 212,
+        "rtx-5080": 251
+      }
+    },
+    {
+      "id": "demo-a-fortnite-1440p",
+      "sourceId": "demo-a",
+      "gameId": "fortnite",
+      "resolution": "1440p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060": 81,
+        "rtx-5060ti": 97,
+        "rx-9060xt": 96,
+        "rtx-5070": 145,
+        "rx-9070": 154,
+        "rx-9070xt": 173,
+        "rtx-5070ti": 177,
+        "rtx-5080": 203
+      }
+    },
+    {
+      "id": "demo-b-fortnite-1440p",
+      "sourceId": "demo-b",
+      "gameId": "fortnite",
+      "resolution": "1440p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060ti": 89,
+        "rtx-5070": 128,
+        "rx-9070": 130,
+        "rx-9070xt": 159,
+        "rtx-5070ti": 151,
+        "rtx-5080": 184
+      }
+    },
+    {
+      "id": "demo-a-fortnite-4K",
+      "sourceId": "demo-a",
+      "gameId": "fortnite",
+      "resolution": "4K",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060": 36,
+        "rtx-5060ti": 46,
+        "rx-9060xt": 45,
+        "rtx-5070": 72,
+        "rx-9070": 78,
+        "rx-9070xt": 88,
+        "rtx-5070ti": 91,
+        "rtx-5080": 107
+      }
+    },
+    {
+      "id": "demo-b-fortnite-4K",
+      "sourceId": "demo-b",
+      "gameId": "fortnite",
+      "resolution": "4K",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060ti": 42,
+        "rtx-5070": 63,
+        "rx-9070": 66,
+        "rx-9070xt": 81,
+        "rtx-5070ti": 77,
+        "rtx-5080": 97
+      }
+    },
+    {
+      "id": "demo-a-counter-strike-2-1080p",
+      "sourceId": "demo-a",
+      "gameId": "counter-strike-2",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060": 252,
+        "rtx-5060ti": 294,
+        "rx-9060xt": 298,
+        "rtx-5070": 420,
+        "rx-9070": 450,
+        "rx-9070xt": 497,
+        "rtx-5070ti": 496,
+        "rtx-5080": 554
+      }
+    },
+    {
+      "id": "demo-b-counter-strike-2-1080p",
+      "sourceId": "demo-b",
+      "gameId": "counter-strike-2",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060ti": 269,
+        "rtx-5070": 370,
+        "rx-9070": 380,
+        "rx-9070xt": 460,
+        "rtx-5070ti": 423,
+        "rtx-5080": 503
+      }
+    },
+    {
+      "id": "demo-a-counter-strike-2-1440p",
+      "sourceId": "demo-a",
+      "gameId": "counter-strike-2",
+      "resolution": "1440p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060": 168,
+        "rtx-5060ti": 201,
+        "rx-9060xt": 204,
+        "rtx-5070": 300,
+        "rx-9070": 328,
+        "rx-9070xt": 368,
+        "rtx-5070ti": 366,
+        "rtx-5080": 420
+      }
+    },
+    {
+      "id": "demo-b-counter-strike-2-1440p",
+      "sourceId": "demo-b",
+      "gameId": "counter-strike-2",
+      "resolution": "1440p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060ti": 184,
+        "rtx-5070": 264,
+        "rx-9070": 277,
+        "rx-9070xt": 340,
+        "rtx-5070ti": 312,
+        "rtx-5080": 381
+      }
+    },
+    {
+      "id": "demo-a-counter-strike-2-4K",
+      "sourceId": "demo-a",
+      "gameId": "counter-strike-2",
+      "resolution": "4K",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060": 75,
+        "rtx-5060ti": 96,
+        "rx-9060xt": 96,
+        "rtx-5070": 150,
+        "rx-9070": 167,
+        "rx-9070xt": 188,
+        "rtx-5070ti": 189,
+        "rtx-5080": 222
+      }
+    },
+    {
+      "id": "demo-b-counter-strike-2-4K",
+      "sourceId": "demo-b",
+      "gameId": "counter-strike-2",
+      "resolution": "4K",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060ti": 88,
+        "rtx-5070": 132,
+        "rx-9070": 141,
+        "rx-9070xt": 174,
+        "rtx-5070ti": 161,
+        "rtx-5080": 201
+      }
+    },
+    {
+      "id": "demo-a-baldurs-gate-3-1080p",
+      "sourceId": "demo-a",
+      "gameId": "baldurs-gate-3",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060": 102,
+        "rtx-5060ti": 119,
+        "rx-9060xt": 120,
+        "rtx-5070": 170,
+        "rx-9070": 180,
+        "rx-9070xt": 199,
+        "rtx-5070ti": 201,
+        "rtx-5080": 224
+      }
+    },
+    {
+      "id": "demo-b-baldurs-gate-3-1080p",
+      "sourceId": "demo-b",
+      "gameId": "baldurs-gate-3",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060ti": 109,
+        "rtx-5070": 150,
+        "rx-9070": 152,
+        "rx-9070xt": 184,
+        "rtx-5070ti": 171,
+        "rtx-5080": 203
+      }
+    },
+    {
+      "id": "demo-a-baldurs-gate-3-1440p",
+      "sourceId": "demo-a",
+      "gameId": "baldurs-gate-3",
+      "resolution": "1440p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060": 70,
+        "rtx-5060ti": 84,
+        "rx-9060xt": 84,
+        "rtx-5070": 125,
+        "rx-9070": 135,
+        "rx-9070xt": 152,
+        "rtx-5070ti": 153,
+        "rtx-5080": 175
+      }
+    },
+    {
+      "id": "demo-b-baldurs-gate-3-1440p",
+      "sourceId": "demo-b",
+      "gameId": "baldurs-gate-3",
+      "resolution": "1440p",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060ti": 77,
+        "rtx-5070": 110,
+        "rx-9070": 114,
+        "rx-9070xt": 140,
+        "rtx-5070ti": 130,
+        "rtx-5080": 159
+      }
+    },
+    {
+      "id": "demo-a-baldurs-gate-3-4K",
+      "sourceId": "demo-a",
+      "gameId": "baldurs-gate-3",
+      "resolution": "4K",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060": 33,
+        "rtx-5060ti": 42,
+        "rx-9060xt": 41,
+        "rtx-5070": 65,
+        "rx-9070": 72,
+        "rx-9070xt": 81,
+        "rtx-5070ti": 82,
+        "rtx-5080": 96
+      }
+    },
+    {
+      "id": "demo-b-baldurs-gate-3-4K",
+      "sourceId": "demo-b",
+      "gameId": "baldurs-gate-3",
+      "resolution": "4K",
+      "preset": "Élevé",
+      "testCpuId": "r7-9800x3d",
+      "date": null,
+      "fps": {
+        "rtx-5060ti": 38,
+        "rtx-5070": 57,
+        "rx-9070": 60,
+        "rx-9070xt": 75,
+        "rtx-5070ti": 70,
+        "rtx-5080": 87
+      }
+    }
+  ],
+  "cpuSeries": [
+    {
+      "id": "demo-a-cpu-cyberpunk-2077",
+      "sourceId": "demo-a",
+      "gameId": "cyberpunk-2077",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testGpuId": "rtx-5080",
+      "date": null,
+      "fps": {
+        "r7-9800x3d": 215,
+        "r7-7800x3d": 190,
+        "r5-9600x": 160,
+        "r5-7600": 145,
+        "i5-14600kf": 168,
+        "i5-12400f": 112
+      }
+    },
+    {
+      "id": "demo-b-cpu-cyberpunk-2077",
+      "sourceId": "demo-b",
+      "gameId": "cyberpunk-2077",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testGpuId": "rtx-5080",
+      "date": null,
+      "fps": {
+        "r7-9800x3d": 208,
+        "r7-7800x3d": 177,
+        "r5-9600x": 144,
+        "i5-14600kf": 164
+      }
+    },
+    {
+      "id": "demo-a-cpu-fortnite",
+      "sourceId": "demo-a",
+      "gameId": "fortnite",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testGpuId": "rtx-5080",
+      "date": null,
+      "fps": {
+        "r7-9800x3d": 380,
+        "r7-7800x3d": 330,
+        "r5-9600x": 270,
+        "r5-7600": 240,
+        "i5-14600kf": 265,
+        "i5-12400f": 175
+      }
+    },
+    {
+      "id": "demo-b-cpu-fortnite",
+      "sourceId": "demo-b",
+      "gameId": "fortnite",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testGpuId": "rtx-5080",
+      "date": null,
+      "fps": {
+        "r7-9800x3d": 368,
+        "r7-7800x3d": 307,
+        "r5-9600x": 244,
+        "i5-14600kf": 259
+      }
+    },
+    {
+      "id": "demo-a-cpu-counter-strike-2",
+      "sourceId": "demo-a",
+      "gameId": "counter-strike-2",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testGpuId": "rtx-5080",
+      "date": null,
+      "fps": {
+        "r7-9800x3d": 620,
+        "r7-7800x3d": 540,
+        "r5-9600x": 450,
+        "r5-7600": 400,
+        "i5-14600kf": 430,
+        "i5-12400f": 300
+      }
+    },
+    {
+      "id": "demo-b-cpu-counter-strike-2",
+      "sourceId": "demo-b",
+      "gameId": "counter-strike-2",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testGpuId": "rtx-5080",
+      "date": null,
+      "fps": {
+        "r7-9800x3d": 600,
+        "r7-7800x3d": 502,
+        "r5-9600x": 406,
+        "i5-14600kf": 420
+      }
+    },
+    {
+      "id": "demo-a-cpu-baldurs-gate-3",
+      "sourceId": "demo-a",
+      "gameId": "baldurs-gate-3",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testGpuId": "rtx-5080",
+      "date": null,
+      "fps": {
+        "r7-9800x3d": 190,
+        "r7-7800x3d": 165,
+        "r5-9600x": 125,
+        "r5-7600": 112,
+        "i5-14600kf": 130,
+        "i5-12400f": 88
+      }
+    },
+    {
+      "id": "demo-b-cpu-baldurs-gate-3",
+      "sourceId": "demo-b",
+      "gameId": "baldurs-gate-3",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "testGpuId": "rtx-5080",
+      "date": null,
+      "fps": {
+        "r7-9800x3d": 184,
+        "r7-7800x3d": 153,
+        "r5-9600x": 113,
+        "i5-14600kf": 127
+      }
+    }
+  ],
+  "gpuAnchors": [
+    {
+      "gameId": "cyberpunk-2077",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "seriesId": "demo-a-cyberpunk-2077-1080p",
+      "fps": 135
+    },
+    {
+      "gameId": "cyberpunk-2077",
+      "resolution": "1440p",
+      "preset": "Élevé",
+      "seriesId": "demo-a-cyberpunk-2077-1440p",
+      "fps": 90
+    },
+    {
+      "gameId": "cyberpunk-2077",
+      "resolution": "4K",
+      "preset": "Élevé",
+      "seriesId": "demo-a-cyberpunk-2077-4K",
+      "fps": 42
+    },
+    {
+      "gameId": "fortnite",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "seriesId": "demo-a-fortnite-1080p",
+      "fps": 210
+    },
+    {
+      "gameId": "fortnite",
+      "resolution": "1440p",
+      "preset": "Élevé",
+      "seriesId": "demo-a-fortnite-1440p",
+      "fps": 145
+    },
+    {
+      "gameId": "fortnite",
+      "resolution": "4K",
+      "preset": "Élevé",
+      "seriesId": "demo-a-fortnite-4K",
+      "fps": 72
+    },
+    {
+      "gameId": "counter-strike-2",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "seriesId": "demo-a-counter-strike-2-1080p",
+      "fps": 420
+    },
+    {
+      "gameId": "counter-strike-2",
+      "resolution": "1440p",
+      "preset": "Élevé",
+      "seriesId": "demo-a-counter-strike-2-1440p",
+      "fps": 300
+    },
+    {
+      "gameId": "counter-strike-2",
+      "resolution": "4K",
+      "preset": "Élevé",
+      "seriesId": "demo-a-counter-strike-2-4K",
+      "fps": 150
+    },
+    {
+      "gameId": "baldurs-gate-3",
+      "resolution": "1080p",
+      "preset": "Élevé",
+      "seriesId": "demo-a-baldurs-gate-3-1080p",
+      "fps": 170
+    },
+    {
+      "gameId": "baldurs-gate-3",
+      "resolution": "1440p",
+      "preset": "Élevé",
+      "seriesId": "demo-a-baldurs-gate-3-1440p",
+      "fps": 125
+    },
+    {
+      "gameId": "baldurs-gate-3",
+      "resolution": "4K",
+      "preset": "Élevé",
+      "seriesId": "demo-a-baldurs-gate-3-4K",
+      "fps": 65
+    }
+  ],
+  "cpuAnchors": [
+    {
+      "gameId": "cyberpunk-2077",
+      "preset": "Élevé",
+      "seriesId": "demo-a-cpu-cyberpunk-2077",
+      "fps": 190
+    },
+    {
+      "gameId": "fortnite",
+      "preset": "Élevé",
+      "seriesId": "demo-a-cpu-fortnite",
+      "fps": 330
+    },
+    {
+      "gameId": "counter-strike-2",
+      "preset": "Élevé",
+      "seriesId": "demo-a-cpu-counter-strike-2",
+      "fps": 540
+    },
+    {
+      "gameId": "baldurs-gate-3",
+      "preset": "Élevé",
+      "seriesId": "demo-a-cpu-baldurs-gate-3",
+      "fps": 165
+    }
+  ]
+}

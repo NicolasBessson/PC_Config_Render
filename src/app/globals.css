@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #080a0f;
+  --color-surface: #0f1219;
+  --color-raised: #161a23;
+  --color-line: rgba(255, 255, 255, 0.09);
+  --color-ink: #e8ebf1;
+  --color-muted: #8a93a4;
+  --color-accent: #2f6bff;
+  --color-accent-soft: #6f9bff;
+  --color-ok: #34d399;
+  --color-warn: #fbbf24;
+  --color-fail: #f87171;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* Fond de scène du visualiseur 3D */
+.viewer-stage {
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 42%, rgba(47, 107, 255, 0.16), transparent 70%),
+    linear-gradient(180deg, #10141d 0%, #090b10 100%);
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 75% 70% at 50% 30%, black, transparent);
+}
+
+input[type="range"] {
+  accent-color: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
