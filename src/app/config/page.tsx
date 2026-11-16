@@ -2,7 +2,7 @@
 
 import { Suspense, useMemo } from "react";
 import { BuildActions } from "@/components/BuildActions";
-import { CompatPanel, ComponentList, PerfPanel, PowerPanel, PriceTotal } from "@/components/BuildPanels";
+import { BudgetBreakdown, CompatPanel, ComponentList, PerfPanel, PowerPanel, PriceTotal } from "@/components/BuildPanels";
 import { Card, CardTitle, DemoNotice, LinkButton, PageShell, StatusBadge } from "@/components/ui";
 import { useViewState } from "@/components/useViewState";
 import { LightingPicker, StylePicker, Viewer } from "@/components/viewer/Viewer";
@@ -60,11 +60,12 @@ function Config() {
               <PriceTotal build={build} />
             </div>
             <div className="mt-4">
-              <BuildActions query={query} />
+              <BuildActions query={query} build={build} />
             </div>
           </Card>
           <CompatPanel report={report} />
           <PerfPanel build={build} resolution={state.resolution} targetFps={state.targetFps} onResolution={(resolution) => update({ resolution })} />
+          <BudgetBreakdown build={build} />
           <PowerPanel build={build} />
           <DemoNotice />
         </div>

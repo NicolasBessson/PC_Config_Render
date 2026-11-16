@@ -44,7 +44,13 @@ Limites de cette campagne, à lever avant de parler de catalogue fiable :
 
 Pour une nouvelle campagne : produire des fichiers de résultats au format décrit en tête de `scripts/apply-verification.mjs`, puis `node scripts/apply-verification.mjs AAAA-MM-JJ resultats.json`. Une fiche ne passe à `verified: true` que si tous ses champs utiles sont confirmés.
 
-Prochaine étape selon la roadmap V2 : finir le sprint 3 (prix relevés, champs non confirmés), puis sprint 4 (benchmarks réels). Ne pas démarrer plusieurs chantiers à la fois.
+Fait (sprint 5 — expérience utilisateur, en partie) : configurateur manuel en trois zones (composants / aperçu 3D / prix et détails) qui deviennent trois onglets sous 1280 px ; répartition du budget par catégorie (`BudgetBreakdown`) ; bouton « Copier la liste » ; aides pour débutants (`src/lib/catalog/help.ts`) ; encart « En bref » du comparateur. Non fait dans ce sprint : refonte de la page d'accueil, graphiques de FPS détaillés, export PDF, catégorie « ventilateurs supplémentaires ».
+
+Sprint 4 (benchmarks réels) **non commencé, volontairement** : il exige des FPS exacts relevés un par un avec leurs conditions de test. Depuis une session sans accès aux pages sources, seuls des extraits de recherche sont disponibles, ce qui ne permet pas de garantir les chiffres. À faire par saisie manuelle, ou avec un accès direct aux sources.
+
+Déploiement : projet Vercel `pc-architect` (compte de l'utilisateur), en ligne sur https://pc-architect-two.vercel.app. Le dépôt GitHub n'est pas encore relié à Vercel (il appartient à un autre compte) : redéployer à la main avec `vercel deploy --prod --yes` après connexion (`vercel login`). L'environnement cloud « PC_Config_Render » autorise `vercel.com` et `api.vercel.com`.
+
+Prochaines étapes : finir le sprint 3 (prix relevés, champs non confirmés), le sprint 4 lorsque les sources seront accessibles, le reste du sprint 5, puis le sprint 6 (tests par 5 à 10 personnes). Ne pas démarrer plusieurs chantiers à la fois.
 
 Non fait, à ne pas présenter comme existant :
 

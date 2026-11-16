@@ -1,6 +1,7 @@
 import { buildPrice, estimatePower, formatChf, isComplete, type Build } from "@/lib/build";
 import { CATEGORIES, CATEGORY_LABELS, games, type Resolution } from "@/lib/catalog";
 import type { CompatibilityReport } from "@/lib/compat";
+import { GLOSSARY } from "@/lib/catalog/help";
 import { evaluateUpgradability } from "@/lib/insights";
 import { estimateFps, type FpsResult } from "@/lib/perf/estimate";
 import { Badge, Card, CardTitle, STATUS_DOT, StatusBadge } from "./ui";
@@ -30,6 +31,39 @@ export function PriceTotal({ build }: { build: Build }) {
       <span className="text-sm text-muted">Prix total indicatif</span>
       <span className="font-mono text-2xl font-semibold tracking-tight">{formatChf(buildPrice(build))}</span>
     </div>
+  );
+}
+
+/**
+ * Répartition du budget : une barre par catégorie, triée du plus cher au
+ * moins cher. Une seule série, donc une seule teinte ; les valeurs sont écrites.
+ */
+export function BudgetBreakdown({ build }: { build: Build }) {
+  const total = buildPrice(build);
+  const rows = CATEGORIES.filter((category) => build[category]).map((category) => ({ category, price: build[category]!.priceChf })).sort((a, b) => b.price - a.price);
+  if (rows.length === 0) return null;
+  const max = rows[0].price;
+  return (
+    <Card>
+      <CardTitle aside={<span className="font-mono text-sm text-ink">{formatChf(total)}</span>}>Répartition du budget</CardTitle>
+      <ul className="space-y-2">
+        {rows.map(({ category, price }) => {
+          const share = Math.round((price / total) * 100);
+          return (
+            <li key={category} title={`${CATEGORY_LABELS[category]} : ${formatChf(price)}, soit ${share} % du total`} className="grid grid-cols-[7.5rem_1fr_auto] items-center gap-2 text-xs">
+              <span className="truncate text-muted">{CATEGORY_LABELS[category]}</span>
+              <span className="h-2 rounded-r bg-white/5">
+                <span className="block h-2 rounded-r bg-accent" style={{ width: `${(price / max) * 100}%` }} />
+              </span>
+              <span className="w-24 text-right font-mono text-ink">
+                {formatChf(price)} <span className="text-muted">· {share} %</span>
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-3 text-xs text-muted">Prix indicatifs, non relevés. Seuls les composants choisis sont comptés.</p>
+    </Card>
   );
 }
 
@@ -147,6 +181,12 @@ export function PerfPanel({ build, resolution, targetFps, gameIds, onResolution 
       <p className="mt-3 text-xs leading-relaxed text-muted">
         Méthode : performance relative normalisée par source, moyenne géométrique, ancrage sur une mesure absolue, puis min(limite GPU, limite CPU). Ray tracing et upscaling désactivés.
       </p>
+      <details className="mt-2 text-xs text-muted">
+        <summary className="cursor-pointer text-accent-soft">Comprendre ces chiffres</summary>
+        <p className="mt-1.5 leading-relaxed">{GLOSSARY.fps}</p>
+        <p className="mt-1 leading-relaxed">{GLOSSARY.range}</p>
+        <p className="mt-1 leading-relaxed">{GLOSSARY.low}</p>
+      </details>
     </Card>
   );
 }

@@ -1,11 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import { buildPrice, formatChf, type Build } from "@/lib/build";
+import { CATEGORIES, CATEGORY_LABELS } from "@/lib/catalog";
 import { useSavedBuilds } from "@/lib/saved";
 import { Button } from "./ui";
 
 /** Sauvegarde locale et partage par lien, sans compte utilisateur. */
-export function BuildActions({ query, path = "/config" }: { query: string; path?: string }) {
+/** Liste des composants en texte brut, à coller dans un message ou un document. */
+export function buildAsText(build: Build, url: string): string {
+  const lines = CATEGORIES.filter((category) => build[category]).map((category) => {
+    const component = build[category]!;
+    return `${CATEGORY_LABELS[category]} : ${component.brand} ${component.name} — ${formatChf(component.priceChf)}`;
+  });
+  return [...lines, `Total indicatif : ${formatChf(buildPrice(build))} (prix non relevés)`, url].join("\n");
+}
+
+export function BuildActions({ query, path = "/config", build }: { query: string; path?: string; build?: Build }) {
   const { save } = useSavedBuilds();
   const [naming, setNaming] = useState(false);
   const [name, setName] = useState("");
@@ -21,6 +32,16 @@ export function BuildActions({ query, path = "/config" }: { query: string; path?
       flash("Lien copié");
     } catch {
       window.prompt("Copiez ce lien :", url);
+    }
+  };
+  const copyList = async () => {
+    if (!build) return;
+    const text = buildAsText(build, `${window.location.origin}${path}?${query}`);
+    try {
+      await navigator.clipboard.writeText(text);
+      flash("Liste copiée");
+    } catch {
+      window.prompt("Copiez cette liste :", text);
     }
   };
   const submit = () => {
@@ -41,6 +62,7 @@ export function BuildActions({ query, path = "/config" }: { query: string; path?
         <>
           <Button onClick={() => setNaming(true)}>Enregistrer</Button>
           <Button onClick={share}>Partager le lien</Button>
+          {build && <Button onClick={copyList}>Copier la liste</Button>}
         </>
       )}
       {feedback && <span role="status" className="text-xs text-ok">{feedback}</span>}

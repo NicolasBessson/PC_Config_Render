@@ -2,7 +2,7 @@
 
 import { Suspense, useMemo, useState } from "react";
 import { BuildActions } from "@/components/BuildActions";
-import { CompatPanel, PerfPanel, PowerPanel, PriceTotal } from "@/components/BuildPanels";
+import { BudgetBreakdown, CompatPanel, PerfPanel, PowerPanel, PriceTotal } from "@/components/BuildPanels";
 import { Badge, Button, Card, CardTitle, DemoNotice, LinkButton, PageShell, STATUS_DOT, StatusBadge } from "@/components/ui";
 import { useViewState } from "@/components/useViewState";
 import { LightingPicker, StylePicker, Viewer } from "@/components/viewer/Viewer";
@@ -10,6 +10,7 @@ import { STYLES } from "@/components/viewer/styles";
 import { formatChf, resolveBuild, type BuildIds } from "@/lib/build";
 import { catalog, CATEGORIES, CATEGORY_LABELS, type AnyComponent, type Category } from "@/lib/catalog";
 import { describeComponent } from "@/lib/catalog/describe";
+import { CATEGORY_HELP } from "@/lib/catalog/help";
 import { checkBuild, checkCandidate } from "@/lib/compat";
 
 function Manual() {
@@ -18,6 +19,9 @@ function Manual() {
   const report = useMemo(() => checkBuild(build), [build]);
   const [open, setOpen] = useState<Category | null>(() => CATEGORIES.find((c) => !state.ids[c]) ?? null);
   const [hideIncompatible, setHideIncompatible] = useState(false);
+  // Sur petit écran, les trois zones deviennent trois onglets.
+  const [tab, setTab] = useState<"composants" | "apercu" | "details">("composants");
+  const zone = (id: typeof tab) => (tab === id ? "" : "hidden");
 
   const select = (category: Category, component: AnyComponent) => {
     const ids: BuildIds = { ...state.ids };
@@ -46,9 +50,16 @@ function Manual() {
         </>
       }
     >
-      <div className="grid gap-4 lg:grid-cols-[1fr_1.05fr]">
+      <div role="tablist" aria-label="Zones du configurateur" className="mb-3 flex rounded-xl border border-line bg-surface p-1 text-sm xl:hidden">
+        {([["composants", "Composants"], ["apercu", "Aperçu 3D"], ["details", "Prix et détails"]] as const).map(([id, label]) => (
+          <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`flex-1 rounded-lg px-2 py-2 transition ${tab === id ? "bg-accent text-white" : "text-muted hover:text-ink"}`}>
+            {label}
+          </button>
+        ))}
+      </div>
+      <div className="grid gap-4 xl:grid-cols-[23rem_minmax(0,1fr)_23rem]">
         {/* Sélection des composants */}
-        <div className="order-2 min-w-0 space-y-2.5 lg:order-1">
+        <div className={`${zone("composants")} min-w-0 space-y-2.5 xl:block xl:max-h-[calc(100vh-9.5rem)] xl:overflow-y-auto xl:pr-1`}>
           <div className="flex items-center justify-between px-1 text-sm">
             <span className="text-muted">{chosen} / {CATEGORIES.length} composants choisis</span>
             <label className="flex cursor-pointer items-center gap-2 text-muted">
@@ -76,6 +87,9 @@ function Manual() {
                 </button>
                 {isOpen && (
                   <ul className="space-y-1.5 border-t border-line p-2.5">
+                    <li className="rounded-xl bg-white/5 px-3 py-2 text-xs leading-relaxed text-muted">
+                      <span className="text-ink">{CATEGORY_HELP[category].role}</span> {CATEGORY_HELP[category].tip}
+                    </li>
                     {visible.map(({ component, check }) => {
                       const active = component.id === current?.id;
                       return (
@@ -114,17 +128,8 @@ function Manual() {
         </div>
 
         {/* Rendu et diagnostics */}
-        <div className="order-1 min-w-0 space-y-4 lg:order-2 lg:sticky lg:top-18 lg:max-h-[calc(100vh-5.5rem)] lg:self-start lg:overflow-y-auto lg:pr-1">
-          <Viewer build={build} style={state.style} lighting={state.lighting} className="aspect-[4/3] w-full" />
-          <Card>
-            <div className="flex items-center justify-between gap-3">
-              <PriceTotalInline build={build} />
-              <StatusBadge status={report.status} />
-            </div>
-            <div className="mt-4">
-              <BuildActions query={query} />
-            </div>
-          </Card>
+        <div className={`${zone("apercu")} min-w-0 space-y-4 xl:block xl:sticky xl:top-18 xl:self-start`}>
+          <Viewer build={build} style={state.style} lighting={state.lighting} className="aspect-[4/3] w-full xl:aspect-auto xl:h-[calc(100vh-24rem)] xl:min-h-[26rem]" />
           <Card>
             <CardTitle>Style et éclairage</CardTitle>
             <StylePicker value={state.style} onChange={(style) => update({ style, lighting: STYLES[style].lighting })} compact />
@@ -132,8 +137,22 @@ function Manual() {
               <LightingPicker value={state.lighting} onChange={(lighting) => update({ lighting })} />
             </div>
           </Card>
+        </div>
+
+        {/* Prix, compatibilité, performances */}
+        <div className={`${zone("details")} min-w-0 space-y-4 xl:block xl:max-h-[calc(100vh-9.5rem)] xl:overflow-y-auto xl:pr-1`}>
+          <Card>
+            <div className="flex items-center justify-between gap-3">
+              <PriceTotalInline build={build} />
+              <StatusBadge status={report.status} />
+            </div>
+            <div className="mt-4">
+              <BuildActions query={query} build={build} />
+            </div>
+          </Card>
           <CompatPanel report={report} />
           <PerfPanel build={build} resolution={state.resolution} targetFps={state.targetFps} onResolution={(resolution) => update({ resolution })} />
+          <BudgetBreakdown build={build} />
           <PowerPanel build={build} />
           <DemoNotice />
         </div>

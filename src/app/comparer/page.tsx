@@ -114,6 +114,26 @@ function Compare() {
 
       {a && b ? (
         <>
+          <Card className="mb-4">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted">En bref</h2>
+            <ul className="mt-2 space-y-1 text-sm">
+              <li>
+                {a.price === b.price ? "Les deux configurations coûtent le même prix." : `La configuration ${a.price < b.price ? "A" : "B"} coûte ${formatChf(Math.abs(a.price - b.price))} de moins.`}
+              </li>
+              {shared.length > 0 ? (
+                (() => {
+                  const ratio = mean(shared.map((p) => p.b.fps!)) / mean(shared.map((p) => p.a.fps!));
+                  const gap = Math.round(Math.abs(ratio - 1) * 100);
+                  return <li>{gap === 0 ? `Performances estimées équivalentes en ${resolution}.` : `La configuration ${ratio > 1 ? "B" : "A"} est estimée ${gap} % plus rapide en ${resolution}, en moyenne sur ${shared.length} jeu${shared.length > 1 ? "x" : ""}.`}</li>;
+                })()
+              ) : (
+                <li className="text-muted">Performances non comparables : données insuffisantes pour au moins une des deux.</li>
+              )}
+              <li>{CATEGORIES.filter((c) => a.build[c]?.id !== b.build[c]?.id).length} composant(s) sur {CATEGORIES.length} diffèrent.</li>
+              {a.report.status !== b.report.status && <li>Compatibilité différente : vérifiez la ligne correspondante.</li>}
+            </ul>
+            <p className="mt-2 text-xs text-muted">Écarts calculés sur des estimations et des prix indicatifs : un écart de quelques pour cent n&apos;est pas significatif.</p>
+          </Card>
           <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
             <table className="w-full min-w-[640px] border-collapse">
               <thead>
