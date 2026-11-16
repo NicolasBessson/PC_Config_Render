@@ -1,0 +1,7 @@
+[
+  { "id": "pure-rock-2", "brand": "be quiet!", "name": "Pure Rock 2", "type": "air", "heightMm": 155, "radiatorMm": null, "sockets": ["AM5", "LGA1700"], "tdpRatingW": 150, "ramClearanceMm": null, "rgb": false, "priceChf": 40, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "pa120-se", "brand": "Thermalright", "name": "Peerless Assassin 120 SE", "type": "air", "heightMm": 155, "radiatorMm": null, "sockets": ["AM5", "LGA1700"], "tdpRatingW": 245, "ramClearanceMm": null, "rgb": false, "priceChf": 40, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "nh-d15", "brand": "Noctua", "name": "NH-D15 chromax.black", "type": "air", "heightMm": 165, "radiatorMm": null, "sockets": ["AM5", "LGA1700"], "tdpRatingW": 250, "ramClearanceMm": 32, "rgb": false, "priceChf": 105, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "lf3-240", "brand": "Arctic", "name": "Liquid Freezer III 240", "type": "aio", "heightMm": null, "radiatorMm": 240, "sockets": ["AM5", "LGA1700"], "tdpRatingW": 250, "ramClearanceMm": null, "rgb": false, "priceChf": 80, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "lf3-360-argb", "brand": "Arctic", "name": "Liquid Freezer III 360 A-RGB", "type": "aio", "heightMm": null, "radiatorMm": 360, "sockets": ["AM5", "LGA1700"], "tdpRatingW": 300, "ramClearanceMm": null, "rgb": true, "priceChf": 110, "priceDate": null, "verified": false, "specUrl": null }
+]

@@ -1,0 +1,6 @@
+[
+  { "id": "nv3-1tb", "brand": "Kingston", "name": "NV3 1 To", "interface": "M.2 NVMe", "capacityGb": 1000, "priceChf": 75, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "sn850x-1tb", "brand": "WD", "name": "Black SN850X 1 To", "interface": "M.2 NVMe", "capacityGb": 1000, "priceChf": 95, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "p3plus-2tb", "brand": "Crucial", "name": "P3 Plus 2 To", "interface": "M.2 NVMe", "capacityGb": 2000, "priceChf": 135, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "990pro-2tb", "brand": "Samsung", "name": "990 Pro 2 To", "interface": "M.2 NVMe", "capacityGb": 2000, "priceChf": 190, "priceDate": null, "verified": false, "specUrl": null }
+]

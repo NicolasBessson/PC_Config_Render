@@ -1,0 +1,6 @@
+[
+  { "id": "ddr4-16-lpx", "brand": "Corsair", "name": "Vengeance LPX 16 Go (2×8) DDR4-3200 CL16", "type": "DDR4", "capacityGb": 16, "modules": 2, "speedMhz": 3200, "cl": 16, "heightMm": 34, "rgb": false, "priceChf": 60, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "ddr4-32-lpx", "brand": "Corsair", "name": "Vengeance LPX 32 Go (2×16) DDR4-3200 CL16", "type": "DDR4", "capacityGb": 32, "modules": 2, "speedMhz": 3200, "cl": 16, "heightMm": 34, "rgb": false, "priceChf": 110, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "ddr5-32-vengeance", "brand": "Corsair", "name": "Vengeance 32 Go (2×16) DDR5-6000 CL30", "type": "DDR5", "capacityGb": 32, "modules": 2, "speedMhz": 6000, "cl": 30, "heightMm": 35, "rgb": false, "priceChf": 220, "priceDate": null, "verified": false, "specUrl": null },
+  { "id": "ddr5-32-tridentz5-rgb", "brand": "G.Skill", "name": "Trident Z5 RGB 32 Go (2×16) DDR5-6000 CL30", "type": "DDR5", "capacityGb": 32, "modules": 2, "speedMhz": 6000, "cl": 30, "heightMm": 44, "rgb": true, "priceChf": 240, "priceDate": null, "verified": false, "specUrl": null }
+]

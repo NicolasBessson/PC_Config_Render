@@ -1,0 +1,46 @@
+"use client";
+
+import { useEffect, useMemo } from "react";
+import * as THREE from "three";
+import type { Build } from "@/lib/build";
+import { CASE, PSU as P } from "../layout";
+import { Label, Part, Repeat, useScene, type Vec3 } from "./context";
+import { box, perforated, rbox } from "./geometry";
+import { psuLabelTexture } from "./textures";
+
+const BACK = -CASE.depth / 2;
+
+/** Alimentation générique : seule la puissance, issue du catalogue, figure sur l'étiquette. */
+export function Psu({ build }: { build: Build }) {
+  const { mat, palette, layout } = useScene();
+  const psu = layout.psu;
+  const light = palette.part === "#f4f5f7";
+  const label = useMemo(
+    () => (psu ? new THREE.MeshStandardMaterial({ map: psuLabelTexture(psu.wattage, light), roughness: 0.6, metalness: 0.1 }) : null),
+    [psu, light],
+  );
+  useEffect(() => () => label?.dispose(), [label]);
+  const sockets = useMemo(() => {
+    const items: { p: Vec3 }[] = [];
+    for (let row = 0; row < 2; row++) for (let column = 0; column < 5; column++) items.push({ p: [P.x - 50 + column * 25, P.y + 16 - row * 30, P.z + P.depth / 2 + 1] });
+    return items;
+  }, []);
+
+  if (!psu || !label || !build.psu) return null;
+  return (
+    <group>
+      <Part g={rbox(P.width, P.height, P.depth, 2)} m={mat.tank} p={[P.x, P.y, P.z]} />
+      <mesh material={label} position={[P.x + P.width / 2 + 0.4, P.y, P.z]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[122, 61]} />
+      </mesh>
+      <Repeat g={box(16, 10, 3)} m={mat.dark} items={sockets} />
+      {/* Face arrière : grille, interrupteur et prise secteur */}
+      <Part g={box(P.width - 4, P.height - 4, 1)} m={mat.steel} p={[P.x, P.y, BACK + 1]} shadow={false} />
+      <Part g={box(94, 68, 1)} m={mat.dark} p={[P.x - 22, P.y, BACK + 0.2]} shadow={false} />
+      <Part g={perforated(92, 66, 5)} m={mat.mesh} p={[P.x - 22, P.y, BACK - 0.6]} shadow={false} />
+      <Part g={rbox(13, 19, 3, 1.5)} m={mat.rubber} p={[P.x + 50, P.y + 20, BACK - 0.6]} shadow={false} />
+      <Part g={rbox(27, 21, 3, 2)} m={mat.rubber} p={[P.x + 48, P.y - 16, BACK - 0.6]} shadow={false} />
+      <Label category="psu" name={build.psu.name} position={[P.x + P.width / 2 + 16, P.y, P.z]} />
+    </group>
+  );
+}
