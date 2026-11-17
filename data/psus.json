@@ -93,5 +93,31 @@
       "label": "Corsair — fiche produit RM850x ATX 3.1 (CP-9020270)",
       "url": "https://www.corsair.com/us/en/p/psu/cp-9020270-na/rmx-series-rm850x-fully-modular-power-supply-cp-9020270-na"
     }
+  },
+  {
+    "id": "rm1000x",
+    "brand": "Corsair",
+    "name": "RM1000x 1000 W Cybenetics Gold (ATX 3.1)",
+    "wattage": 1000,
+    "efficiency": "Cybenetics Gold",
+    "formFactor": "ATX",
+    "pcie8pin": 4,
+    "has12v2x6": true,
+    "modular": true,
+    "priceChf": 190,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": "https://www.corsair.com/us/en/p/psu/cp-9020271-na/rmx-series-rm1000x-fully-modular-power-supply-cp-9020271-na",
+    "visual": {
+      "body": "#131417"
+    },
+    "verifiedAt": "2026-11-17",
+    "source": {
+      "label": "Corsair — fiche produit RM1000x ATX 3.1 (CP-9020271)",
+      "url": "https://www.corsair.com/us/en/p/psu/cp-9020271-na/rmx-series-rm1000x-fully-modular-power-supply-cp-9020271-na"
+    },
+    "unconfirmed": [
+      "formFactor"
+    ]
   }
 ]

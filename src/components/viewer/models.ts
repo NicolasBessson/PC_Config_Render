@@ -55,34 +55,100 @@ export const CASE_MODELS: Record<string, CaseModel> = {
   "4000d-airflow-white": { ...KIRIGAMI_4000D, tint: "#e6e8eb" },
 };
 
+type Axis = [number, number, number];
+
+/**
+ * Barrette de mémoire. `basis` indique vers quel axe de la scène part chaque axe du fichier
+ * (x, y puis z) ; `unit` donne les millimètres par unité du fichier ; `anchor` est le point du
+ * fichier posé sur la carte mère, au centre de l'emplacement. `glow` désigne les matériaux de
+ * la barre lumineuse, qui prennent la couleur de l'éclairage choisi.
+ */
+export interface RamModel extends PartModel {
+  basis: [Axis, Axis, Axis];
+  unit: number;
+  anchor: Axis;
+  glow?: RegExp;
+}
+
+const LPX: RamModel = {
+  file: "/models/corsair-vengeance-lpx.glb",
+  credit: { title: "RAM Corsair Vengeance LPX", author: "supahot", url: "https://sketchfab.com/3d-models/ram-corsair-vengeance-lpx-ee11e1926e514075a70642ecb5dc5c2d", license: BY },
+  // Longueur du fichier (z) vers le haut, épaisseur (y) en profondeur, hauteur (−x, contacts côté +x) en s'éloignant de la carte mère.
+  basis: [[-1, 0, 0], [0, 0, -1], [0, 1, 0]],
+  unit: 133 / 4.569,
+  anchor: [-0.538, 1.522, -1.0365],
+};
+
+/** T-Force Delta RGB : longueur selon x, hauteur selon y (contacts en bas), épaisseur selon z. */
+const DELTA_RGB = {
+  basis: [[0, 1, 0], [1, 0, 0], [0, 0, 1]] as [Axis, Axis, Axis],
+  unit: 144.2 / 22.817,
+  anchor: [0.3525, -0.689, 0.1095] as Axis,
+  glow: /^Material\.005$/,
+};
+
 /** Barrettes de mémoire, par identifiant de catalogue. */
-export const RAM_MODELS: Record<string, PartModel> = Object.fromEntries(
-  ["ddr4-16-lpx", "ddr4-32-lpx"].map((id) => [
-    id,
-    {
-      file: "/models/corsair-vengeance-lpx.glb",
-      credit: { title: "RAM Corsair Vengeance LPX", author: "supahot", url: "https://sketchfab.com/3d-models/ram-corsair-vengeance-lpx-ee11e1926e514075a70642ecb5dc5c2d", license: BY },
-    },
-  ]),
-);
+export const RAM_MODELS: Record<string, RamModel> = {
+  "ddr4-16-lpx": LPX,
+  "ddr4-32-lpx": LPX,
+  "ddr5-32-delta-rgb-black": {
+    file: "/models/teamgroup-delta-rgb-ddr5-black.glb",
+    credit: { title: "DDR5 RAM - Teamgroup T-Force Black", author: "PolyDavid", url: "https://sketchfab.com/3d-models/ddr5-ram-teamgroup-t-force-black-268614943df3411bb6487a9601adc03f", license: BY },
+    ...DELTA_RGB,
+  },
+  "ddr5-32-delta-rgb-white": {
+    file: "/models/teamgroup-delta-rgb-ddr5-white.glb",
+    credit: { title: "DDR5 RAM - Teamgroup T-Force White", author: "PolyDavid", url: "https://sketchfab.com/3d-models/ddr5-ram-teamgroup-t-force-white-198540480d3241f6be95d7e57f53b90a", license: BY },
+    ...DELTA_RGB,
+  },
+};
 
 /**
  * Cartes graphiques. Les trois échelles amènent la longueur, la hauteur et
- * l'épaisseur du fichier sur les cotes du catalogue ; `edges` donne, dans le
- * fichier, le plan de l'équerre, le bord côté carte mère et la plaque arrière
- * (les ventilateurs sont du côté opposé, vers +x).
+ * l'épaisseur du fichier sur les cotes du catalogue. La longueur suit toujours
+ * l'axe z du fichier, équerre côté +z. `thicknessAxis` dit quel axe porte
+ * l'épaisseur : "x" (ventilateurs côté +x, hauteur selon y) ou "y"
+ * (ventilateurs côté −y, hauteur selon x). `edges` donne, dans le fichier, le
+ * plan de l'équerre, le bord côté carte mère (sur l'axe de la hauteur) et la
+ * plaque arrière (sur l'axe de l'épaisseur).
  */
 export interface GpuModel extends PartModel {
-  /** Étendues du corps de la carte dans le fichier : longueur (z), hauteur (y), épaisseur (x). */
+  thicknessAxis: "x" | "y";
+  /** Étendues du corps de la carte dans le fichier. */
   size: { length: number; height: number; thickness: number };
-  edges: { bracketZ: number; boardY: number; backplateX: number };
+  edges: { bracketZ: number; board: number; backplate: number };
 }
 export const GPU_MODELS: Record<string, GpuModel> = {
   "arc-b580": {
     file: "/models/intel-arc-b580.glb",
     credit: { title: "Intel Arc B580 Graphics Card", author: "PolyDavid", url: "https://sketchfab.com/3d-models/intel-arc-b580-graphics-card-3251ad158ee44a7e9802cb378b4d281a", license: BY },
+    thicknessAxis: "x",
     size: { length: 7.812, height: 3.009, thickness: 2.07 },
-    edges: { bracketZ: 3.285, boardY: -1.236, backplateX: -1.187 },
+    edges: { bracketZ: 3.285, board: -1.236, backplate: -1.187 },
+  },
+  "rtx-5090-fe": {
+    file: "/models/nvidia-rtx-5090-fe.glb",
+    credit: { title: "NVIDIA RTX 5090 Founders Edition", author: "PolyDavid", url: "https://sketchfab.com/3d-models/nvidia-rtx-5090-founders-edition-5934a7ddfa144951ac66eb8cab13f220", license: BY },
+    thicknessAxis: "y",
+    size: { length: 26.494, height: 11.182, thickness: 3.13 },
+    edges: { bracketZ: 13.36, board: -6.354, backplate: 1.164 },
+  },
+};
+
+/**
+ * Ventirads. La hauteur suit l'axe y du fichier (semelle en bas), le flux d'air l'axe z.
+ * `height` est la hauteur du fichier, de la semelle au sommet ; `base` le centre de la semelle.
+ */
+export interface CoolerModel extends PartModel {
+  height: number;
+  base: Axis;
+}
+export const COOLER_MODELS: Record<string, CoolerModel> = {
+  "freezer-34-esports-duo": {
+    file: "/models/arctic-freezer-34-esports-duo.glb",
+    credit: { title: "Arctic Freezer (AMD)", author: "Nouraiz", url: "https://sketchfab.com/3d-models/arctic-freezer-amd-5b06c10634c049b9865e6036abf2d4ac", license: BY },
+    height: 0.735,
+    base: [-0.014, -0.088, -0.011],
   },
 };
 
@@ -119,7 +185,7 @@ export const STORAGE_MODELS: Record<string, StorageModel> = {
   },
 };
 
-const REGISTRIES: Record<string, PartModel>[] = [CASE_MODELS, RAM_MODELS, GPU_MODELS, CPU_MODELS, STORAGE_MODELS];
+const REGISTRIES: Record<string, PartModel>[] = [CASE_MODELS, RAM_MODELS, GPU_MODELS, CPU_MODELS, STORAGE_MODELS, COOLER_MODELS];
 
 /** Crédit du modèle 3D d'un composant, s'il en a un. */
 export function modelCredit(id: string | null | undefined): ModelCredit | null {

@@ -45,13 +45,13 @@ Une configuration est entièrement décrite par son URL : le lien se partage tel
 
 Le catalogue et les benchmarks livrés ici servent à faire fonctionner le parcours. **Ils ne sont pas vérifiés.**
 
-- **Composants** (`data/*.json`) : une première campagne de vérification auprès des fabricants a eu lieu le 16 novembre 2026. 20 fiches sur 40 sont `verified: true` ; les 20 autres ont une source mais des champs non confirmés, listés dans `unconfirmed`. La vérification s'appuie sur des extraits de recherche des sites officiels, pas sur une lecture complète des pages.
+- **Composants** (`data/*.json`) : deux campagnes de vérification auprès des fabricants ont eu lieu les 16 et 17 novembre 2026. 25 fiches sur 50 sont `verified: true` ; les 25 autres ont une source mais des champs non confirmés, listés dans `unconfirmed`. La vérification s'appuie sur des extraits de recherche des sites officiels, pas sur une lecture complète des pages.
 - **Prix** : ordres de grandeur, pas des relevés. `priceDate: null` signifie « prix non relevé ».
 - **Benchmarks** (`data/benchmarks.json`) : valeurs **synthétiques**, produites par `scripts/generate-demo-benchmarks.mjs`. Ce ne sont pas des mesures. Les deux sources portent `demo: true`, et l'interface affiche « Source de démonstration » sur chaque estimation.
 
 Avant toute mise en ligne, ces fichiers doivent être remplacés par des données saisies manuellement avec source, date et conditions (sections 6.4 et 16.5 du cahier des charges).
 
-Pour illustrer le cas « données insuffisantes », un jeu (Monster Hunter Wilds) et une carte graphique (Arc B580) n'ont volontairement aucun benchmark.
+Pour illustrer le cas « données insuffisantes », un jeu (Monster Hunter Wilds) et deux cartes graphiques (Arc B580, RTX 5090 Founders Edition) n'ont volontairement aucun benchmark : elles ne sont jamais recommandées, seulement choisies à la main.
 
 ## Architecture
 
@@ -103,17 +103,22 @@ Boîtier moyen-tour générique modélisé en géométrie paramétrique, déclin
 - Chaque produit a son apparence (couleurs, ventilateurs, épaisseur du radiateur) et chaque boîtier ses dimensions extérieures. Pas de logos ni de répliques exactes.
 - Éclairage : couleur principale et secondaire, intensité, effets fixe, respiration ou cycle ; les animations peuvent être coupées.
 - Deux niveaux de qualité (haute : ombres et halo lumineux ; légère), avec bascule automatique si la fluidité est insuffisante.
+- **Rendu photo** : un bouton lance un calcul par lancer de rayons, image par image. La lumière rebondit réellement (ombres douces, LED qui éclairent l'intérieur, vitre qui réfléchit et laisse passer). L'image s'affine en 320 passes ; « Capture » l'enregistre. Demande une carte graphique correcte.
 - Si WebGL est indisponible, la page reste utilisable et affiche les données de la configuration.
 
 ### Modèles 3D de tiers
 
-Sept produits utilisent un modèle 3D réel, créé par un tiers et publié sur Sketchfab sous licence [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/). Tous sont repositionnés et mis à l'échelle ; le boîtier blanc est en outre reteinté.
+Douze fiches du catalogue utilisent un modèle 3D réel, créé par un tiers et publié sur Sketchfab sous licence [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/). Tous sont repositionnés, mis à l'échelle et compressés (textures réduites, géométrie compactée) ; le boîtier blanc est en outre reteinté, et les couleurs claires sont adaptées à l'exposition du style affiché.
 
 | Produit | Modèle | Auteur |
 |---|---|---|
 | Corsair 4000D Airflow, noir et blanc | [Corsair 4000D Airflow (Free)](https://sketchfab.com/3d-models/corsair-4000d-airflow-free-34df3ba96cf94e71accdb5779c4b8694) | Kirigami |
 | Corsair Vengeance LPX | [RAM Corsair Vengeance LPX](https://sketchfab.com/3d-models/ram-corsair-vengeance-lpx-ee11e1926e514075a70642ecb5dc5c2d) | supahot |
 | Intel Arc B580 | [Intel Arc B580 Graphics Card](https://sketchfab.com/3d-models/intel-arc-b580-graphics-card-3251ad158ee44a7e9802cb378b4d281a) | PolyDavid |
+| NVIDIA GeForce RTX 5090 Founders Edition | [NVIDIA RTX 5090 Founders Edition](https://sketchfab.com/3d-models/nvidia-rtx-5090-founders-edition-5934a7ddfa144951ac66eb8cab13f220) | PolyDavid |
+| TeamGroup T-Force Delta RGB DDR5, noire | [DDR5 RAM - Teamgroup T-Force Black](https://sketchfab.com/3d-models/ddr5-ram-teamgroup-t-force-black-268614943df3411bb6487a9601adc03f) | PolyDavid |
+| TeamGroup T-Force Delta RGB DDR5, blanche | [DDR5 RAM - Teamgroup T-Force White](https://sketchfab.com/3d-models/ddr5-ram-teamgroup-t-force-white-198540480d3241f6be95d7e57f53b90a) | PolyDavid |
+| Arctic Freezer 34 eSports DUO | [Arctic Freezer (AMD)](https://sketchfab.com/3d-models/arctic-freezer-amd-5b06c10634c049b9865e6036abf2d4ac) | Nouraiz |
 | AMD Ryzen 7 9800X3D | [AMD 9800x3D CPU - SUPER LOW POLY](https://sketchfab.com/3d-models/amd-9800x3d-cpu-super-low-poly-3851621aed404adaa5b11efde67d5dc4) | PolyDavid |
 | AMD Ryzen 5 7600 | [AMD Ryzen 5 7600 CPU chip (AM5 socket)](https://sketchfab.com/3d-models/amd-ryzen-5-7600-cpu-chip-am5-socket-a05c2732e0b847c2967e2c9282abd5f9) | arsdever |
 | Samsung 990 Pro | [Samsung 990 PRO SSD](https://sketchfab.com/3d-models/samsung-990-pro-ssd-6ada64c9ba734e499978a084e68ec3df) | PolyDavid |

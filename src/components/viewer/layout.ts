@@ -1,6 +1,6 @@
 import { fanCountOf, type Build } from "@/lib/build";
 import type { Style } from "@/lib/catalog";
-import { CASE_MODELS, CPU_MODELS, GPU_MODELS, RAM_MODELS, STORAGE_MODELS } from "./models";
+import { CASE_MODELS, COOLER_MODELS, CPU_MODELS, GPU_MODELS, RAM_MODELS, STORAGE_MODELS } from "./models";
 
 /*
  * Description de la scène 3D, déduite de la configuration.
@@ -110,7 +110,7 @@ export interface GpuLayout {
 }
 
 export type CoolerLayout =
-  | { kind: "air"; height: number; towers: 1 | 2; topX: number; rgb: boolean; fans: number; fanSize: 120 | 140; colors: CoolerColors | null }
+  | { kind: "air"; height: number; towers: 1 | 2; topX: number; rgb: boolean; fans: number; fanSize: 120 | 140; colors: CoolerColors | null; /** Identifiant du modèle 3D réel, s'il en existe un. */ model: string | null }
   | { kind: "aio"; radiator: number; mount: "top" | "front"; fans: number; fanSize: 120 | 140; length: number; thickness: number; rgb: boolean; colors: CoolerColors | null };
 export interface CoolerColors {
   fin: string;
@@ -189,7 +189,7 @@ export function layoutScene(build: Build, style: Style): SceneLayout {
     } else {
       const height = cooler.heightMm ?? 155;
       const towers = (cooler.tdpRatingW ?? 0) >= 200 ? 2 : 1;
-      coolerLayout = { kind: "air", height, towers, topX: BOARD.x + height, rgb: cooler.rgb, fans: cooler.visual?.fans ?? 1, fanSize: cooler.visual?.fanSize ?? 120, colors };
+      coolerLayout = { kind: "air", height, towers, topX: BOARD.x + height, rgb: cooler.rgb, fans: cooler.visual?.fans ?? 1, fanSize: cooler.visual?.fanSize ?? 120, colors, model: COOLER_MODELS[cooler.id] ? cooler.id : null };
     }
   }
 

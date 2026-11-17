@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { resolveBuild, type BuildIds } from "@/lib/build";
 import { catalog } from "@/lib/catalog";
 import { ANCHOR, BOARD, CASE, frameFor, frontFanHeights, GPU_TOP, layoutScene } from "./layout";
-import { ALL_MODEL_CREDITS, CASE_MODELS, CPU_MODELS, GPU_MODELS, modelCredit, RAM_MODELS, STORAGE_MODELS } from "./models";
+import { ALL_MODEL_CREDITS, CASE_MODELS, COOLER_MODELS, CPU_MODELS, GPU_MODELS, modelCredit, RAM_MODELS, STORAGE_MODELS } from "./models";
 
 const BASE: BuildIds = {
   cpu: "r5-7600", gpu: "rtx-5070", motherboard: "b650-tomahawk", ram: "ddr5-32-vengeance",
@@ -95,6 +95,7 @@ describe("correspondance entre la configuration et la scène 3D", () => {
     for (const id of Object.keys(GPU_MODELS)) expect(catalog.gpu.some((g) => g.id === id), id).toBe(true);
     for (const id of Object.keys(CPU_MODELS)) expect(catalog.cpu.some((c) => c.id === id), id).toBe(true);
     for (const id of Object.keys(STORAGE_MODELS)) expect(catalog.storage.some((c) => c.id === id), id).toBe(true);
+    for (const id of Object.keys(COOLER_MODELS)) expect(catalog.cooler.some((c) => c.id === id), id).toBe(true);
     expect(ALL_MODEL_CREDITS.length).toBeGreaterThanOrEqual(6);
     expect(new Set(ALL_MODEL_CREDITS.map((credit) => credit.url)).size).toBe(ALL_MODEL_CREDITS.length);
     for (const credit of ALL_MODEL_CREDITS) {
@@ -116,6 +117,29 @@ describe("correspondance entre la configuration et la scène 3D", () => {
     expect(CASE_MODELS["4000d-airflow"].tint).toBeUndefined();
     expect(scene()).toMatchObject({ cpuModel: "r5-7600", storageModel: null });
     expect(scene().gpu!.model).toBeNull();
+  });
+
+  it("RTX 5090 FE, T-Force Delta RGB et Freezer 34 : la scène utilise leurs modèles réels", () => {
+    const real = scene({ gpu: "rtx-5090-fe", psu: "rm1000x", ram: "ddr5-32-delta-rgb-black", cooler: "freezer-34-esports-duo" });
+    expect(real.gpu).toMatchObject({ model: "rtx-5090-fe", length: 304, width: 137, thickness: 40 });
+    expect(real.ram).toMatchObject({ model: "ddr5-32-delta-rgb-black", rgb: true });
+    expect(real.cooler).toMatchObject({ kind: "air", model: "freezer-34-esports-duo", height: 157 });
+    expect(scene({ ram: "ddr5-32-delta-rgb-white" }).ram!.model).toBe("ddr5-32-delta-rgb-white");
+    // Un ventirad sans modèle garde sa forme générique.
+    expect(scene({ cooler: "pa120-se" }).cooler).toMatchObject({ kind: "air", model: null });
+  });
+
+  it("chaque barrette réelle est posée en miroir (déterminant négatif), sinon ses inscriptions seraient inversées", () => {
+    for (const [id, model] of Object.entries(RAM_MODELS)) {
+      const [[a, b, c], [d, e, f], [g, h, i]] = model.basis;
+      // Colonnes de la matrice : déterminant d'une base orthonormée, ±1.
+      const determinant = a * (e * i - f * h) - d * (b * i - c * h) + g * (b * f - c * e);
+      expect(determinant, id).toBe(-1);
+      expect(model.unit, id).toBeGreaterThan(0);
+    }
+    // Seules les barrettes RGB déclarent une barre lumineuse.
+    expect(RAM_MODELS["ddr5-32-delta-rgb-black"].glow).toBeDefined();
+    expect(RAM_MODELS["ddr4-32-lpx"].glow).toBeUndefined();
   });
 
   it("reprend l'apparence propre à chaque produit", () => {

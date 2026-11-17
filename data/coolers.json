@@ -169,5 +169,40 @@
     "unconfirmed": [
       "tdpRatingW"
     ]
+  },
+  {
+    "id": "freezer-34-esports-duo",
+    "brand": "Arctic",
+    "name": "Freezer 34 eSports DUO (rouge)",
+    "type": "air",
+    "heightMm": 157,
+    "radiatorMm": null,
+    "sockets": [
+      "AM5",
+      "LGA1700"
+    ],
+    "tdpRatingW": null,
+    "ramClearanceMm": null,
+    "rgb": false,
+    "priceChf": 45,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": "https://www.arctic.de/en/Freezer-34-eSports-DUO/ACFRE00060A",
+    "visual": {
+      "fin": "#1b1c1f",
+      "top": "#b3161c",
+      "fan": "#141518",
+      "fans": 2,
+      "fanSize": 120
+    },
+    "verifiedAt": "2026-11-17",
+    "source": {
+      "label": "ARCTIC — page produit Freezer 34 eSports DUO et fiche technique",
+      "url": "https://www.arctic.de/en/Freezer-34-eSports-DUO/ACFRE00060A"
+    },
+    "unconfirmed": [
+      "tdpRatingW",
+      "visual.fans"
+    ]
   }
 ]

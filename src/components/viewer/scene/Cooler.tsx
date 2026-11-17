@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo } from "react";
-import type * as THREE from "three";
+import * as THREE from "three";
 import type { Build } from "@/lib/build";
 import { ANCHOR, BOARD, frontFanHeights, type CoolerLayout, type Frame } from "../layout";
 import { Glow, Label, Part, Pick, Repeat, useScene, useTint, type Vec3 } from "./context";
 import { box, cylinder, rbox, torus, tube } from "./geometry";
+import { COOLER_MODELS } from "../models";
 import { Fan } from "./Fan";
+import { GltfModel } from "./GltfModel";
 
 const X = BOARD.x;
 const { cpuY, cpuZ } = BOARD;
@@ -126,13 +128,31 @@ export function Cooler({ build }: { build: Build }) {
   const fin = useTint(cooler?.colors?.fin, mat.fin, 0.88, 0.28);
   const top = useTint(cooler?.colors?.top, mat.satin, 0.35, 0.4);
   const fanTint = useTint(cooler?.colors?.fan, mat.plastic, 0.05, 0.55);
+  const model = cooler?.kind === "air" && cooler.model ? COOLER_MODELS[cooler.model] : null;
+  // Modèle réel : hauteur du fichier (y, semelle en bas) en s'éloignant de la carte mère, flux d'air (z) vers l'arrière
+  // du boîtier, à l'échelle de la hauteur du catalogue. Déterminant négatif, comme pour tous les modèles.
+  const matrix = useMemo(() => {
+    if (!model || cooler?.kind !== "air") return null;
+    const k = cooler.height / model.height;
+    const placed = new THREE.Matrix4().makeBasis(new THREE.Vector3(0, k, 0), new THREE.Vector3(k, 0, 0), new THREE.Vector3(0, 0, k));
+    const base = new THREE.Vector3(...model.base).applyMatrix4(placed);
+    return placed.setPosition(X - base.x, cpuY - base.y, cpuZ - base.z);
+  }, [model, cooler]);
   if (!cooler || !build.cooler) return null;
   const skin: Skin = { fin, top, fan: cooler.colors ? fanTint : undefined };
   // Seul un refroidissement réellement RGB s'illumine.
   const lit = cooler.rgb;
   return (
     <Pick category="cooler">
-      {cooler.kind === "air" ? <AirCooler cooler={cooler} lit={lit} skin={skin} /> : <LiquidCooler cooler={cooler} frame={layout.frame} lit={lit} skin={skin} />}
+      {cooler.kind === "air" ? (
+        model && matrix ? (
+          <GltfModel file={model.file} matrix={matrix} fallback={<AirCooler cooler={cooler} lit={lit} skin={skin} />} />
+        ) : (
+          <AirCooler cooler={cooler} lit={lit} skin={skin} />
+        )
+      ) : (
+        <LiquidCooler cooler={cooler} frame={layout.frame} lit={lit} skin={skin} />
+      )}
       <Label
         category="cooler"
         name={build.cooler.name}

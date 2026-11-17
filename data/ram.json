@@ -100,5 +100,56 @@
       "label": "G.Skill — fiche technique F5-6000J3040F16GX2-TZ5RK + FAQ DRAM (hauteur)",
       "url": "https://www.gskill.com/specification/165/374/1649235161/F5-6000J3040F16GX2-TZ5RK-F5-6000J3040F16GA2-TZ5RK-Specification"
     }
+  },
+  {
+    "id": "ddr5-32-delta-rgb-black",
+    "brand": "TeamGroup",
+    "name": "T-Force Delta RGB 32 Go (2×16) DDR5-6000 CL30, noir",
+    "type": "DDR5",
+    "capacityGb": 32,
+    "modules": 2,
+    "speedMhz": 6000,
+    "cl": 30,
+    "heightMm": 46.1,
+    "rgb": true,
+    "priceChf": 230,
+    "priceDate": null,
+    "verified": true,
+    "specUrl": "https://www.teamgroupinc.com/en/product-detail/memory/T-FORCE/delta-rgb-ddr5-black/delta-rgb-ddr5-black-FF3D532G6000HC30DC01/",
+    "visual": {
+      "spreader": "#17181b"
+    },
+    "verifiedAt": "2026-11-17",
+    "source": {
+      "label": "TEAMGROUP — fiche produit T-FORCE DELTA RGB DDR5 noire 32 Go (2×16) 6000 CL30",
+      "url": "https://www.teamgroupinc.com/en/product-detail/memory/T-FORCE/delta-rgb-ddr5-black/delta-rgb-ddr5-black-FF3D532G6000HC30DC01/"
+    }
+  },
+  {
+    "id": "ddr5-32-delta-rgb-white",
+    "brand": "TeamGroup",
+    "name": "T-Force Delta RGB 32 Go (2×16) DDR5-6000 CL30, blanc",
+    "type": "DDR5",
+    "capacityGb": 32,
+    "modules": 2,
+    "speedMhz": 6000,
+    "cl": 30,
+    "heightMm": 46.1,
+    "rgb": true,
+    "priceChf": 230,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": "https://www.teamgroupinc.com/en/product-detail/memory/T-FORCE/delta-rgb-ddr5-white/delta-rgb-ddr5-white-FF4D532G6000HC30DC01/",
+    "visual": {
+      "spreader": "#eceef1"
+    },
+    "verifiedAt": "2026-11-17",
+    "source": {
+      "label": "TEAMGROUP — fiche produit T-FORCE DELTA RGB DDR5 blanche 32 Go (2×16) 6000 CL30",
+      "url": "https://www.teamgroupinc.com/en/product-detail/memory/T-FORCE/delta-rgb-ddr5-white/delta-rgb-ddr5-white-FF4D532G6000HC30DC01/"
+    },
+    "unconfirmed": [
+      "heightMm"
+    ]
   }
 ]

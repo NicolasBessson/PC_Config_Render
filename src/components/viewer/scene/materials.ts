@@ -6,13 +6,47 @@ import { brushedTexture, finsTexture, grainTexture, pcbTexture, perforationTextu
  * Bibliothèque de matériaux d'un style. Une vingtaine de matériaux partagés
  * par toute la scène, au lieu d'un matériau par objet.
  */
-export function createMaterials(palette: StylePalette) {
+const WHITE = new THREE.Color("#ffffff");
+
+/**
+ * Rendu photo : les noirs des palettes renvoient moins de 1 % de la lumière, bien moins qu'un
+ * vrai plastique ou une vraie peinture noire (3 à 5 %). Sans effet en rendu classique, où les
+ * lumières compensent ; en lancer de rayons, l'intérieur resterait noir et les LED n'éclaireraient rien.
+ */
+export function photoAlbedo(color: THREE.Color): THREE.Color {
+  return color.lerp(WHITE, 0.022);
+}
+
+/** Luminance relative d'une couleur linéaire. */
+export function luminance(color: THREE.Color): number {
+  return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
+}
+
+/** Exposition du style blanc : celle pour laquelle une couleur réelle s'affiche telle quelle. */
+const REFERENCE_EXPOSURE = 0.21;
+
+/**
+ * Les styles sombres sont éclairés bien plus fort que le style blanc (`exposure`), comme un
+ * photographe pose plus longtemps devant un boîtier noir. Une pièce claire — ventirad
+ * gris, carte blanche, modèle réel — y serait brûlée. Les teintes moyennes et claires sont
+ * donc ramenées à ce qu'elles donneraient sous l'éclairage de référence ; les noirs gardent
+ * l'essentiel de la surexposition, qui fait ressortir leurs détails. La transition est
+ * continue et l'ordre des clartés conservé. `weight` est la clarté moyenne de la texture.
+ */
+export function exposureSafe(color: THREE.Color, exposure: number, weight = 1): THREE.Color {
+  const boost = exposure / REFERENCE_EXPOSURE;
+  if (boost <= 1) return color;
+  const level = luminance(color) * weight;
+  return color.multiplyScalar((1 + (boost - 1) * Math.exp(-level / 0.06)) / boost);
+}
+
+export function createMaterials(palette: StylePalette, photo = false) {
   const standard = (parameters: THREE.MeshStandardMaterialParameters) => new THREE.MeshStandardMaterial(parameters);
   const light = palette.part === "#f4f5f7";
   // Relief fin : aucune surface réelle n'est parfaitement lisse.
   const grain = { bumpMap: grainTexture(), bumpScale: 0.6 };
   const brushed = { roughnessMap: brushedTexture(), bumpMap: brushedTexture(), bumpScale: 0.35 };
-  return {
+  const materials = {
     /** Tôle peinte du châssis. */
     chassis: standard({ color: palette.chassis, metalness: 0.4, roughness: 0.56, ...grain }),
     /** Tôle perforée : façade, dessus, grilles. */
@@ -23,7 +57,11 @@ export function createMaterials(palette: StylePalette) {
     satin: standard({ color: palette.part, metalness: 0.2, roughness: 0.36, ...grain, bumpScale: 0.3 }),
     rubber: standard({ color: "#08090a", metalness: 0, roughness: 0.95, ...grain }),
     /** Verre trempé : vernis de surface et reflets marqués, comme une vraie vitre teintée. */
-    glass: new THREE.MeshPhysicalMaterial({ color: palette.glass, transparent: true, opacity: palette.glassOpacity, metalness: 0, roughness: 0.02, clearcoat: 1, clearcoatRoughness: 0.02, reflectivity: 0.5, specularIntensity: 1, envMapIntensity: 0.5, depthWrite: false }),
+    glass: photo
+      ? // Rendu photo : un vrai verre, traversé et réfléchi par la lumière. Sa teinte dépend du style (verre fumé ou clair).
+        // Épaisseur nulle : traité comme une lame mince, sans réfraction — un verre épais voile l'intérieur.
+        new THREE.MeshPhysicalMaterial({ color: new THREE.Color().setScalar(Math.sqrt(Math.max(0.12, 1 - palette.glassOpacity * 1.5))), transmission: 1, ior: 1.5, thickness: 0, roughness: 0, metalness: 0 })
+      : new THREE.MeshPhysicalMaterial({ color: palette.glass, transparent: true, opacity: palette.glassOpacity, metalness: 0, roughness: 0.02, clearcoat: 1, clearcoatRoughness: 0.02, reflectivity: 0.5, specularIntensity: 1, envMapIntensity: 0.5, depthWrite: false }),
     pcb: standard({ color: palette.pcb, map: pcbTexture(), bumpMap: pcbTexture(), bumpScale: 0.5, metalness: 0.25, roughness: 0.62 }),
     heatsink: standard({ color: palette.heatsink, metalness: 0.85, roughness: 0.5, ...brushed }),
     fin: standard({ color: palette.fin, metalness: 0.88, roughness: 0.28 }),
@@ -42,6 +80,10 @@ export function createMaterials(palette: StylePalette) {
     gold: standard({ color: "#d4a94a", metalness: 1, roughness: 0.3 }),
     mirror: standard({ color: "#0a0b0d", metalness: 0.9, roughness: 0.05 }),
   };
+  if (photo) {
+    for (const material of Object.values(materials)) if (material !== materials.glass) photoAlbedo(material.color);
+  }
+  return materials;
 }
 
 export type Materials = ReturnType<typeof createMaterials>;

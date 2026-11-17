@@ -50,14 +50,17 @@ export function Gpu({ build }: { build: Build }) {
   }, [gpu]);
 
   const model = gpu?.model ? GPU_MODELS[gpu.model] : null;
-  // Modèle réel : longueur du fichier (z, équerre côté +z) vers l'arrière du boîtier, hauteur (y) en s'éloignant
-  // de la carte mère, épaisseur (x, ventilateurs côté +x) vers le bas. Chaque axe est mis à la cote du catalogue.
+  // Modèle réel : longueur du fichier (z, équerre côté +z) vers l'arrière du boîtier, hauteur en s'éloignant de la
+  // carte mère, épaisseur vers le bas (ventilateurs en dessous). Chaque axe est mis à la cote du catalogue.
   const matrix = useMemo(() => {
     if (!gpu || !model) return null;
     const kl = gpu.length / model.size.length, kh = (gpu.width - 4) / model.size.height, kt = gpu.thickness / model.size.thickness;
-    return new THREE.Matrix4()
-      .makeBasis(new THREE.Vector3(0, -kt, 0), new THREE.Vector3(kh, 0, 0), new THREE.Vector3(0, 0, -kl))
-      .setPosition(BOARD.x + 4 - kh * model.edges.boardY, GPU_TOP + kt * model.edges.backplateX, GPU_BACK + kl * model.edges.bracketZ);
+    const x = BOARD.x + 4 - kh * model.edges.board, z = GPU_BACK + kl * model.edges.bracketZ;
+    const length = new THREE.Vector3(0, 0, -kl);
+    // Dans les deux cas le déterminant est négatif : la scène étant affichée en miroir, le modèle retrouve son sens réel.
+    return model.thicknessAxis === "x"
+      ? new THREE.Matrix4().makeBasis(new THREE.Vector3(0, -kt, 0), new THREE.Vector3(kh, 0, 0), length).setPosition(x, GPU_TOP + kt * model.edges.backplate, z)
+      : new THREE.Matrix4().makeBasis(new THREE.Vector3(kh, 0, 0), new THREE.Vector3(0, kt, 0), length).setPosition(x, GPU_TOP - kt * model.edges.backplate, z);
   }, [gpu, model]);
 
   if (!gpu || !shape || !build.gpu) return null;

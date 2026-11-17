@@ -114,6 +114,24 @@ await test("visualiseur 3D : vues, vitre, fiche au clic et capture", async (page
   expect(await page.getByRole("button", { name: "Retirer la vitre" }).count(), "la réinitialisation doit remettre la vitre");
 });
 
+await test(
+  "rendu photo : le calcul démarre, progresse et s'arrête",
+  async (page) => {
+    await open(page, `/config?b=${BUILD}&style=noir`);
+    await page.waitForSelector("canvas");
+    await page.waitForTimeout(2500);
+    await page.getByRole("button", { name: "Rendu photo" }).click();
+    const status = page.getByRole("status").filter({ hasText: "Rendu photo" });
+    await status.waitFor({ timeout: 5000 });
+    // Sans carte graphique, la préparation (compilation, structure d'accélération) prend plus d'une minute.
+    await status.filter({ hasText: /[1-9]\d* \/ \d+ passes/ }).waitFor({ timeout: 240000 });
+    await page.getByRole("button", { name: "Rendu photo" }).click();
+    expect((await status.count()) === 0, "couper le rendu photo doit retirer l'indicateur d'avancement");
+    expect((await page.locator(".viewer-stage canvas").count()) === 1, "le visualiseur doit rester affiché");
+  },
+  { viewport: { width: 760, height: 700 } },
+);
+
 await test("comparateur : tableau et résumé des écarts", async (page) => {
   const other = "r7-9800x3d.rtx-5080.b650-tomahawk.ddr5-32-tridentz5-rgb.990pro-2tb.rm850x.lf3-360-argb.lancool-216-rgb";
   await open(page, `/comparer?a=${encodeURIComponent(`b=${BUILD}&style=noir`)}&b=${encodeURIComponent(`b=${other}&style=rgb`)}`);

@@ -7,7 +7,7 @@ import { CATEGORY_LABELS, type Category, type Style } from "@/lib/catalog";
 import { describeComponent } from "@/lib/catalog/describe";
 import { checkBuild } from "@/lib/compat";
 import { DEFAULT_VIEW, VIEW_ORDER, VIEWS, type ViewId } from "./camera";
-import type { Quality } from "./PcCanvas";
+import { PHOTO_SAMPLES, type Quality } from "./PcCanvas";
 import { modelCredit } from "./models";
 import { LIGHT_COLORS, STYLE_ORDER, STYLES, type Lighting, type LightMode } from "./styles";
 
@@ -39,6 +39,8 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
   const [showLabels, setShowLabels] = useState(false);
   const [selected, setSelected] = useState<Category | null>(null);
   const [exploded, setExploded] = useState(false);
+  /** Rendu photo : `null` = éteint ; sinon nombre de passes calculées (−1 si indisponible). */
+  const [photo, setPhoto] = useState<number | null>(null);
   const [view, setView] = useState<{ id: ViewId; nonce: number }>({ id: DEFAULT_VIEW, nonce: 0 });
   const touch = useSyncExternalStore(subscribeNever, isTouchDevice, () => false);
   /** Fluidité mesurée insuffisante : on allège, sauf si l'utilisateur a choisi lui-même. */
@@ -59,6 +61,7 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
     goTo(DEFAULT_VIEW);
     setShowPanel(true);
     setExploded(false);
+    setPhoto(null);
   };
 
   return (
@@ -69,6 +72,8 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
         view={view.id} viewNonce={view.nonce} quality={quality}
         onDecline={choice ? undefined : () => setDeclined(true)}
         exploded={exploded}
+        photo={photo !== null}
+        onPhotoProgress={setPhoto}
         selected={toolbar ? selected : null}
         onSelect={toolbar && interactive ? setSelected : undefined}
       />
@@ -76,6 +81,21 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
       <span className="pointer-events-none absolute left-3 top-3 rounded-full border border-line bg-black/50 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-muted backdrop-blur" title="Rendu indicatif : la plupart des modèles 3D sont génériques, aux dimensions du catalogue. Quelques produits ont un modèle réel créé par un tiers, crédité dans leur fiche.">
         Rendu illustratif
       </span>
+      {photo !== null && (
+        <div role="status" className="pointer-events-none absolute left-1/2 top-12 w-64 max-w-[calc(100%-1.5rem)] -translate-x-1/2 rounded-xl border border-line bg-black/70 px-3 py-2 text-center text-[11px] text-ink backdrop-blur sm:top-3">
+          {photo < 0 ? (
+            "Rendu photo indisponible sur cet appareil."
+          ) : (
+            <>
+              <span className="block font-medium">{photo >= PHOTO_SAMPLES ? "Rendu photo terminé" : photo === 0 ? "Rendu photo · préparation…" : `Rendu photo · ${photo} / ${PHOTO_SAMPLES} passes`}</span>
+              <span className="mt-1.5 block h-1 overflow-hidden rounded-full bg-white/10">
+                <span className="block h-full rounded-full bg-accent transition-[width]" style={{ width: `${Math.min(100, (photo / PHOTO_SAMPLES) * 100)}%` }} />
+              </span>
+              <span className="mt-1.5 block text-muted">{photo >= PHOTO_SAMPLES ? "« Capture » enregistre l'image." : "L'image s'affine peu à peu. Déplacer la vue relance le calcul."}</span>
+            </>
+          )}
+        </div>
+      )}
       {toolbar && (
         <>
           <div role="group" aria-label="Vues" className="absolute right-3 top-3 flex gap-0.5 rounded-full border border-line bg-black/60 p-0.5 text-xs backdrop-blur max-sm:top-11">
@@ -90,6 +110,7 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
               <ToolButton active={exploded} onClick={() => { setExploded((v) => !v); goTo(exploded ? DEFAULT_VIEW : "eclatee"); }}>Vue éclatée</ToolButton>
               <ToolButton active={showLabels} onClick={() => setShowLabels((v) => !v)}>Étiquettes</ToolButton>
               <ToolButton onClick={() => setChoice(quality === "high" ? "low" : "high")}>Qualité : {quality === "high" ? "haute" : "légère"}</ToolButton>
+              <ToolButton active={photo !== null} onClick={() => setPhoto((value) => (value === null ? 0 : null))}>Rendu photo</ToolButton>
               <ToolButton onClick={capture}>Capture</ToolButton>
             </div>
           </div>

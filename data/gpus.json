@@ -292,5 +292,40 @@
       "label": "Intel — spécifications produit",
       "url": "https://www.intel.com/content/www/us/en/products/sku/241598/intel-arc-b580-graphics/specifications.html"
     }
+  },
+  {
+    "id": "rtx-5090-fe",
+    "brand": "NVIDIA",
+    "name": "GeForce RTX 5090 Founders Edition 32 Go",
+    "chipset": "GeForce RTX 5090",
+    "vramGb": 32,
+    "powerW": 575,
+    "lengthMm": 304,
+    "slots": 2,
+    "fans": 2,
+    "power": {
+      "connector": "12v-2x6",
+      "count": 1,
+      "adapter8pin": 4
+    },
+    "priceChf": 2000,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": "https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5090/",
+    "visual": {
+      "shroud": "#18191c",
+      "accent": "#8b8f96",
+      "backplate": "#1b1c20",
+      "widthMm": 137
+    },
+    "verifiedAt": "2026-11-17",
+    "source": {
+      "label": "NVIDIA — page produit GeForce RTX 5090 (caractéristiques) et guide de démarrage",
+      "url": "https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5090/"
+    },
+    "unconfirmed": [
+      "fans",
+      "power.connector"
+    ]
   }
 ]

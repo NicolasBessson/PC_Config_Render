@@ -7,7 +7,8 @@ import * as THREE from "three";
 import { CATEGORY_LABELS, type Category } from "@/lib/catalog";
 import type { SceneLayout } from "../layout";
 import type { Lighting, StylePalette } from "../styles";
-import type { Materials } from "./materials";
+import { exposureSafe, photoAlbedo, type Materials } from "./materials";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { brushedTexture, grainTexture } from "./textures";
 
 export interface SceneContext {
@@ -21,6 +22,8 @@ export interface SceneContext {
   onSelect?: (category: Category | null) => void;
   /** Vue éclatée : les composants s'écartent du boîtier. */
   exploded: boolean;
+  /** Rendu photo par lancer de rayons : la scène est figée et les matériaux deviennent physiques. */
+  photo: boolean;
 }
 
 export const Ctx = createContext<SceneContext | null>(null);
@@ -46,8 +49,12 @@ export function glowLevel(lighting: Lighting, time = 0) {
 }
 
 /** Matériau lumineux : fixe, respiration ou cycle de couleurs ; éteint sinon. */
-export function Glow({ on = true, offset = 0, strength = 3.4 }: { on?: boolean; offset?: number; strength?: number }) {
-  const { lighting, animate } = useScene();
+/** En rendu photo, les éléments lumineux éclairent réellement la scène : il leur faut la puissance d'une vraie LED. */
+const PHOTO_GLOW = 6;
+
+export function Glow({ on = true, offset = 0, strength: baseStrength = 3.4 }: { on?: boolean; offset?: number; strength?: number }) {
+  const { lighting, animate, photo } = useScene();
+  const strength = baseStrength * (photo ? PHOTO_GLOW : 1);
   const ref = useRef<THREE.MeshStandardMaterial>(null);
   const time = useRef(0);
   const lit = on && lighting.mode !== "off";
@@ -69,12 +76,17 @@ export function Glow({ on = true, offset = 0, strength = 3.4 }: { on?: boolean; 
 
 /** Matériau à la couleur propre d'un produit ; à défaut, le matériau du style. */
 export function useTint(color: string | null | undefined, fallback: THREE.Material, metalness = 0.3, roughness = 0.5): THREE.Material {
+  const { photo, palette } = useScene();
+  const exposure = palette.exposure;
   const material = useMemo(() => {
     if (!color) return null;
     // Même grain que les matériaux de style ; les pièces métalliques reçoivent un brossage.
     const relief = metalness > 0.6 ? { roughnessMap: brushedTexture(), bumpMap: brushedTexture(), bumpScale: 0.35, roughness: Math.max(roughness, 0.48) } : { bumpMap: grainTexture(), bumpScale: 0.5 };
-    return new THREE.MeshStandardMaterial({ color, metalness, roughness, ...relief });
-  }, [color, metalness, roughness]);
+    const tinted = new THREE.MeshStandardMaterial({ color, metalness, roughness, ...relief });
+    exposureSafe(tinted.color, exposure);
+    if (photo) photoAlbedo(tinted.color);
+    return tinted;
+  }, [color, metalness, roughness, photo, exposure]);
   useEffect(() => () => material?.dispose(), [material]);
   return material ?? fallback;
 }
@@ -86,9 +98,27 @@ export function Part({ g, m, p, r, s, shadow = true }: { g: THREE.BufferGeometry
 
 const dummy = new THREE.Object3D();
 
-/** Répétition d'une même pièce en un seul appel de rendu (ailettes, condensateurs, vis). */
+/**
+ * Répétition d'une même pièce en un seul appel de rendu (ailettes, condensateurs, vis).
+ * Le lancer de rayons ne connaît pas l'instanciation : en rendu photo, les copies sont
+ * donc fusionnées en un maillage ordinaire.
+ */
 export function Repeat({ g, m, items }: { g: THREE.BufferGeometry; m: THREE.Material; items: { p: Vec3; r?: Vec3 }[] }) {
+  const { photo } = useScene();
   const ref = useRef<THREE.InstancedMesh>(null);
+  const merged = useMemo(() => {
+    if (!photo || items.length === 0) return null;
+    const copies = items.map((item) => {
+      dummy.position.set(...item.p);
+      dummy.rotation.set(...(item.r ?? [0, 0, 0]));
+      dummy.updateMatrix();
+      return g.clone().applyMatrix4(dummy.matrix);
+    });
+    const geometry = mergeGeometries(copies);
+    copies.forEach((copy) => copy.dispose());
+    return geometry;
+  }, [photo, g, items]);
+  useEffect(() => () => merged?.dispose(), [merged]);
   useLayoutEffect(() => {
     const mesh = ref.current;
     if (!mesh) return;
@@ -100,7 +130,8 @@ export function Repeat({ g, m, items }: { g: THREE.BufferGeometry; m: THREE.Mate
     });
     mesh.instanceMatrix.needsUpdate = true;
     mesh.computeBoundingSphere();
-  }, [items]);
+  }, [items, merged]);
+  if (merged) return <mesh geometry={merged} material={m} castShadow receiveShadow />;
   return <instancedMesh key={items.length} ref={ref} args={[g, m, items.length]} castShadow receiveShadow />;
 }
 
@@ -145,14 +176,15 @@ const goal = new THREE.Vector3();
 
 /** Rend un composant cliquable, l'entoure d'un cadre lorsqu'il est sélectionné, et l'anime en vue éclatée. */
 export function Pick({ category, children }: { category: Category; children: ReactNode }) {
-  const { selected, onSelect, exploded } = useScene();
+  const { selected, onSelect, exploded, photo } = useScene();
   const group = useRef<THREE.Group>(null);
   const invalidate = useThree((state) => state.invalidate);
   useFrame((_, delta) => {
     const node = group.current;
     if (!node) return;
     goal.set(...EXPLODE_OFFSET[category]).multiplyScalar(exploded ? 1 : 0);
-    if (node.position.distanceToSquared(goal) < 0.01) {
+    // Rendu photo : pas de transition, la scène doit être en place avant d'être figée.
+    if (photo || node.position.distanceToSquared(goal) < 0.01) {
       node.position.copy(goal);
       return;
     }
@@ -184,7 +216,7 @@ export function Pick({ category, children }: { category: Category; children: Rea
       >
         {children}
       </group>
-      {interactive && selected === category && !exploded && <Highlight target={group} />}
+      {interactive && selected === category && !exploded && !photo && <Highlight target={group} />}
     </>
   );
 }
