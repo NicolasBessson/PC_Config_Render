@@ -110,7 +110,8 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
               <ToolButton active={exploded} onClick={() => { setExploded((v) => !v); goTo(exploded ? DEFAULT_VIEW : "eclatee"); }}>Vue éclatée</ToolButton>
               <ToolButton active={showLabels} onClick={() => setShowLabels((v) => !v)}>Étiquettes</ToolButton>
               <ToolButton onClick={() => setChoice(quality === "high" ? "low" : "high")}>Qualité : {quality === "high" ? "haute" : "légère"}</ToolButton>
-              <ToolButton active={photo !== null} onClick={() => setPhoto((value) => (value === null ? 0 : null))}>Rendu photo</ToolButton>
+              {/* Le lancer de rayons demande une vraie carte graphique : il n'est pas proposé sur téléphone ou tablette. */}
+              {!touch && <ToolButton active={photo !== null} onClick={() => setPhoto((value) => (value === null ? 0 : null))}>Rendu photo</ToolButton>}
               <ToolButton onClick={capture}>Capture</ToolButton>
             </div>
           </div>

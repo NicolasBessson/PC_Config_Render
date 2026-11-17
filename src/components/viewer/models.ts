@@ -198,6 +198,31 @@ export const STORAGE_MODELS: Record<string, StorageModel> = {
 };
 
 /**
+ * Ventilateurs de boîtier. L'axe de rotation est l'axe y du fichier, moyeu visible côté +y.
+ * `size` est le côté du cadre dans le fichier, `center` le centre du moyeu. `spin` désigne les
+ * nœuds du rotor (pales, moyeu), qui tournent ; `glow` les matériaux des bandes lumineuses.
+ */
+export interface FanModel extends PartModel {
+  size: number;
+  center: Axis;
+  spin: RegExp;
+  glow?: RegExp;
+}
+const UNI_FAN = { size: 0.905, center: [0.679, 0.12, -1.591] as Axis, spin: /^Object_(4|6|10|14)$/, glow: /^material$/ };
+export const FAN_MODELS: Record<string, FanModel> = {
+  "uni-fan-sl120-black": {
+    file: "/models/lian-li-uni-fan-sl120-black.glb",
+    credit: { title: "Lian Li UNI FAN SL120 RGB BLACK", author: "DIEKO", url: "https://sketchfab.com/3d-models/lian-li-uni-fan-sl120-rgb-black-5abd0d8e89ea4241b7216f4b6d5a2ca4", license: BY },
+    ...UNI_FAN,
+  },
+  "uni-fan-sl120-white": {
+    file: "/models/lian-li-uni-fan-sl120-white.glb",
+    credit: { title: "Lian Li UNI FAN SL120 RGB WHITE", author: "DIEKO", url: "https://sketchfab.com/3d-models/lian-li-uni-fan-sl120-rgb-white-151c28bb1bc9483a92728815cb0628ea", license: BY },
+    ...UNI_FAN,
+  },
+};
+
+/**
  * Cartes mères. Le circuit est à plat dans le fichier : x va de l'arrière vers l'avant du boîtier,
  * z du haut vers le bas, y s'éloigne de la carte. Une carte réelle n'a pas son socket ni ses
  * emplacements là où la carte générique les dessine : la scène lit donc ses repères ici
@@ -240,7 +265,7 @@ export const MOTHERBOARD_MODELS: Record<string, MotherboardModel> = {
   },
 };
 
-const REGISTRIES: Record<string, PartModel>[] = [CASE_MODELS, RAM_MODELS, GPU_MODELS, CPU_MODELS, STORAGE_MODELS, COOLER_MODELS, MOTHERBOARD_MODELS];
+const REGISTRIES: Record<string, PartModel>[] = [CASE_MODELS, RAM_MODELS, GPU_MODELS, CPU_MODELS, STORAGE_MODELS, COOLER_MODELS, MOTHERBOARD_MODELS, FAN_MODELS];
 
 /** Crédit du modèle 3D d'un composant, s'il en a un. */
 export function modelCredit(id: string | null | undefined): ModelCredit | null {

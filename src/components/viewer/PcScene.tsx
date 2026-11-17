@@ -2,15 +2,17 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import type * as THREE from "three";
+import * as THREE from "three";
 import type { Build } from "@/lib/build";
 import type { Category, Style } from "@/lib/catalog";
 import { ANCHOR, frontFanHeights, layoutScene, REAR_FAN } from "./layout";
+import { FAN_MODELS, type FanModel } from "./models";
 import { Cables } from "./scene/Cables";
 import { Chassis } from "./scene/Chassis";
 import { Cooler } from "./scene/Cooler";
 import { Ctx, glowColor, glowLevel, Label, Pick, useScene, useTint } from "./scene/context";
 import { Fan } from "./scene/Fan";
+import { GltfModel } from "./scene/GltfModel";
 import { Gpu } from "./scene/Gpu";
 import { createMaterials, disposeMaterials } from "./scene/materials";
 import { Motherboard } from "./scene/Motherboard";
@@ -49,23 +51,44 @@ function InnerLights() {
   );
 }
 
+/**
+ * Pose un modèle de ventilateur : son axe (y du fichier, moyeu côté +y) est tourné vers la façade
+ * (`front`) ou vers le bas (`down`), son moyeu amené sur `position`, à l'échelle du catalogue.
+ * Déterminant négatif, comme tous les modèles.
+ */
+function fanMatrix(model: FanModel, position: [number, number, number], size: number, facing: "front" | "down") {
+  const k = size / model.size;
+  const matrix =
+    facing === "front"
+      ? new THREE.Matrix4().makeBasis(new THREE.Vector3(k, 0, 0), new THREE.Vector3(0, 0, k), new THREE.Vector3(0, k, 0))
+      : new THREE.Matrix4().makeBasis(new THREE.Vector3(k, 0, 0), new THREE.Vector3(0, -k, 0), new THREE.Vector3(0, 0, k));
+  const center = new THREE.Vector3(...model.center).applyMatrix4(matrix);
+  return matrix.setPosition(position[0] - center.x, position[1] - center.y, position[2] - center.z);
+}
+
 /** Ventilateurs supplémentaires : en façade à la suite de ceux du boîtier, puis sous le dessus. */
 function ExtraFans({ build }: { build: Build }) {
   const { layout, mat } = useScene();
   const extra = layout.extraFans;
   const tint = useTint(extra?.color, mat.plastic, 0.05, 0.55);
+  const model = extra?.model ? FAN_MODELS[extra.model] : null;
+  const spin = useMemo(() => (model ? { match: model.spin, center: model.center, axis: "y" as const } : undefined), [model]);
   if (!extra || !build.fans || extra.front + extra.top === 0) return null;
   const { frame, fans } = layout;
   const frontY = frontFanHeights(fans.front + extra.front, extra.size).slice(fans.front);
   const topZ = Array.from({ length: extra.top }, (_, i) => -196 + extra.size / 2 + i * (extra.size + 2));
   return (
     <Pick category="fans">
-      {frontY.map((y, i) => (
-        <Fan key={`f${y}`} position={[frame.cx, y, frame.frontFanZ]} axis="z" size={extra.size} lit={extra.rgb} offset={0.2 + i * 0.1} material={tint} />
-      ))}
-      {topZ.map((z, i) => (
-        <Fan key={`t${z}`} position={[30, ANCHOR.top - 17, z]} axis="-y" size={extra.size} lit={extra.rgb} offset={0.4 + i * 0.1} material={tint} />
-      ))}
+      {frontY.map((y, i) => {
+        const generic = <Fan key={`f${y}`} position={[frame.cx, y, frame.frontFanZ]} axis="z" size={extra.size} lit={extra.rgb} offset={0.2 + i * 0.1} material={tint} />;
+        if (!model) return generic;
+        return <GltfModel key={`f${y}`} file={model.file} matrix={fanMatrix(model, [frame.cx, y, frame.frontFanZ], extra.size, "front")} glow={extra.rgb ? model.glow : undefined} glowOffset={0.2 + i * 0.1} spin={spin} fallback={generic} />;
+      })}
+      {topZ.map((z, i) => {
+        const generic = <Fan key={`t${z}`} position={[30, ANCHOR.top - 17, z]} axis="-y" size={extra.size} lit={extra.rgb} offset={0.4 + i * 0.1} material={tint} />;
+        if (!model) return generic;
+        return <GltfModel key={`t${z}`} file={model.file} matrix={fanMatrix(model, [30, ANCHOR.top - 17, z], extra.size, "down")} glow={extra.rgb ? model.glow : undefined} glowOffset={0.4 + i * 0.1} spin={spin} fallback={generic} />;
+      })}
       <Label category="fans" name={`${extra.front + extra.top} × ${build.fans.name}`} position={extra.top > 0 ? [30, ANCHOR.top - 40, topZ[0]] : [frame.cx, frontY[0], frame.frontFanZ - 30]} />
     </Pick>
   );

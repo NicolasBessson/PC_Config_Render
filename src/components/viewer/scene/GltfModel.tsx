@@ -1,6 +1,7 @@
 "use client";
 
-import { Component, Suspense, useEffect, useMemo, type ReactNode } from "react";
+import { Component, Suspense, useEffect, useMemo, useRef, type ReactNode } from "react";
+import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { clone as cloneWithSkeletons } from "three/examples/jsm/utils/SkeletonUtils.js";
@@ -87,6 +88,16 @@ const INTERIOR_LIGHT = 3;
 /** Puissance maximale des éléments lumineux d'un modèle (logo, voyants) : visibles, sans éblouir. */
 const MAX_EMISSIVE = 1.3;
 
+/** Partie tournante d'un modèle (rotor de ventilateur) : nœuds concernés, centre et axe dans le fichier. */
+export interface Spin {
+  match: RegExp;
+  center: [number, number, number];
+  axis: "x" | "y" | "z";
+  speed?: number;
+}
+
+const PIVOT = "__pivot";
+
 interface LoadedProps {
   file: string;
   matrix: THREE.Matrix4;
@@ -95,13 +106,15 @@ interface LoadedProps {
   glow?: RegExp;
   glowOffset: number;
   tune?: MaterialTune[];
+  spin?: Spin;
   photo: boolean;
   /** Exposition du style : les matériaux clairs du modèle y sont adaptés. */
   exposure: number;
   interior: boolean;
 }
 
-function Loaded({ file, matrix, hide, tint, glow, glowOffset, tune, photo, exposure, interior }: LoadedProps) {
+function Loaded({ file, matrix, hide, tint, glow, glowOffset, tune, spin, photo, exposure, interior }: LoadedProps) {
+  const { animate } = useScene();
   // Pas de décodeur Draco : il serait téléchargé depuis un serveur externe.
   const { scene } = useGLTF(file, false);
   const object = useMemo(() => {
@@ -160,8 +173,29 @@ function Loaded({ file, matrix, hide, tint, glow, glowOffset, tune, photo, expos
       mesh.geometry = plainGeometry(mesh.geometry);
       mesh.material = adapt(mesh.material as THREE.MeshStandardMaterial);
     });
+    // Rotor : ses nœuds sont rattachés à un pivot placé sur l'axe, sans changer leur position.
+    if (spin) {
+      copy.updateMatrixWorld(true);
+      const pivot = new THREE.Group();
+      pivot.name = PIVOT;
+      pivot.position.set(...spin.center);
+      copy.add(pivot);
+      pivot.updateMatrixWorld(true);
+      const moving: THREE.Object3D[] = [];
+      copy.traverse((node) => {
+        if ((node as THREE.Mesh).isMesh && spin.match.test(node.name)) moving.push(node);
+      });
+      for (const node of moving) pivot.attach(node);
+    }
     return copy;
-  }, [scene, tint, tune, photo, exposure, interior]);
+  }, [scene, tint, tune, spin, photo, exposure, interior]);
+  const pivot = useRef<THREE.Object3D | null>(null);
+  useEffect(() => {
+    pivot.current = object.getObjectByName(PIVOT) ?? null;
+  }, [object]);
+  useFrame((_, delta) => {
+    if (animate && spin && pivot.current) pivot.current.rotation[spin.axis] -= delta * (spin.speed ?? 5);
+  });
   // Les matériaux adaptés appartiennent à cette copie : ils sont libérés avec elle.
   useEffect(
     () => () => {
@@ -227,6 +261,7 @@ export function GltfModel({
   glow,
   glowOffset = 0,
   tune,
+  spin,
   interior = true,
   fallback = null,
 }: {
@@ -237,6 +272,7 @@ export function GltfModel({
   glow?: RegExp;
   glowOffset?: number;
   tune?: MaterialTune[];
+  spin?: Spin;
   /** Pièce montée dans le boîtier (par défaut) ; `false` pour le boîtier lui-même. */
   interior?: boolean;
   fallback?: ReactNode;
@@ -245,7 +281,7 @@ export function GltfModel({
   return (
     <ModelBoundary fallback={fallback}>
       <Suspense fallback={fallback}>
-        <Loaded file={file} matrix={matrix} hide={hide} tint={tint} glow={glow} glowOffset={glowOffset} tune={tune} photo={photo} exposure={palette.exposure} interior={interior} />
+        <Loaded file={file} matrix={matrix} hide={hide} tint={tint} glow={glow} glowOffset={glowOffset} tune={tune} spin={spin} photo={photo} exposure={palette.exposure} interior={interior} />
       </Suspense>
     </ModelBoundary>
   );

@@ -78,5 +78,51 @@
       "label": "Noctua — spécifications",
       "url": "https://www.noctua.at/en/products/nf-a12x25-pwm-chromax-black-swap/specifications"
     }
+  },
+  {
+    "id": "uni-fan-sl120-black",
+    "brand": "Lian Li",
+    "name": "UNI FAN SL120 A-RGB 120 mm, noir",
+    "sizeMm": 120,
+    "rgb": true,
+    "connector": "PWM 4 broches + A-RGB 3 broches, par module de câble UNI FAN",
+    "priceChf": 28,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": "https://lian-li.com/product/uni-fan-sl/",
+    "visual": {
+      "frame": "#141518"
+    },
+    "verifiedAt": "2026-11-17",
+    "source": {
+      "label": "Lian Li — page produit UNI FAN SL120 / SL140",
+      "url": "https://lian-li.com/product/uni-fan-sl/"
+    },
+    "unconfirmed": [
+      "connector"
+    ]
+  },
+  {
+    "id": "uni-fan-sl120-white",
+    "brand": "Lian Li",
+    "name": "UNI FAN SL120 A-RGB 120 mm, blanc",
+    "sizeMm": 120,
+    "rgb": true,
+    "connector": "PWM 4 broches + A-RGB 3 broches, par module de câble UNI FAN",
+    "priceChf": 28,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": "https://lian-li.com/product/uni-fan-sl/",
+    "visual": {
+      "frame": "#eceef1"
+    },
+    "verifiedAt": "2026-11-17",
+    "source": {
+      "label": "Lian Li — page produit UNI FAN SL120 / SL140",
+      "url": "https://lian-li.com/product/uni-fan-sl/"
+    },
+    "unconfirmed": [
+      "connector"
+    ]
   }
 ]

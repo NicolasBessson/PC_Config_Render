@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { resolveBuild, type BuildIds } from "@/lib/build";
 import { catalog } from "@/lib/catalog";
 import { ANCHOR, BOARD, CASE, frameFor, frontFanHeights, GENERIC_ANCHORS, GPU_TOP, layoutScene } from "./layout";
-import { ALL_MODEL_CREDITS, CASE_MODELS, COOLER_MODELS, CPU_MODELS, GPU_MODELS, modelCredit, MOTHERBOARD_MODELS, RAM_MODELS, STORAGE_MODELS } from "./models";
+import { ALL_MODEL_CREDITS, CASE_MODELS, COOLER_MODELS, CPU_MODELS, FAN_MODELS, GPU_MODELS, modelCredit, MOTHERBOARD_MODELS, RAM_MODELS, STORAGE_MODELS } from "./models";
 
 const BASE: BuildIds = {
   cpu: "r5-7600", gpu: "rtx-5070", motherboard: "b650-tomahawk", ram: "ddr5-32-vengeance",
@@ -96,6 +96,7 @@ describe("correspondance entre la configuration et la scène 3D", () => {
     for (const id of Object.keys(CPU_MODELS)) expect(catalog.cpu.some((c) => c.id === id), id).toBe(true);
     for (const id of Object.keys(STORAGE_MODELS)) expect(catalog.storage.some((c) => c.id === id), id).toBe(true);
     for (const id of Object.keys(COOLER_MODELS)) expect(catalog.cooler.some((c) => c.id === id), id).toBe(true);
+    for (const id of Object.keys(FAN_MODELS)) expect(catalog.fans.some((f) => f.id === id), id).toBe(true);
     expect(ALL_MODEL_CREDITS.length).toBeGreaterThanOrEqual(6);
     expect(new Set(ALL_MODEL_CREDITS.map((credit) => credit.url)).size).toBe(ALL_MODEL_CREDITS.length);
     for (const credit of ALL_MODEL_CREDITS) {
@@ -160,6 +161,18 @@ describe("correspondance entre la configuration et la scène 3D", () => {
     expect(Math.abs(slotY - (GPU_TOP - 3))).toBeLessThan(6);
     expect(modelCredit("b550-aorus-elite-v2")?.author).toBe("exitmonad");
     for (const id of Object.keys(MOTHERBOARD_MODELS)) expect(catalog.motherboard.some((m) => m.id === id), id).toBe(true);
+  });
+
+  it("ventilateurs supplémentaires réels : le modèle n'est utilisé que pour le produit qui en a un", () => {
+    const real = scene({ fans: "uni-fan-sl120-black", fanCount: 3 });
+    expect(real.extraFans).toMatchObject({ model: "uni-fan-sl120-black", rgb: true, size: 120 });
+    expect(real.extraFans!.front + real.extraFans!.top).toBe(3);
+    expect(scene({ fans: "arctic-p12-argb", fanCount: 2 }).extraFans!.model).toBeNull();
+    expect(scene().extraFans).toBeNull();
+    // Le rotor et les bandes lumineuses du fichier sont désignés pour l'animation et l'éclairage.
+    expect(FAN_MODELS["uni-fan-sl120-white"].spin.test("Object_10")).toBe(true);
+    expect(FAN_MODELS["uni-fan-sl120-white"].spin.test("Object_16")).toBe(false);
+    expect(FAN_MODELS["uni-fan-sl120-white"].glow?.test("material")).toBe(true);
   });
 
   it("chaque barrette réelle est posée en miroir (déterminant négatif), sinon ses inscriptions seraient inversées", () => {

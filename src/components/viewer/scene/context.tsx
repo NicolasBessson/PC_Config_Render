@@ -7,7 +7,7 @@ import * as THREE from "three";
 import { CATEGORY_LABELS, type Category } from "@/lib/catalog";
 import type { SceneLayout } from "../layout";
 import type { Lighting, StylePalette } from "../styles";
-import { exposureSafe, photoAlbedo, type Materials } from "./materials";
+import { exposureSafe, photoAlbedo, plasticSpecular, type Materials } from "./materials";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { brushedTexture, grainTexture } from "./textures";
 
@@ -82,7 +82,8 @@ export function useTint(color: string | null | undefined, fallback: THREE.Materi
     if (!color) return null;
     // Même grain que les matériaux de style ; les pièces métalliques reçoivent un brossage.
     const relief = metalness > 0.6 ? { roughnessMap: brushedTexture(), bumpMap: brushedTexture(), bumpScale: 0.35, roughness: Math.max(roughness, 0.48) } : { bumpMap: grainTexture(), bumpScale: 0.5 };
-    const tinted = new THREE.MeshStandardMaterial({ color, metalness, roughness, ...relief });
+    // Une pièce non métallique reçoit les mêmes reflets atténués que les plastiques du style.
+    const tinted = metalness > 0.6 ? new THREE.MeshStandardMaterial({ color, metalness, roughness, ...relief }) : new THREE.MeshPhysicalMaterial({ color, metalness, roughness, ...relief, specularIntensity: plasticSpecular(exposure, photo) });
     exposureSafe(tinted.color, exposure);
     if (photo) photoAlbedo(tinted.color);
     return tinted;

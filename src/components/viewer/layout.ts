@@ -1,6 +1,6 @@
 import { fanCountOf, type Build } from "@/lib/build";
 import type { Style } from "@/lib/catalog";
-import { CASE_MODELS, COOLER_MODELS, CPU_MODELS, GPU_MODELS, MOTHERBOARD_MODELS, RAM_MODELS, STORAGE_MODELS, type MotherboardModel } from "./models";
+import { CASE_MODELS, COOLER_MODELS, CPU_MODELS, FAN_MODELS, GPU_MODELS, MOTHERBOARD_MODELS, RAM_MODELS, STORAGE_MODELS, type MotherboardModel } from "./models";
 
 /*
  * Description de la scène 3D, déduite de la configuration.
@@ -175,7 +175,7 @@ export interface SceneLayout {
   /** Ventilateurs de boîtier, hors refroidissement du processeur. `rgb: null` = selon le style. */
   fans: { front: number; frontSize: number; rear: number; rearSize: number; rgb: boolean | null };
   /** Ventilateurs supplémentaires choisis : d'abord en façade sous ceux du boîtier, puis en haut. */
-  extraFans: { front: number; top: number; size: 120 | 140; rgb: boolean; color: string | null } | null;
+  extraFans: { front: number; top: number; size: 120 | 140; rgb: boolean; color: string | null; /** Identifiant du modèle 3D réel, s'il en existe un. */ model: string | null } | null;
   cables: { atx24: boolean; eps: boolean; gpu: number };
 }
 
@@ -251,7 +251,7 @@ export function layoutScene(build: Build, style: Style): SceneLayout {
     const topFree = topTaken ? 0 : slots ? slots.top[String(size) as "120" | "140"] : 2;
     const count = fanCountOf(build);
     const front = Math.min(count, frontFree);
-    extraFans = { front, top: Math.min(count - front, topFree), size, rgb: build.fans.rgb, color: build.fans.visual?.frame ?? null };
+    extraFans = { front, top: Math.min(count - front, topFree), size, rgb: build.fans.rgb, color: build.fans.visual?.frame ?? null, model: FAN_MODELS[build.fans.id] ? build.fans.id : null };
   }
 
   return {

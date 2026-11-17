@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
-import { exposureSafe, luminance, photoAlbedo } from "./materials";
+import { exposureSafe, luminance, photoAlbedo, plasticSpecular } from "./materials";
 
 const grey = (level: number) => new THREE.Color().setScalar(level);
 
@@ -48,5 +48,15 @@ describe("continuité de l'adaptation", () => {
         previous = shown;
       }
     }
+  });
+});
+
+describe("reflets des plastiques", () => {
+  it("restent entiers dans le style blanc et en rendu photo, sont atténués dans les styles sombres", () => {
+    expect(plasticSpecular(0.21)).toBe(1);
+    expect(plasticSpecular(1.15, true)).toBe(1);
+    expect(plasticSpecular(1.15)).toBeGreaterThan(0.25);
+    expect(plasticSpecular(1.15)).toBeLessThan(0.4);
+    expect(plasticSpecular(1)).toBeGreaterThan(plasticSpecular(1.15));
   });
 });

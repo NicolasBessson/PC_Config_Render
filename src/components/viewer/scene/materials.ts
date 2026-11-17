@@ -40,8 +40,20 @@ export function exposureSafe(color: THREE.Color, exposure: number, weight = 1): 
   return color.multiplyScalar((1 + (boost - 1) * Math.exp(-level / 0.06)) / boost);
 }
 
+/**
+ * Force des reflets des matières non métalliques. Dans un style sombre, l'éclairage plus fort y
+ * allume un reflet du studio qui fait paraître gris clair un plastique noir : les reflets sont
+ * atténués d'autant. En rendu photo la lumière est simulée, rien n'est à corriger.
+ */
+export function plasticSpecular(exposure: number, photo = false): number {
+  return photo ? 1 : Math.min(1, (1.7 * REFERENCE_EXPOSURE) / exposure);
+}
+
 export function createMaterials(palette: StylePalette, photo = false) {
   const standard = (parameters: THREE.MeshStandardMaterialParameters) => new THREE.MeshStandardMaterial(parameters);
+  // Plastiques, caoutchouc, gaines : reflets adaptés à l'exposition du style (voir `plasticSpecular`).
+  const specularIntensity = plasticSpecular(palette.exposure, photo);
+  const plasticLike = (parameters: THREE.MeshStandardMaterialParameters) => new THREE.MeshPhysicalMaterial({ ...parameters, specularIntensity });
   const light = palette.part === "#f4f5f7";
   // Relief fin : aucune surface réelle n'est parfaitement lisse.
   const grain = { bumpMap: grainTexture(), bumpScale: 0.6 };
@@ -52,10 +64,10 @@ export function createMaterials(palette: StylePalette, photo = false) {
     /** Tôle perforée : façade, dessus, grilles. */
     mesh: standard({ color: palette.chassis, metalness: 0.6, roughness: 0.42, alphaMap: perforationTexture(), alphaTest: 0.5, side: THREE.DoubleSide }),
     /** Plastique mat : carénages, cadres de ventilateur. */
-    plastic: standard({ color: palette.part, metalness: 0.02, roughness: 0.62, ...grain }),
+    plastic: plasticLike({ color: palette.part, metalness: 0.02, roughness: 0.62, ...grain }),
     /** Plastique satiné : caches, capots. */
-    satin: standard({ color: palette.part, metalness: 0.2, roughness: 0.36, ...grain, bumpScale: 0.3 }),
-    rubber: standard({ color: "#08090a", metalness: 0, roughness: 0.95, ...grain }),
+    satin: plasticLike({ color: palette.part, metalness: 0.2, roughness: 0.36, ...grain, bumpScale: 0.3 }),
+    rubber: plasticLike({ color: "#08090a", metalness: 0, roughness: 0.95, ...grain }),
     /** Verre trempé : vernis de surface et reflets marqués, comme une vraie vitre teintée. */
     glass: photo
       ? // Rendu photo : un vrai verre, traversé et réfléchi par la lumière. Sa teinte dépend du style (verre fumé ou clair).
@@ -69,14 +81,14 @@ export function createMaterials(palette: StylePalette, photo = false) {
     steel: standard({ color: "#9a9ea6", metalness: 0.92, roughness: 0.5, ...brushed }),
     nickel: standard({ color: "#cfd3d9", metalness: 1, roughness: 0.16 }),
     /** Noir satiné : ports, connecteurs, emplacements. */
-    dark: standard({ color: "#0c0d10", metalness: 0.3, roughness: 0.55 }),
-    slot: standard({ color: light ? "#3a3f47" : "#1c1e23", metalness: 0.2, roughness: 0.6 }),
-    cable: standard({ color: palette.cable, metalness: 0, roughness: 0.82, ...grain, bumpScale: 1.2 }),
-    blade: standard({ color: palette.blade, metalness: 0.05, roughness: 0.42 }),
+    dark: plasticLike({ color: "#0c0d10", metalness: 0.3, roughness: 0.55 }),
+    slot: plasticLike({ color: light ? "#3a3f47" : "#1c1e23", metalness: 0.2, roughness: 0.6 }),
+    cable: plasticLike({ color: palette.cable, metalness: 0, roughness: 0.82, ...grain, bumpScale: 1.2 }),
+    blade: plasticLike({ color: palette.blade, metalness: 0.05, roughness: 0.42 }),
     /** Pales translucides des ventilateurs lumineux. */
     bladeLit: standard({ color: "#f1f3f6", metalness: 0, roughness: 0.35, transparent: true, opacity: 0.6 }),
     radiator: standard({ color: light ? "#e1e4e8" : "#17181c", map: finsTexture(), metalness: 0.5, roughness: 0.55 }),
-    tank: standard({ color: light ? "#eceef1" : "#111215", metalness: 0.35, roughness: 0.5, ...grain }),
+    tank: plasticLike({ color: light ? "#eceef1" : "#111215", metalness: 0.35, roughness: 0.5, ...grain }),
     gold: standard({ color: "#d4a94a", metalness: 1, roughness: 0.3 }),
     mirror: standard({ color: "#0a0b0d", metalness: 0.9, roughness: 0.05 }),
   };
