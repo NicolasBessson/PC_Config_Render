@@ -34,6 +34,7 @@ function ribbon(path: Vec3[], wires: number, axis: "y" | "z", pitch = 4.2, radiu
         }) as Vec3[],
         radius,
         6,
+        7, // un motif de tressage tous les 7 mm
       ),
     );
   }

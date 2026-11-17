@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import type { StylePalette } from "../styles";
-import { brushedTexture, finsTexture, grainTexture, pcbTexture, perforationTexture } from "./textures";
+import { braidNormal, brushedNormal, brushedTexture, finsTexture, grainNormal, pcbNormal, pcbTexture, perforationTexture } from "./textures";
 
 /*
  * Bibliothèque de matériaux d'un style. Une vingtaine de matériaux partagés
@@ -56,8 +56,10 @@ export function createMaterials(palette: StylePalette, photo = false) {
   const plasticLike = (parameters: THREE.MeshStandardMaterialParameters) => new THREE.MeshPhysicalMaterial({ ...parameters, specularIntensity });
   const light = palette.part === "#f4f5f7";
   // Relief fin : aucune surface réelle n'est parfaitement lisse.
-  const grain = { bumpMap: grainTexture(), bumpScale: 0.6 };
-  const brushed = { roughnessMap: brushedTexture(), bumpMap: brushedTexture(), bumpScale: 0.35 };
+  // Cartes de normales plutôt que simple relief : le lancer de rayons du rendu photo ne connaît que les premières.
+  const relief = (strength: number) => new THREE.Vector2(strength, strength);
+  const grain = { normalMap: grainNormal(), normalScale: relief(0.22) };
+  const brushed = { roughnessMap: brushedTexture(), normalMap: brushedNormal(), normalScale: relief(0.16) };
   const materials = {
     /** Tôle peinte du châssis. */
     chassis: standard({ color: palette.chassis, metalness: 0.4, roughness: 0.56, ...grain }),
@@ -66,7 +68,7 @@ export function createMaterials(palette: StylePalette, photo = false) {
     /** Plastique mat : carénages, cadres de ventilateur. */
     plastic: plasticLike({ color: palette.part, metalness: 0.02, roughness: 0.62, ...grain }),
     /** Plastique satiné : caches, capots. */
-    satin: plasticLike({ color: palette.part, metalness: 0.2, roughness: 0.36, ...grain, bumpScale: 0.3 }),
+    satin: plasticLike({ color: palette.part, metalness: 0.2, roughness: 0.36, ...grain, normalScale: relief(0.11) }),
     rubber: plasticLike({ color: "#08090a", metalness: 0, roughness: 0.95, ...grain }),
     /** Verre trempé : vernis de surface et reflets marqués, comme une vraie vitre teintée. */
     glass: photo
@@ -74,7 +76,7 @@ export function createMaterials(palette: StylePalette, photo = false) {
         // Épaisseur nulle : traité comme une lame mince, sans réfraction — un verre épais voile l'intérieur.
         new THREE.MeshPhysicalMaterial({ color: new THREE.Color().setScalar(Math.sqrt(Math.max(0.12, 1 - palette.glassOpacity * 1.5))), transmission: 1, ior: 1.5, thickness: 0, roughness: 0, metalness: 0 })
       : new THREE.MeshPhysicalMaterial({ color: palette.glass, transparent: true, opacity: palette.glassOpacity, metalness: 0, roughness: 0.02, clearcoat: 1, clearcoatRoughness: 0.02, reflectivity: 0.5, specularIntensity: 1, envMapIntensity: 0.5, depthWrite: false }),
-    pcb: standard({ color: palette.pcb, map: pcbTexture(), bumpMap: pcbTexture(), bumpScale: 0.5, metalness: 0.25, roughness: 0.62 }),
+    pcb: standard({ color: palette.pcb, map: pcbTexture(), normalMap: pcbNormal(), normalScale: relief(0.35), metalness: 0.25, roughness: 0.62 }),
     heatsink: standard({ color: palette.heatsink, metalness: 0.85, roughness: 0.5, ...brushed }),
     fin: standard({ color: palette.fin, metalness: 0.88, roughness: 0.28 }),
     /** Acier brut : équerres, caches d'emplacements, vis. */
@@ -83,7 +85,8 @@ export function createMaterials(palette: StylePalette, photo = false) {
     /** Noir satiné : ports, connecteurs, emplacements. */
     dark: plasticLike({ color: "#0c0d10", metalness: 0.3, roughness: 0.55 }),
     slot: plasticLike({ color: light ? "#3a3f47" : "#1c1e23", metalness: 0.2, roughness: 0.6 }),
-    cable: plasticLike({ color: palette.cable, metalness: 0, roughness: 0.82, ...grain, bumpScale: 1.2 }),
+    /** Gaine tressée : le relief des brins croisés accroche la lumière. */
+    cable: plasticLike({ color: palette.cable, metalness: 0, roughness: 0.82, normalMap: braidNormal(), normalScale: relief(0.9) }),
     blade: plasticLike({ color: palette.blade, metalness: 0.05, roughness: 0.42 }),
     /** Pales translucides des ventilateurs lumineux. */
     bladeLit: standard({ color: "#f1f3f6", metalness: 0, roughness: 0.35, transparent: true, opacity: 0.6 }),

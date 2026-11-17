@@ -56,6 +56,87 @@ export function brushedTexture() {
   return texture;
 }
 
+/**
+ * Carte de normales calculée à partir d'une carte de hauteur (clair = en relief). Contrairement à un
+ * simple relief (« bump »), elle est comprise par le lancer de rayons : le grain d'un plastique ou le
+ * brossage d'un métal se voient aussi en rendu photo. Les bords se raccordent : la carte se répète.
+ */
+function normalFrom(key: string, height: THREE.Texture, strength: number): THREE.Texture {
+  let texture = cache.get(key);
+  if (!texture) {
+    const source = height.image as HTMLCanvasElement;
+    const { width, height: rows } = source;
+    const levels = source.getContext("2d")!.getImageData(0, 0, width, rows).data;
+    const at = (x: number, y: number) => levels[(((y + rows) % rows) * width + ((x + width) % width)) * 4] / 255;
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = rows;
+    const context = canvas.getContext("2d")!;
+    const image = context.createImageData(width, rows);
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < width; x++) {
+        // Pente dans les deux directions (filtre de Sobel), puis vecteur normal ramené à l'unité.
+        const dx = (at(x + 1, y - 1) + 2 * at(x + 1, y) + at(x + 1, y + 1) - at(x - 1, y - 1) - 2 * at(x - 1, y) - at(x - 1, y + 1)) * strength;
+        const dy = (at(x - 1, y + 1) + 2 * at(x, y + 1) + at(x + 1, y + 1) - at(x - 1, y - 1) - 2 * at(x, y - 1) - at(x + 1, y - 1)) * strength;
+        const length = Math.hypot(dx, dy, 1);
+        const i = (y * width + x) * 4;
+        image.data[i] = Math.round((-dx / length) * 127.5 + 127.5);
+        image.data[i + 1] = Math.round((dy / length) * 127.5 + 127.5);
+        image.data[i + 2] = Math.round((1 / length) * 127.5 + 127.5);
+        image.data[i + 3] = 255;
+      }
+    }
+    context.putImageData(image, 0, 0);
+    texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.NoColorSpace;
+    texture.wrapS = height.wrapS;
+    texture.wrapT = height.wrapT;
+    texture.repeat.copy(height.repeat);
+    texture.anisotropy = 8;
+    cache.set(key, texture);
+  }
+  return texture;
+}
+
+/** Relief du grain des plastiques et de la peinture. */
+export function grainNormal() {
+  return normalFrom("grain-normal", grainTexture(), 1.2);
+}
+
+/** Relief des stries d'un métal brossé. */
+export function brushedNormal() {
+  return normalFrom("brushed-normal", brushedTexture(), 1.6);
+}
+
+/** Relief des pistes et des composants d'un circuit imprimé. */
+export function pcbNormal() {
+  return normalFrom("pcb-normal", pcbTexture(), 2);
+}
+
+/** Gaine tressée des câbles : deux nappes de brins croisés en diagonale. */
+function braidTexture() {
+  const texture = make("braid", 64, 64, (ctx) => {
+    const image = ctx.createImageData(64, 64);
+    for (let y = 0; y < 64; y++) {
+      for (let x = 0; x < 64; x++) {
+        const u = x / 64, v = y / 64;
+        // Chaque brin est un bourrelet ; là où deux brins se croisent, celui du dessus l'emporte.
+        const over = Math.sin(Math.PI * 4 * (u + v)) ** 2, under = Math.sin(Math.PI * 4 * (u - v)) ** 2;
+        const level = Math.round(255 * Math.max(over, under * 0.82));
+        const i = (y * 64 + x) * 4;
+        image.data[i] = image.data[i + 1] = image.data[i + 2] = level;
+        image.data[i + 3] = 255;
+      }
+    }
+    ctx.putImageData(image, 0, 0);
+  }, true, false);
+  texture.repeat.set(1, 2);
+  return texture;
+}
+export function braidNormal() {
+  return normalFrom("braid-normal", braidTexture(), 1.4);
+}
+
 /** Tôle perforée en nid d'abeille : blanc = matière, noir = trou. */
 export function perforationTexture() {
   return make("perforation", 64, 112, (ctx) => {

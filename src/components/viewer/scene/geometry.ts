@@ -155,7 +155,16 @@ export function ramSpreader(height: number): THREE.BufferGeometry {
 }
 
 /** Tube souple passant par une série de points : câbles et tuyaux. */
-export function tube(points: [number, number, number][], radius: number, radialSegments = 10): THREE.TubeGeometry {
+/**
+ * Tube le long d'une courbe. `patternMm` : longueur d'un motif de texture le long du tube ; la texture se
+ * répète alors à pas constant, quelle que soit la longueur (gaine tressée des câbles).
+ */
+export function tube(points: [number, number, number][], radius: number, radialSegments = 10, patternMm?: number): THREE.TubeGeometry {
   const curve = new THREE.CatmullRomCurve3(points.map((p) => new THREE.Vector3(...p)), false, "catmullrom", 0.5);
-  return new THREE.TubeGeometry(curve, 36, radius, radialSegments, false);
+  const geometry = new THREE.TubeGeometry(curve, 36, radius, radialSegments, false);
+  if (patternMm) {
+    const uv = geometry.attributes.uv, repeats = curve.getLength() / patternMm;
+    for (let i = 0; i < uv.count; i++) uv.setX(i, uv.getX(i) * repeats);
+  }
+  return geometry;
 }
