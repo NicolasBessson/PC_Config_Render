@@ -178,7 +178,7 @@ export function Chassis(props: { build: Build; style: Style; showPanel: boolean 
   const f = layout.frame;
   return (
     <Pick category="case">
-      <GltfModel file={model.file} matrix={matrix} hide={props.showPanel ? undefined : GLASS} tint={model.tint} fallback={null} />
+      <GltfModel file={model.file} matrix={matrix} hide={props.showPanel ? undefined : GLASS} tint={model.tint} interior={false} fallback={null} />
       {props.build.case && <Label category="case" name={props.build.case.name} position={[f.right, ANCHOR.top + 28, f.front - 70]} />}
     </Pick>
   );

@@ -36,6 +36,18 @@ export interface CaseModel {
 export interface PartModel {
   file: string;
   credit: ModelCredit;
+  /** Retouches de matériaux du fichier, par nom : un circuit imprimé déclaré métallique, par exemple, brille comme un miroir. */
+  tune?: MaterialTune[];
+}
+
+export interface MaterialTune {
+  match: RegExp;
+  metalness?: number;
+  roughness?: number;
+  /** Ignorer les textures de métal et de rugosité du fichier : seules les valeurs ci-dessus comptent. */
+  uniform?: boolean;
+  /** Force des reflets d'une matière non métallique (1 = normale). */
+  specular?: number;
 }
 
 const BY = "CC BY 4.0" as const;
@@ -185,7 +197,50 @@ export const STORAGE_MODELS: Record<string, StorageModel> = {
   },
 };
 
-const REGISTRIES: Record<string, PartModel>[] = [CASE_MODELS, RAM_MODELS, GPU_MODELS, CPU_MODELS, STORAGE_MODELS, COOLER_MODELS];
+/**
+ * Cartes mères. Le circuit est à plat dans le fichier : x va de l'arrière vers l'avant du boîtier,
+ * z du haut vers le bas, y s'éloigne de la carte. Une carte réelle n'a pas son socket ni ses
+ * emplacements là où la carte générique les dessine : la scène lit donc ses repères ici
+ * (voir `anchorsFor` dans layout.ts), en coordonnées du fichier.
+ */
+export interface MotherboardModel extends PartModel {
+  /** Dans le fichier : bord arrière (x), face du circuit (y), bord haut (z). */
+  origin: Axis;
+  /** Millimètres par unité : profondeur (x), épaisseur (y), hauteur (z). */
+  scale: Axis;
+  /** Étendue du circuit dans le fichier : profondeur (x) et hauteur (z). */
+  size: [number, number];
+  /** Centre du socket (x, z). */
+  cpu: [number, number];
+  /** Centre de chacun des emplacements mémoire en x, du plus proche du socket au plus éloigné, et leur milieu en z. */
+  ramX: number[];
+  ramZ: number;
+  /** Milieu du connecteur 24 broches en z. */
+  atxZ: number;
+  /** Dissipateur M.2 principal : étendue en x, milieu en z. */
+  m2: { x: [number, number]; z: number };
+}
+export const MOTHERBOARD_MODELS: Record<string, MotherboardModel> = {
+  "b550-aorus-elite-v2": {
+    file: "/models/gigabyte-b550-aorus-elite-v2.glb",
+    credit: { title: "B550 AORUS ELITE V2 model", author: "exitmonad", url: "https://sketchfab.com/3d-models/b550-aorus-elite-v2-model-59f6b9b39f5d401b8beee8ff0c28e88e", license: BY },
+    origin: [-1.636, -0.067, -1.922],
+    // Le fichier n'est pas aux proportions exactes de la carte : la profondeur est calée sur le processeur
+    // (40 mm de côté), la hauteur sur le premier emplacement PCIe, qui doit tomber face à la carte graphique.
+    scale: [71.3, 68, 62.29],
+    size: [3.26, 4.657],
+    cpu: [0.0515, -0.5035],
+    ramX: [0.8085, 0.9365, 1.0525, 1.1685],
+    ramZ: -0.551,
+    atxZ: -0.502,
+    m2: { x: [-1.28, 0.229], z: 0.589 },
+    // Le circuit est déclaré métallique et poli dans le fichier : il reflète alors le studio comme un miroir et paraît
+    // gris clair, voire blanc, dans les styles sombres. Un vernis de circuit imprimé est mat, non métallique, peu réfléchissant.
+    tune: [{ match: /^main$/, metalness: 0, roughness: 0.75, uniform: true, specular: 0.3 }],
+  },
+};
+
+const REGISTRIES: Record<string, PartModel>[] = [CASE_MODELS, RAM_MODELS, GPU_MODELS, CPU_MODELS, STORAGE_MODELS, COOLER_MODELS, MOTHERBOARD_MODELS];
 
 /** Crédit du modèle 3D d'un composant, s'il en a un. */
 export function modelCredit(id: string | null | undefined): ModelCredit | null {

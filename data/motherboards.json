@@ -116,5 +116,38 @@
       "label": "MSI — spécifications produit",
       "url": "https://www.msi.com/Motherboard/MAG-Z790-TOMAHAWK-WIFI/Specification"
     }
+  },
+  {
+    "id": "b550-aorus-elite-v2",
+    "brand": "Gigabyte",
+    "name": "B550 AORUS ELITE V2",
+    "socket": "AM4",
+    "chipset": "B550",
+    "formFactor": "ATX",
+    "ramType": "DDR4",
+    "ramSlots": 4,
+    "m2Slots": 2,
+    "biosUpdateFor": [
+      "r5-5600",
+      "r7-5800x3d"
+    ],
+    "upgradePath": false,
+    "priceChf": 120,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": "https://www.gigabyte.com/Motherboard/B550-AORUS-ELITE-V2-rev-10-11/sp",
+    "visual": {
+      "pcb": "#101114",
+      "heatsink": "#565a61",
+      "accent": "#f26a1b"
+    },
+    "verifiedAt": "2026-11-17",
+    "source": {
+      "label": "GIGABYTE — spécifications B550 AORUS ELITE V2 (rév. 1.0/1.1)",
+      "url": "https://www.gigabyte.com/Motherboard/B550-AORUS-ELITE-V2-rev-10-11/sp"
+    },
+    "unconfirmed": [
+      "biosUpdateFor"
+    ]
   }
 ]

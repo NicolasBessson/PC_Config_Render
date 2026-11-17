@@ -1,6 +1,6 @@
 import { fanCountOf, type Build } from "@/lib/build";
 import type { Style } from "@/lib/catalog";
-import { CASE_MODELS, COOLER_MODELS, CPU_MODELS, GPU_MODELS, RAM_MODELS, STORAGE_MODELS } from "./models";
+import { CASE_MODELS, COOLER_MODELS, CPU_MODELS, GPU_MODELS, MOTHERBOARD_MODELS, RAM_MODELS, STORAGE_MODELS, type MotherboardModel } from "./models";
 
 /*
  * Description de la scène 3D, déduite de la configuration.
@@ -36,6 +36,44 @@ export const PSU_SIZE = { width: 150, height: 86, depth: 160 } as const;
 /** Pas des emplacements d'extension à l'arrière. */
 export const SLOT_PITCH = 20.32;
 export const RAM_SLOT_Z = [60, 70, 80, 90].map((offset) => BOARD.cpuZ + offset);
+
+/**
+ * Repères qui dépendent du dessin de la carte mère : socket, emplacements mémoire, connecteur
+ * 24 broches, dissipateur M.2. Ceux de la carte générique, ou ceux mesurés sur un modèle réel.
+ */
+export interface Anchors {
+  cpuY: number;
+  cpuZ: number;
+  /** Milieu des emplacements mémoire en hauteur, et position de chacun en profondeur. */
+  ramY: number;
+  ramZ: number[];
+  /** Hauteur du connecteur 24 broches, au bord avant de la carte. */
+  atxY: number;
+  m2: { y: number; z: number; length: number };
+}
+export const GENERIC_ANCHORS: Anchors = {
+  cpuY: BOARD.cpuY,
+  cpuZ: BOARD.cpuZ,
+  ramY: BOARD.cpuY + 2,
+  ramZ: RAM_SLOT_Z,
+  atxY: BOARD.cpuY - 16,
+  m2: { y: 64, z: BOARD.cpuZ + 34, length: 86 },
+};
+
+/** Repères d'une carte mère réelle : ses coordonnées de fichier, amenées dans la scène. */
+export function anchorsFor(model: MotherboardModel): Anchors {
+  const z = (x: number) => BOARD.back + (x - model.origin[0]) * model.scale[0];
+  const y = (fileZ: number) => BOARD.top - (fileZ - model.origin[2]) * model.scale[2];
+  const [m2Back, m2Front] = model.m2.x.map(z);
+  return {
+    cpuY: y(model.cpu[1]),
+    cpuZ: z(model.cpu[0]),
+    ramY: y(model.ramZ),
+    ramZ: model.ramX.map(z),
+    atxY: y(model.atxZ),
+    m2: { y: y(model.m2.z), z: (m2Back + m2Front) / 2, length: m2Front - m2Back },
+  };
+}
 
 /** Enveloppe du boîtier et repères qui en dépendent. */
 export interface Frame {
@@ -122,7 +160,9 @@ export interface SceneLayout {
   /** Les représentations sont génériques : à afficher comme telles. */
   generic: true;
   frame: Frame;
-  board: { formFactor: keyof typeof BOARD_SIZE; height: number; depth: number; bottom: number; front: number; colors: { pcb: string; heatsink: string; accent: string } | null } | null;
+  board: { formFactor: keyof typeof BOARD_SIZE; height: number; depth: number; bottom: number; front: number; colors: { pcb: string; heatsink: string; accent: string } | null; /** Identifiant du modèle 3D réel, s'il en existe un. */ model: string | null } | null;
+  /** Position du socket, des emplacements mémoire et des connecteurs : dépend de la carte mère. */
+  anchors: Anchors;
   cpu: boolean;
   /** Modèles 3D réels du processeur et du SSD, s'ils existent. */
   cpuModel: string | null;
@@ -151,11 +191,14 @@ export function layoutScene(build: Build, style: Style): SceneLayout {
   const { motherboard, gpu, cooler, ram, psu, case: pcCase } = build;
   const frame = frameFor(pcCase);
 
+  const boardModel = motherboard ? MOTHERBOARD_MODELS[motherboard.id] : undefined;
   let board: SceneLayout["board"] = null;
   if (motherboard) {
-    const [height, depth] = BOARD_SIZE[motherboard.formFactor];
-    board = { formFactor: motherboard.formFactor, height, depth, bottom: BOARD.top - height, front: BOARD.back + depth, colors: motherboard.visual ?? null };
+    // Un modèle réel impose ses propres dimensions, mesurées sur le fichier.
+    const [height, depth] = boardModel ? [boardModel.size[1] * boardModel.scale[2], boardModel.size[0] * boardModel.scale[0]] : BOARD_SIZE[motherboard.formFactor];
+    board = { formFactor: motherboard.formFactor, height, depth, bottom: BOARD.top - height, front: BOARD.back + depth, colors: motherboard.visual ?? null, model: boardModel ? motherboard.id : null };
   }
+  const anchors = boardModel ? anchorsFor(boardModel) : GENERIC_ANCHORS;
 
   let gpuLayout: GpuLayout | null = null;
   if (gpu) {
@@ -215,6 +258,7 @@ export function layoutScene(build: Build, style: Style): SceneLayout {
     generic: true,
     frame,
     board,
+    anchors,
     cpu: Boolean(build.cpu),
     cpuModel: build.cpu && CPU_MODELS[build.cpu.id] ? build.cpu.id : null,
     storageModel: build.storage && STORAGE_MODELS[build.storage.id] ? build.storage.id : null,

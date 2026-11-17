@@ -7,6 +7,7 @@
     "heightMm": 155,
     "radiatorMm": null,
     "sockets": [
+      "AM4",
       "AM5",
       "LGA1700"
     ],
@@ -38,6 +39,7 @@
     "heightMm": 155,
     "radiatorMm": null,
     "sockets": [
+      "AM4",
       "AM5",
       "LGA1700"
     ],
@@ -73,6 +75,7 @@
     "heightMm": 168,
     "radiatorMm": null,
     "sockets": [
+      "AM4",
       "AM5",
       "LGA1700"
     ],
@@ -108,6 +111,7 @@
     "heightMm": null,
     "radiatorMm": 240,
     "sockets": [
+      "AM4",
       "AM5",
       "LGA1700"
     ],
@@ -143,6 +147,7 @@
     "heightMm": null,
     "radiatorMm": 360,
     "sockets": [
+      "AM4",
       "AM5",
       "LGA1700"
     ],
@@ -178,6 +183,7 @@
     "heightMm": 157,
     "radiatorMm": null,
     "sockets": [
+      "AM4",
       "AM5",
       "LGA1700"
     ],

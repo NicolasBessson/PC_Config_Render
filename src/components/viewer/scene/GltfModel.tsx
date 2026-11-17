@@ -3,6 +3,8 @@
 import { Component, Suspense, useEffect, useMemo, type ReactNode } from "react";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
+import { clone as cloneWithSkeletons } from "three/examples/jsm/utils/SkeletonUtils.js";
+import type { MaterialTune } from "../models";
 import { Glow, useScene } from "./context";
 import { exposureSafe, photoAlbedo } from "./materials";
 
@@ -75,6 +77,13 @@ function plainGeometry(geometry: THREE.BufferGeometry): THREE.BufferGeometry {
   return result;
 }
 
+/**
+ * L'intérieur du boîtier reçoit, en plus de l'éclairage général, les lumières d'ambiance des LED et la
+ * lumière d'appoint : environ trois fois plus de lumière que l'extérieur. Les pièces montées à
+ * l'intérieur sont adaptées en conséquence, sinon un circuit imprimé noir paraît gris clair.
+ */
+const INTERIOR_LIGHT = 3;
+
 /** Puissance maximale des éléments lumineux d'un modèle (logo, voyants) : visibles, sans éblouir. */
 const MAX_EMISSIVE = 1.3;
 
@@ -85,17 +94,20 @@ interface LoadedProps {
   tint?: string;
   glow?: RegExp;
   glowOffset: number;
+  tune?: MaterialTune[];
   photo: boolean;
   /** Exposition du style : les matériaux clairs du modèle y sont adaptés. */
   exposure: number;
+  interior: boolean;
 }
 
-function Loaded({ file, matrix, hide, tint, glow, glowOffset, photo, exposure }: LoadedProps) {
+function Loaded({ file, matrix, hide, tint, glow, glowOffset, tune, photo, exposure, interior }: LoadedProps) {
   // Pas de décodeur Draco : il serait téléchargé depuis un serveur externe.
   const { scene } = useGLTF(file, false);
   const object = useMemo(() => {
-    // Copie par instance : plusieurs visualiseurs peuvent afficher le même fichier.
-    const copy = scene.clone(true);
+    // Copie par instance : plusieurs visualiseurs peuvent afficher le même fichier. Certaines pièces sont
+    // articulées (processeur, levier du socket) : la copie doit conserver leur squelette, sinon elles se déplacent.
+    const copy = cloneWithSkeletons(scene);
     // Un matériau du fichier donne un seul matériau adapté, partagé par tous les maillages qui l'utilisent.
     const adapted = new Map<THREE.Material, THREE.Material>();
     const adapt = (source: THREE.MeshStandardMaterial): THREE.Material => {
@@ -107,14 +119,30 @@ function Loaded({ file, matrix, hide, tint, glow, glowOffset, photo, exposure }:
         // Rendu photo : la vitre du modèle devient un vrai verre légèrement fumé.
         result = new THREE.MeshPhysicalMaterial({ name, color: new THREE.Color().setScalar(0.86), transmission: 1, ior: 1.5, thickness: 0, roughness: 0, metalness: 0 });
       } else {
-        const material = source.clone();
+        let material = source.clone();
+        for (const rule of tune ?? []) {
+          if (!rule.match.test(name)) continue;
+          if (rule.metalness !== undefined) material.metalness = rule.metalness;
+          if (rule.roughness !== undefined) material.roughness = rule.roughness;
+          if (rule.uniform) {
+            material.metalnessMap = null;
+            material.roughnessMap = null;
+          }
+          // Les reflets d'une matière non métallique ne se règlent que sur un matériau « physique ».
+          if (rule.specular !== undefined) {
+            const { color, map, normalMap, normalScale, roughness, metalness, roughnessMap, metalnessMap, side } = material;
+            material.dispose();
+            material = new THREE.MeshPhysicalMaterial({ name, color, map, normalMap, normalScale, roughness, metalness, roughnessMap, metalnessMap, side, specularIntensity: rule.specular });
+          }
+        }
         // Variante de teinte : la carrosserie est recolorée.
         if (tint && BODY.test(name)) {
           material.color.set(tint);
           material.map = null;
         }
         if (material.color) {
-          exposureSafe(material.color, exposure, textureBrightness(material.map));
+          // En rendu photo, la lumière est simulée : l'intérieur ne reçoit que ce qui y entre réellement.
+          exposureSafe(material.color, exposure * (interior && !photo ? INTERIOR_LIGHT : 1), textureBrightness(material.map));
           // Rendu photo : un noir uni absolu ne renvoie aucune lumière ; il reçoit le même minimum que les matériaux de la scène.
           if (photo && !material.map) photoAlbedo(material.color);
         }
@@ -133,7 +161,7 @@ function Loaded({ file, matrix, hide, tint, glow, glowOffset, photo, exposure }:
       mesh.material = adapt(mesh.material as THREE.MeshStandardMaterial);
     });
     return copy;
-  }, [scene, tint, photo, exposure]);
+  }, [scene, tint, tune, photo, exposure, interior]);
   // Les matériaux adaptés appartiennent à cette copie : ils sont libérés avec elle.
   useEffect(
     () => () => {
@@ -191,12 +219,33 @@ function Loaded({ file, matrix, hide, tint, glow, glowOffset, photo, exposure }:
  * Modèle 3D d'un produit réel, placé dans la scène par une matrice (axes,
  * échelle, position). `hide` masque les matériaux dont le nom correspond.
  */
-export function GltfModel({ file, matrix, hide, tint, glow, glowOffset = 0, fallback = null }: { file: string; matrix: THREE.Matrix4; hide?: RegExp; tint?: string; glow?: RegExp; glowOffset?: number; fallback?: ReactNode }) {
+export function GltfModel({
+  file,
+  matrix,
+  hide,
+  tint,
+  glow,
+  glowOffset = 0,
+  tune,
+  interior = true,
+  fallback = null,
+}: {
+  file: string;
+  matrix: THREE.Matrix4;
+  hide?: RegExp;
+  tint?: string;
+  glow?: RegExp;
+  glowOffset?: number;
+  tune?: MaterialTune[];
+  /** Pièce montée dans le boîtier (par défaut) ; `false` pour le boîtier lui-même. */
+  interior?: boolean;
+  fallback?: ReactNode;
+}) {
   const { photo, palette } = useScene();
   return (
     <ModelBoundary fallback={fallback}>
       <Suspense fallback={fallback}>
-        <Loaded file={file} matrix={matrix} hide={hide} tint={tint} glow={glow} glowOffset={glowOffset} photo={photo} exposure={palette.exposure} />
+        <Loaded file={file} matrix={matrix} hide={hide} tint={tint} glow={glow} glowOffset={glowOffset} tune={tune} photo={photo} exposure={palette.exposure} interior={interior} />
       </Suspense>
     </ModelBoundary>
   );

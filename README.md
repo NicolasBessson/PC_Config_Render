@@ -45,13 +45,13 @@ Une configuration est entièrement décrite par son URL : le lien se partage tel
 
 Le catalogue et les benchmarks livrés ici servent à faire fonctionner le parcours. **Ils ne sont pas vérifiés.**
 
-- **Composants** (`data/*.json`) : deux campagnes de vérification auprès des fabricants ont eu lieu les 16 et 17 novembre 2026. 25 fiches sur 50 sont `verified: true` ; les 25 autres ont une source mais des champs non confirmés, listés dans `unconfirmed`. La vérification s'appuie sur des extraits de recherche des sites officiels, pas sur une lecture complète des pages.
+- **Composants** (`data/*.json`) : deux campagnes de vérification auprès des fabricants ont eu lieu les 16 et 17 novembre 2026. 25 fiches sur 53 sont `verified: true` ; les 28 autres ont une source mais des champs non confirmés, listés dans `unconfirmed`. La vérification s'appuie sur des extraits de recherche des sites officiels, pas sur une lecture complète des pages.
 - **Prix** : ordres de grandeur, pas des relevés. `priceDate: null` signifie « prix non relevé ».
 - **Benchmarks** (`data/benchmarks.json`) : valeurs **synthétiques**, produites par `scripts/generate-demo-benchmarks.mjs`. Ce ne sont pas des mesures. Les deux sources portent `demo: true`, et l'interface affiche « Source de démonstration » sur chaque estimation.
 
 Avant toute mise en ligne, ces fichiers doivent être remplacés par des données saisies manuellement avec source, date et conditions (sections 6.4 et 16.5 du cahier des charges).
 
-Pour illustrer le cas « données insuffisantes », un jeu (Monster Hunter Wilds) et deux cartes graphiques (Arc B580, RTX 5090 Founders Edition) n'ont volontairement aucun benchmark : elles ne sont jamais recommandées, seulement choisies à la main.
+Pour illustrer le cas « données insuffisantes », un jeu (Monster Hunter Wilds) et deux cartes graphiques (Arc B580, RTX 5090 Founders Edition) n'ont volontairement aucun benchmark : elles ne sont jamais recommandées, seulement choisies à la main. Il en va de même de la plateforme AM4 (Ryzen 5 5600, Ryzen 7 5800X3D, carte mère B550), ajoutée pour son modèle 3D réel.
 
 ## Architecture
 
@@ -108,11 +108,12 @@ Boîtier moyen-tour générique modélisé en géométrie paramétrique, déclin
 
 ### Modèles 3D de tiers
 
-Douze fiches du catalogue utilisent un modèle 3D réel, créé par un tiers et publié sur Sketchfab sous licence [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/). Tous sont repositionnés, mis à l'échelle et compressés (textures réduites, géométrie compactée) ; le boîtier blanc est en outre reteinté, et les couleurs claires sont adaptées à l'exposition du style affiché.
+Treize fiches du catalogue utilisent un modèle 3D réel, créé par un tiers et publié sur Sketchfab sous licence [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/). Tous sont repositionnés, mis à l'échelle et compressés (textures réduites, géométrie compactée) ; le boîtier blanc est en outre reteinté, et les couleurs claires sont adaptées à l'exposition du style affiché.
 
 | Produit | Modèle | Auteur |
 |---|---|---|
 | Corsair 4000D Airflow, noir et blanc | [Corsair 4000D Airflow (Free)](https://sketchfab.com/3d-models/corsair-4000d-airflow-free-34df3ba96cf94e71accdb5779c4b8694) | Kirigami |
+| Gigabyte B550 AORUS ELITE V2 | [B550 AORUS ELITE V2 model](https://sketchfab.com/3d-models/b550-aorus-elite-v2-model-59f6b9b39f5d401b8beee8ff0c28e88e) | exitmonad |
 | Corsair Vengeance LPX | [RAM Corsair Vengeance LPX](https://sketchfab.com/3d-models/ram-corsair-vengeance-lpx-ee11e1926e514075a70642ecb5dc5c2d) | supahot |
 | Intel Arc B580 | [Intel Arc B580 Graphics Card](https://sketchfab.com/3d-models/intel-arc-b580-graphics-card-3251ad158ee44a7e9802cb378b4d281a) | PolyDavid |
 | NVIDIA GeForce RTX 5090 Founders Edition | [NVIDIA RTX 5090 Founders Edition](https://sketchfab.com/3d-models/nvidia-rtx-5090-founders-edition-5934a7ddfa144951ac66eb8cab13f220) | PolyDavid |

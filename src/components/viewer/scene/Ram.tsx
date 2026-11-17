@@ -1,7 +1,7 @@
 "use client";
 
 import type { Build } from "@/lib/build";
-import { BOARD, RAM_SLOT_Z } from "../layout";
+import { BOARD } from "../layout";
 import { Glow, Label, Part, Pick, useScene, useTint } from "./context";
 import { useMemo } from "react";
 import * as THREE from "three";
@@ -23,15 +23,16 @@ export function Ram({ build }: { build: Build }) {
   const ram = layout.ram;
   const spreader = useTint(ram?.color, mat.heatsink, 0.7, 0.35);
   const model = ram?.model ? RAM_MODELS[ram.model] : null;
-  const matrices = useMemo(() => (model && ram ? ram.slots.map((slot) => ramMatrix(model, BOARD.cpuY + 2, RAM_SLOT_Z[slot])) : []), [ram, model]);
+  const { ramY, ramZ } = layout.anchors;
+  const matrices = useMemo(() => (model && ram ? ram.slots.map((slot) => ramMatrix(model, ramY, ramZ[slot])) : []), [ram, model, ramY, ramZ]);
   if (!ram || !build.ram) return null;
   // Seul un kit réellement RGB s'illumine.
   const lit = ram.rgb;
-  const y = BOARD.cpuY + 2;
+  const y = ramY;
   return (
     <Pick category="ram">
       {ram.slots.map((slot, i) => {
-        const z = RAM_SLOT_Z[slot];
+        const z = ramZ[slot];
         const generic = (
           <group key={slot}>
             <Part g={box(6, 133, 1.4)} m={mat.pcb} p={[BOARD.x + 3, y, z]} shadow={false} />
@@ -45,7 +46,7 @@ export function Ram({ build }: { build: Build }) {
         );
         return model ? <GltfModel key={slot} file={model.file} matrix={matrices[i]} glow={lit ? model.glow : undefined} glowOffset={0.45 + i * 0.08} fallback={generic} /> : generic;
       })}
-      <Label category="ram" name={build.ram.name} position={[BOARD.x + ram.height + 6, y - 44, RAM_SLOT_Z[3] + 10]} />
+      <Label category="ram" name={build.ram.name} position={[BOARD.x + ram.height + 6, y - 44, ramZ[3] + 10]} />
     </Pick>
   );
 }

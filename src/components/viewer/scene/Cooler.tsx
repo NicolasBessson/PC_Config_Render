@@ -11,7 +11,6 @@ import { Fan } from "./Fan";
 import { GltfModel } from "./GltfModel";
 
 const X = BOARD.x;
-const { cpuY, cpuZ } = BOARD;
 const HALF_PI = Math.PI / 2;
 
 interface Skin {
@@ -21,7 +20,8 @@ interface Skin {
 }
 
 function AirCooler({ cooler, lit, skin }: { cooler: Extract<CoolerLayout, { kind: "air" }>; lit: boolean; skin: Skin }) {
-  const { mat } = useScene();
+  const { mat, layout } = useScene();
+  const { cpuY, cpuZ } = layout.anchors;
   const { towers, fans, fanSize, topX } = cooler;
   const y = cpuY + 6;
   const span = fanSize + 2; // largeur des ailettes, à la mesure du ventilateur
@@ -38,7 +38,7 @@ function AirCooler({ cooler, lit, skin }: { cooler: Extract<CoolerLayout, { kind
     const pipes = towerZ.flatMap((z) => pipeY.map((dy) => ({ p: [X + 16 + pipeLength / 2, y + dy, z] as Vec3, r: [0, 0, HALF_PI] as Vec3 })));
     const caps = towerZ.flatMap((z) => pipeY.map((dy) => ({ p: [topX + 1.2, y + dy, z] as Vec3, r: [0, 0, HALF_PI] as Vec3 })));
     return { towerZ, fanZ, fins, pipes, caps, pipeLength };
-  }, [towers, fans, span, stackStart, stackEnd, topX, y]);
+  }, [towers, fans, span, stackStart, stackEnd, topX, y, cpuZ]);
 
   return (
     <group>
@@ -58,7 +58,8 @@ function AirCooler({ cooler, lit, skin }: { cooler: Extract<CoolerLayout, { kind
 }
 
 function LiquidCooler({ cooler, frame, lit, skin }: { cooler: Extract<CoolerLayout, { kind: "aio" }>; frame: Frame; lit: boolean; skin: Skin }) {
-  const { mat, palette } = useScene();
+  const { mat, palette, layout } = useScene();
+  const { cpuY, cpuZ } = layout.anchors;
   const { mount, fans, fanSize, length, thickness } = cooler;
   const width = fanSize + 2;
   const coreLength = length - 46;
@@ -79,7 +80,7 @@ function LiquidCooler({ cooler, frame, lit, skin }: { cooler: Extract<CoolerLayo
       return { geometry: tube(points, 6.4), fitting: points[3] };
     });
     return { centerY, topCenterZ, tubes };
-  }, [mount, fans, fanSize, length, thickness, frame.cx, frontZ]);
+  }, [mount, fans, fanSize, length, thickness, frame.cx, frontZ, cpuY, cpuZ]);
 
   const { centerY, topCenterZ, tubes } = geometry;
   return (
@@ -124,6 +125,7 @@ function LiquidCooler({ cooler, frame, lit, skin }: { cooler: Extract<CoolerLayo
 /** Refroidissement du processeur, à la forme du modèle : tours, ventilateurs, épaisseur du radiateur. */
 export function Cooler({ build }: { build: Build }) {
   const { mat, layout } = useScene();
+  const { cpuY, cpuZ } = layout.anchors;
   const cooler = layout.cooler;
   const fin = useTint(cooler?.colors?.fin, mat.fin, 0.88, 0.28);
   const top = useTint(cooler?.colors?.top, mat.satin, 0.35, 0.4);
@@ -137,7 +139,7 @@ export function Cooler({ build }: { build: Build }) {
     const placed = new THREE.Matrix4().makeBasis(new THREE.Vector3(0, k, 0), new THREE.Vector3(k, 0, 0), new THREE.Vector3(0, 0, k));
     const base = new THREE.Vector3(...model.base).applyMatrix4(placed);
     return placed.setPosition(X - base.x, cpuY - base.y, cpuZ - base.z);
-  }, [model, cooler]);
+  }, [model, cooler, cpuY, cpuZ]);
   if (!cooler || !build.cooler) return null;
   const skin: Skin = { fin, top, fan: cooler.colors ? fanTint : undefined };
   // Seul un refroidissement réellement RGB s'illumine.

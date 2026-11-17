@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { resolveBuild, type BuildIds } from "@/lib/build";
 import { catalog } from "@/lib/catalog";
-import { ANCHOR, BOARD, CASE, frameFor, frontFanHeights, GPU_TOP, layoutScene } from "./layout";
-import { ALL_MODEL_CREDITS, CASE_MODELS, COOLER_MODELS, CPU_MODELS, GPU_MODELS, modelCredit, RAM_MODELS, STORAGE_MODELS } from "./models";
+import { ANCHOR, BOARD, CASE, frameFor, frontFanHeights, GENERIC_ANCHORS, GPU_TOP, layoutScene } from "./layout";
+import { ALL_MODEL_CREDITS, CASE_MODELS, COOLER_MODELS, CPU_MODELS, GPU_MODELS, modelCredit, MOTHERBOARD_MODELS, RAM_MODELS, STORAGE_MODELS } from "./models";
 
 const BASE: BuildIds = {
   cpu: "r5-7600", gpu: "rtx-5070", motherboard: "b650-tomahawk", ram: "ddr5-32-vengeance",
@@ -127,6 +127,39 @@ describe("correspondance entre la configuration et la scène 3D", () => {
     expect(scene({ ram: "ddr5-32-delta-rgb-white" }).ram!.model).toBe("ddr5-32-delta-rgb-white");
     // Un ventirad sans modèle garde sa forme générique.
     expect(scene({ cooler: "pa120-se" }).cooler).toMatchObject({ kind: "air", model: null });
+  });
+
+  it("carte mère réelle : le socket, la mémoire et les câbles suivent ses repères, pas ceux de la carte générique", () => {
+    const am4 = { cpu: "r5-5600", motherboard: "b550-aorus-elite-v2", ram: "ddr4-32-lpx", cooler: "freezer-34-esports-duo" };
+    const real = scene(am4);
+    const generic = scene();
+    expect(real.board!.model).toBe("b550-aorus-elite-v2");
+    expect(generic.board!.model).toBeNull();
+    expect(generic.anchors).toEqual(GENERIC_ANCHORS);
+    // Le socket du modèle n'est pas là où la carte générique le dessine.
+    expect(real.anchors.cpuZ).toBeGreaterThan(GENERIC_ANCHORS.cpuZ + 10);
+    expect(real.anchors.cpuY).toBeLessThan(GENERIC_ANCHORS.cpuY);
+    // Tous les repères restent sur le circuit, dans l'ordre attendu.
+    const { anchors, board } = real;
+    expect(anchors.cpuZ).toBeGreaterThan(BOARD.back);
+    expect(anchors.cpuY).toBeLessThan(BOARD.top);
+    expect(anchors.ramZ).toHaveLength(4);
+    for (let i = 1; i < 4; i++) expect(anchors.ramZ[i]).toBeGreaterThan(anchors.ramZ[i - 1] + 7); // emplacements distincts
+    expect(anchors.ramZ[0]).toBeGreaterThan(anchors.cpuZ + 30); // la mémoire est devant le socket
+    expect(anchors.ramZ[3]).toBeLessThan(board!.front);
+    expect(anchors.m2.y).toBeLessThan(anchors.cpuY - 40); // le dissipateur M.2 est sous le socket
+    expect(anchors.m2.y).toBeGreaterThan(GPU_TOP); // et au-dessus de la carte graphique
+    // Le circuit garde un format ATX plausible et ne traverse pas le fond du boîtier.
+    expect(board!.height).toBeGreaterThan(280);
+    expect(board!.height).toBeLessThanOrEqual(305);
+    expect(board!.depth).toBeGreaterThan(225);
+    expect(board!.depth).toBeLessThanOrEqual(244);
+    // Le premier emplacement PCIe du modèle tombe face à la carte graphique (à moins de 6 mm de son circuit).
+    const model = MOTHERBOARD_MODELS["b550-aorus-elite-v2"];
+    const slotY = BOARD.top - (0.8876 - model.origin[2]) * model.scale[2];
+    expect(Math.abs(slotY - (GPU_TOP - 3))).toBeLessThan(6);
+    expect(modelCredit("b550-aorus-elite-v2")?.author).toBe("exitmonad");
+    for (const id of Object.keys(MOTHERBOARD_MODELS)) expect(catalog.motherboard.some((m) => m.id === id), id).toBe(true);
   });
 
   it("chaque barrette réelle est posée en miroir (déterminant négatif), sinon ses inscriptions seraient inversées", () => {

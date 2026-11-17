@@ -43,13 +43,13 @@ function ribbon(path: Vec3[], wires: number, axis: "y" | "z", pitch = 4.2, radiu
 /** Câblage gainé fil par fil, avec ses peignes : 24 broches, 8 broches processeur et carte graphique. */
 export function Cables() {
   const { mat, layout } = useScene();
-  const { board, gpu, cables, frame } = layout;
+  const { board, gpu, cables, frame, anchors } = layout;
 
   const { harness, combs } = useMemo(() => {
     const wires: THREE.TubeGeometry[] = [];
     const combs: Comb[] = [];
     if (board && cables.atx24) {
-      const y = BOARD.cpuY - 16, front = board.front;
+      const y = anchors.atxY, front = board.front;
       wires.push(...ribbon([[X + 12, y, front - 8], [X + 34, y, front - 4], [X + 36, y, front + 22], [X - 2, y, front + 28]], 12, "y"));
       combs.push({ p: [X + 37, y, front + 9], size: [3, 30, 5] });
     }
@@ -74,7 +74,7 @@ export function Cables() {
     const harness = wires.length > 0 ? mergeGeometries(wires) : null;
     wires.forEach((geometry) => geometry.dispose());
     return { harness, combs };
-  }, [board, gpu, cables, frame]);
+  }, [board, gpu, cables, frame, anchors]);
 
   useEffect(() => () => harness?.dispose(), [harness]);
 

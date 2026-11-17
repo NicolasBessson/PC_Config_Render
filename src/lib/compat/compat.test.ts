@@ -19,6 +19,21 @@ describe("moteur de compatibilité", () => {
     expect(report.warnings).toHaveLength(0);
   });
 
+  it("plateforme AM4 : processeur, carte mère, mémoire DDR4 et ventirad s'accordent entre eux seulement", () => {
+    const am4: BuildIds = { cpu: "r5-5600", motherboard: "b550-aorus-elite-v2", ram: "ddr4-32-lpx", cooler: "freezer-34-esports-duo" };
+    const report = check(am4);
+    expect(report.status).not.toBe("incompatible");
+    expect(report.failures).toHaveLength(0);
+    // Un processeur AM4 ne va pas sur une carte AM5, ni l'inverse.
+    expect(statusOf("cpu-socket", { cpu: "r5-5600" })).toBe("fail");
+    expect(statusOf("cpu-socket", { motherboard: "b550-aorus-elite-v2", ram: "ddr4-32-lpx" })).toBe("fail");
+    // La carte B550 n'accepte que de la DDR4.
+    expect(check({ ...am4, ram: "ddr5-32-vengeance" }).status).toBe("incompatible");
+    // La RTX 5090 exige l'alimentation de 1000 W.
+    expect(check({ ...am4, gpu: "rtx-5090-fe" }).status).toBe("incompatible");
+    expect(check({ ...am4, gpu: "rtx-5090-fe", psu: "rm1000x" }).status).not.toBe("incompatible");
+  });
+
   it("chaque règle a un identifiant unique et une version", () => {
     expect(new Set(RULES.map((r) => r.id)).size).toBe(RULES.length);
     for (const rule of RULES) expect(rule.version).toBeGreaterThanOrEqual(1);

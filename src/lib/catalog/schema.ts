@@ -22,7 +22,7 @@ const base = {
 
 const hex = z.string().regex(/^#[0-9a-f]{6}$/i);
 
-export const socketSchema = z.enum(["AM5", "LGA1700"]);
+export const socketSchema = z.enum(["AM4", "AM5", "LGA1700"]);
 export const ramTypeSchema = z.enum(["DDR4", "DDR5"]);
 export const formFactorSchema = z.enum(["ATX", "mATX", "ITX"]);
 export const styleSchema = z.enum(["noir", "blanc", "minimaliste", "rgb"]);

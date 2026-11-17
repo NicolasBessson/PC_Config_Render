@@ -5,18 +5,19 @@ import type { Build } from "@/lib/build";
 import { ANCHOR, BOARD, RAM_SLOT_Z } from "../layout";
 import { Glow, Label, Part, Pick, Repeat, useScene, useTint, type Vec3 } from "./context";
 import * as THREE from "three";
-import { CPU_MODELS, STORAGE_MODELS } from "../models";
+import { CPU_MODELS, MOTHERBOARD_MODELS, STORAGE_MODELS } from "../models";
 import { box, cylinder, rbox } from "./geometry";
 import { GltfModel } from "./GltfModel";
 
 const X = BOARD.x;
-const { cpuY, cpuZ } = BOARD;
 const HALF_PI = Math.PI / 2;
 
 /** Carte mère générique : socket, étages d'alimentation, emplacements, connecteurs arrière. */
 export function Motherboard({ build }: { build: Build }) {
   const { mat, palette, layout } = useScene();
   const board = layout.board;
+  // Position du socket : celle de la carte générique, ou celle du modèle réel.
+  const { cpuY, cpuZ, m2 } = layout.anchors;
   const heatsink = useTint(board?.colors?.heatsink, mat.heatsink, 0.82, 0.3);
   const accent = useTint(board?.colors?.accent, mat.satin, 0.4, 0.4);
 
@@ -46,7 +47,18 @@ export function Motherboard({ build }: { build: Build }) {
     const audio = Array.from({ length: 5 }, (_, i) => ({ p: [X + 5, bottom + 14 + i * 9, BOARD.back + 16] as Vec3, r: [0, 0, HALF_PI] as Vec3 }));
     const sata = [0, 1].map((i) => ({ p: [X + 6, bottom + 78 + i * 20, front - 5] as Vec3 }));
     return { capacitors, vrmFins, clips, usb, screws, pcie, chokes, chips, headers, audio, sata };
-  }, [board]);
+  }, [board, cpuY, cpuZ]);
+
+  const boardModel = board?.model ? MOTHERBOARD_MODELS[board.model] : null;
+  // Modèle réel : le circuit est à plat dans le fichier. Sa profondeur (x) part de l'arrière du boîtier, sa hauteur (z)
+  // descend depuis le bord supérieur, son épaisseur (y) s'éloigne de la carte. Déterminant négatif, comme tous les modèles.
+  const boardMatrix = useMemo(() => {
+    if (!boardModel) return null;
+    const [kd, kt, kh] = boardModel.scale;
+    const matrix = new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 0, kd), new THREE.Vector3(kt, 0, 0), new THREE.Vector3(0, -kh, 0));
+    const origin = new THREE.Vector3(...boardModel.origin).applyMatrix4(matrix);
+    return matrix.setPosition(X - origin.x, BOARD.top - origin.y, BOARD.back - origin.z);
+  }, [boardModel]);
 
   const cpuModel = layout.cpuModel ? CPU_MODELS[layout.cpuModel] : null;
   const storageModel = layout.storageModel ? STORAGE_MODELS[layout.storageModel] : null;
@@ -57,20 +69,19 @@ export function Motherboard({ build }: { build: Build }) {
     // Rotation par quarts de tour dans le plan de la carte, selon l'orientation du marquage dans le fichier.
     const angle = (cpuModel.turn * Math.PI) / 2, c = Math.round(Math.cos(angle)), s = Math.round(Math.sin(angle));
     return new THREE.Matrix4().makeBasis(new THREE.Vector3(0, k * c, k * s), new THREE.Vector3(k, 0, 0), new THREE.Vector3(0, -k * s, k * c)).setPosition(X + 5.5, cpuY, cpuZ);
-  }, [cpuModel]);
+  }, [cpuModel, cpuY, cpuZ]);
   // SSD M.2 : longueur du fichier (z) le long de la carte, 80 mm.
   const storageMatrix = useMemo(() => {
     if (!storageModel) return null;
     const k = 80 / storageModel.length;
-    return new THREE.Matrix4().makeBasis(new THREE.Vector3(0, k, 0), new THREE.Vector3(k, 0, 0), new THREE.Vector3(0, 0, k)).setPosition(X + 2.5, 64, cpuZ + 34);
-  }, [storageModel]);
+    return new THREE.Matrix4().makeBasis(new THREE.Vector3(0, k, 0), new THREE.Vector3(k, 0, 0), new THREE.Vector3(0, 0, k)).setPosition(X + 2.5, m2.y, m2.z);
+  }, [storageModel, m2]);
 
   if (!board || !details || !build.motherboard) return null;
   const { height, depth, bottom, front } = board;
 
-  return (
-    <group>
-     <Pick category="motherboard">
+  const genericBoard = (
+    <>
       <Part g={box(2, height, depth)} m={mat.pcb} p={[X - 1, BOARD.top - height / 2, BOARD.back + depth / 2]} />
       <Repeat g={cylinder(3, 3, 2.4, 10)} m={mat.steel} items={details.screws} />
 
@@ -96,14 +107,6 @@ export function Motherboard({ build }: { build: Build }) {
       <mesh geometry={rbox(1.6, 92, 3, 0.8)} position={[X + 40.4, cpuY + 10, BOARD.back + 30]}>
         <Glow on={palette.lit.cooler} offset={0.25} />
       </mesh>
-      <Part g={box(40, 150, 14)} m={mat.dark} p={[X + 22, 124, BOARD.back - 9]} shadow={false} />
-      <Part g={box(46, 160, 0.8)} m={mat.steel} p={[-78, 124, ANCHOR.back - 0.2]} shadow={false} />
-      <Repeat g={box(13, 6, 2)} m={mat.dark} items={details.usb} />
-      <Part g={rbox(17, 14, 2, 1)} m={mat.dark} p={[-78, 124, ANCHOR.back - 1.2]} shadow={false} />
-      {[104, 92, 80].map((y) => (
-        <Part key={y} g={cylinder(3.2, 3.2, 2, 14)} m={mat.gold} p={[-78, y, ANCHOR.back - 1.2]} r={[HALF_PI, 0, 0]} shadow={false} />
-      ))}
-
       {/* Emplacements mémoire */}
       {RAM_SLOT_Z.map((z) => (
         <Part key={z} g={box(5, 140, 6.4)} m={mat.slot} p={[X + 2.5, cpuY + 2, z]} shadow={false} />
@@ -127,11 +130,27 @@ export function Motherboard({ build }: { build: Build }) {
       </mesh>
       {bottom < 0 && <Part g={cylinder(10, 10, 3, 24)} m={mat.nickel} p={[X + 1.5, 4, cpuZ + 96]} r={[0, 0, HALF_PI]} shadow={false} />}
 
+    </>
+  );
+
+  return (
+    <group>
+     <Pick category="motherboard">
+      {boardModel && boardMatrix ? <GltfModel file={boardModel.file} matrix={boardMatrix} tune={boardModel.tune} fallback={genericBoard} /> : genericBoard}
+      {/* Plaque et prises arrière : sur le boîtier, quelle que soit la carte */}
+      <Part g={box(40, 150, 14)} m={mat.dark} p={[X + 22, 124, BOARD.back - 9]} shadow={false} />
+      <Part g={box(46, 160, 0.8)} m={mat.steel} p={[-78, 124, ANCHOR.back - 0.2]} shadow={false} />
+      <Repeat g={box(13, 6, 2)} m={mat.dark} items={details.usb} />
+      <Part g={rbox(17, 14, 2, 1)} m={mat.dark} p={[-78, 124, ANCHOR.back - 1.2]} shadow={false} />
+      {[104, 92, 80].map((y) => (
+        <Part key={y} g={cylinder(3.2, 3.2, 2, 14)} m={mat.gold} p={[-78, y, ANCHOR.back - 1.2]} r={[HALF_PI, 0, 0]} shadow={false} />
+      ))}
+
       <Label category="motherboard" name={build.motherboard.name} position={[X + 14, bottom + 52, front - 30]} />
      </Pick>
       {/* Avec un SSD réel, le dissipateur reste sur la carte mère : la vue éclatée dévoile alors le SSD. */}
       <Pick category={build.storage && !storageModel ? "storage" : "motherboard"}>
-        <Part g={rbox(5, 24, 86, 2)} m={heatsink} p={[X + 7, 64, cpuZ + 34]} />
+        <Part g={rbox(5, boardModel ? 20 : 24, Math.round(m2.length), 2)} m={heatsink} p={[X + 7, m2.y, m2.z]} />
       </Pick>
       {storageModel && storageMatrix && (
         <Pick category="storage">
@@ -142,13 +161,16 @@ export function Motherboard({ build }: { build: Build }) {
         <Pick category="cpu">
           {cpuModel && cpuMatrix ? (
             <GltfModel file={cpuModel.file} matrix={cpuMatrix} fallback={<Part g={rbox(5, 38, 38, 1.5)} m={mat.nickel} p={[X + 6.5, cpuY, cpuZ]} />} />
+          ) : boardModel ? (
+            // Le modèle de carte mère porte déjà un processeur dans son socket : il suffit d'une zone cliquable, invisible.
+            <mesh geometry={rbox(5, 38, 38, 1.5)} position={[X + 6.5, cpuY, cpuZ]} visible={false} />
           ) : (
             <Part g={rbox(5, 38, 38, 1.5)} m={mat.nickel} p={[X + 6.5, cpuY, cpuZ]} />
           )}
         </Pick>
       )}
       {build.cpu && <Label category="cpu" name={build.cpu.name} position={[X + 30, cpuY - 72, cpuZ - 30]} />}
-      {build.storage && <Label category="storage" name={build.storage.name} position={[X + 8, 64, cpuZ + 78]} />}
+      {build.storage && <Label category="storage" name={build.storage.name} position={[X + 8, m2.y, m2.z + m2.length / 2 + 1]} />}
     </group>
   );
 }

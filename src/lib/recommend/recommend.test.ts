@@ -86,6 +86,17 @@ describe("moteur de recommandation", () => {
     expect(result.proposals.every((p) => p.build.gpu.id !== "arc-b580")).toBe(true);
   });
 
+  it("ne recommande pas un processeur sans benchmark (plateforme AM4)", () => {
+    for (const style of ["noir", "blanc", "rgb"] as const) {
+      const result = recommend({ ...TEST_A, style, budget: 5000 });
+      expect(result.proposals.length).toBeGreaterThan(0);
+      for (const p of result.proposals) {
+        expect(p.build.cpu.socket).not.toBe("AM4");
+        expect(p.build.gpu.id).not.toBe("rtx-5090-fe");
+      }
+    }
+  });
+
   it("est reproductible à données et paramètres identiques", () => {
     const encoded = () => recommend(TEST_A).proposals.map((p) => p.encoded);
     expect(encoded()).toEqual(encoded());
