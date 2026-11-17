@@ -5,7 +5,7 @@ import * as THREE from "three";
 import type { Build } from "@/lib/build";
 import { ANCHOR, PSU_SIZE } from "../layout";
 import { Label, Part, Pick, Repeat, useScene, useTint, type Vec3 } from "./context";
-import { box, perforated, rbox } from "./geometry";
+import { box, perforated, rbox, tube } from "./geometry";
 import { psuLabelTexture } from "./textures";
 
 const BACK = ANCHOR.back;
@@ -28,6 +28,13 @@ export function Psu({ build }: { build: Build }) {
     return items;
   }, [P.x, P.y, P.z, P.depth]);
 
+  // Faisceau qui quitte la face modulaire vers le passe-câbles du plateau.
+  const harness = useMemo(() => {
+    const zFace = P.z + P.depth / 2;
+    return [-1, 0, 1].map((lane) => tube([[P.x - 28 + lane * 22, P.y + 14, zFace + 2], [P.x - 34 + lane * 18, P.y + 16, zFace + 46], [P.x - 70 + lane * 8, P.y + 22, zFace + 84], [-102, P.y + 30 + lane * 6, zFace + 104]], 5.2));
+  }, [P.x, P.y, P.z, P.depth]);
+  useEffect(() => () => harness.forEach((geometry) => geometry.dispose()), [harness]);
+
   if (!psu || !label || !build.psu) return null;
   return (
     <Pick category="psu">
@@ -36,6 +43,7 @@ export function Psu({ build }: { build: Build }) {
         <planeGeometry args={[122, 61]} />
       </mesh>
       <Repeat g={box(16, 10, 3)} m={mat.dark} items={sockets} />
+      {P.mount === "rear" && harness.map((geometry, i) => <mesh key={i} geometry={geometry} material={mat.cable} castShadow />)}
       {/* Face arrière : grille, interrupteur et prise secteur */}
       {P.mount === "rear" && (
         <>

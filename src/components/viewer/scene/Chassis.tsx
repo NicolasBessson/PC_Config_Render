@@ -36,6 +36,10 @@ export function Chassis({ build, style, showPanel }: { build: Build; style: Styl
   const shroudY = f.bottom + 4 + shroudHeight / 2;
   const grommets = [150, 60, -40].filter((y) => y - 40 > f.shroudTop);
   const rearGrille = layout.fans.rearSize - 4;
+  // Vis visibles à l'arrière : fixation de l'alimentation et du ventilateur.
+  const half = layout.fans.rearSize / 2 - 7.5;
+  const rearScrews: { p: Vec3; r: Vec3 }[] = [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sy]) => ({ p: [REAR_FAN.x + sx * half, REAR_FAN.y + sy * half, ANCHOR.back - 2.4], r: [HALF_PI, 0, 0] }));
+  if (f.psu.mount === "rear") for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) rearScrews.push({ p: [f.psu.x + sx * 69, f.psu.y + sy * 37, ANCHOR.back - 2.4], r: [HALF_PI, 0, 0] });
 
   return (
     <Pick category="case">
@@ -116,6 +120,12 @@ export function Chassis({ build, style, showPanel }: { build: Build; style: Styl
       {/* Panneau arrière : grille du ventilateur et caches des emplacements libres */}
       <Part g={perforated(rearGrille, rearGrille, 9)} m={mat.mesh} p={[REAR_FAN.x, REAR_FAN.y, ANCHOR.back - 1]} shadow={false} />
       {covers.length > 0 && <Repeat g={box(116, 11.5, 1.4)} m={mat.steel} items={covers} />}
+      <Repeat g={cylinder(3.4, 3.4, 1.6, 12)} m={mat.steel} items={rearScrews} />
+      {/* Vis moletées du panneau latéral et filtre à poussière sous l'alimentation */}
+      {[-1, 1].map((side) => (
+        <Part key={side} g={cylinder(5, 5, 9, 16)} m={mat.steel} p={[f.right - 5, cy + side * (H / 2 - 60), ANCHOR.back - 6]} r={[HALF_PI, 0, 0]} shadow={false} />
+      ))}
+      <Part g={rbox(W - 60, 2, 150, 1)} m={mat.dark} p={[cx, f.bottom - 3, ANCHOR.back + 96]} shadow={false} />
       {!layout.board && <Part g={box(46, 160, 1)} m={mat.steel} p={[-78, 124, ANCHOR.back]} shadow={false} />}
 
       {/* Cache d'alimentation, lorsque le boîtier en possède un */}

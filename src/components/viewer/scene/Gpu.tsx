@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import type { Build } from "@/lib/build";
 import { ANCHOR, BOARD, GPU_BACK, GPU_TOP, SLOT_PITCH } from "../layout";
 import { Glow, Label, Part, Pick, Repeat, useScene, useTint, type Vec3 } from "./context";
-import { box, panel, rbox, torus } from "./geometry";
+import { box, cylinder, panel, rbox, torus } from "./geometry";
 import { Rotor } from "./Fan";
 
 const HALF_PI = Math.PI / 2;
@@ -32,11 +32,20 @@ export function Gpu({ build }: { build: Build }) {
     const finHeight = gpu.thickness - 24;
     const fins: { p: Vec3 }[] = [];
     for (let z = z0 + 8; z < z0 + length - 8; z += 3.4) fins.push({ p: [cx, bottom + 18 + finHeight / 2, z] });
-    return { x1, width, cx, length, z0, zc, top, bottom, fanRadius, fanZ, finHeight, fins };
+    // Vis de la plaque arrière et nervures obliques du carénage, entre les ventilateurs.
+    const screws: { p: Vec3 }[] = [];
+    for (const kx of [-0.36, 0.36]) for (const kz of [0.08, 0.36, 0.64, 0.92]) screws.push({ p: [cx + kx * width, top + 0.4, z0 + length * kz] });
+    const ribs: { p: Vec3; r: Vec3 }[] = [];
+    for (let i = 0; i <= gpu.fans; i++) {
+      const z = z0 + (length / gpu.fans) * i;
+      if (z < z0 + 12 || z > z0 + length - 12) continue;
+      for (const side of [-1, 1]) ribs.push({ p: [cx + side * width * 0.2, bottom - 0.6, z], r: [0, side * 0.6, 0] });
+    }
+    return { x1, width, cx, length, z0, zc, top, bottom, fanRadius, fanZ, finHeight, fins, screws, ribs };
   }, [gpu]);
 
   if (!gpu || !shape || !build.gpu) return null;
-  const { x1, width, cx, length, z0, zc, top, bottom, fanRadius, fanZ, finHeight, fins } = shape;
+  const { x1, width, cx, length, z0, zc, top, bottom, fanRadius, fanZ, finHeight, fins, screws, ribs } = shape;
   const thickness = gpu.thickness;
   const bracketHeight = gpu.slots * SLOT_PITCH - 6;
   const bracketY = 28 - ((gpu.slots - 1) * SLOT_PITCH) / 2;
@@ -48,6 +57,8 @@ export function Gpu({ build }: { build: Build }) {
       <Part g={rbox(width, 2.6, length, 1.2)} m={backplate} p={[cx, top - 1.3, zc]} />
       <Part g={box(width - 34, 0.6, length * 0.2)} m={mat.dark} p={[cx, top + 0.1, z0 + length * 0.85]} shadow={false} />
       <Part g={box(width * 0.55, 0.5, 2)} m={mat.dark} p={[cx - 12, top + 0.1, z0 + length * 0.3]} shadow={false} />
+      <Repeat g={cylinder(2.2, 2.2, 1.4, 10)} m={mat.steel} items={screws} />
+      {ribs.length > 0 && <Repeat g={rbox(width * 0.5, 2.2, 5, 1)} m={accent} items={ribs} />}
       {/* Circuit imprimé et dissipateur à ailettes */}
       <Part g={box(width - 6, 1.6, length * 0.74)} m={mat.pcb} p={[cx - 3, top - 4.4, z0 + length * 0.37]} shadow={false} />
       <Repeat g={box(width - 12, finHeight, 1.1)} m={mat.fin} items={fins} />

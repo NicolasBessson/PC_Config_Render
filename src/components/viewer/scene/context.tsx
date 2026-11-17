@@ -8,6 +8,7 @@ import { CATEGORY_LABELS, type Category } from "@/lib/catalog";
 import type { SceneLayout } from "../layout";
 import type { Lighting, StylePalette } from "../styles";
 import type { Materials } from "./materials";
+import { brushedTexture, grainTexture } from "./textures";
 
 export interface SceneContext {
   palette: StylePalette;
@@ -66,7 +67,12 @@ export function Glow({ on = true, offset = 0, strength = 3.4 }: { on?: boolean; 
 
 /** Matériau à la couleur propre d'un produit ; à défaut, le matériau du style. */
 export function useTint(color: string | null | undefined, fallback: THREE.Material, metalness = 0.3, roughness = 0.5): THREE.Material {
-  const material = useMemo(() => (color ? new THREE.MeshStandardMaterial({ color, metalness, roughness }) : null), [color, metalness, roughness]);
+  const material = useMemo(() => {
+    if (!color) return null;
+    // Même grain que les matériaux de style ; les pièces métalliques reçoivent un brossage.
+    const relief = metalness > 0.6 ? { roughnessMap: brushedTexture(), bumpMap: brushedTexture(), bumpScale: 0.35, roughness: Math.max(roughness, 0.48) } : { bumpMap: grainTexture(), bumpScale: 0.5 };
+    return new THREE.MeshStandardMaterial({ color, metalness, roughness, ...relief });
+  }, [color, metalness, roughness]);
   useEffect(() => () => material?.dispose(), [material]);
   return material ?? fallback;
 }

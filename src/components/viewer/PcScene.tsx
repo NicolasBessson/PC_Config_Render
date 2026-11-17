@@ -125,6 +125,8 @@ export function PcScene({ build, style, lighting, showPanel = true, showLabels =
             ))}
           </Pick>
           <ExtraFans build={build} />
+          {/* Lumière d'appoint neutre : l'intérieur reste lisible même sans éclairage RGB. */}
+          <pointLight position={[frame.right - 28, 110, 30]} color="#ffffff" intensity={7 * palette.exposure} distance={8} decay={1.5} />
           <InnerLights />
         </group>
       </group>

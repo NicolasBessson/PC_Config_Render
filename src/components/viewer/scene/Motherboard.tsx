@@ -31,7 +31,18 @@ export function Motherboard({ build }: { build: Build }) {
     );
     // Emplacements PCIe : le premier, renforcé, reçoit la carte graphique.
     const pcie = [28, 28 - 2 * 20.32, 28 - 4 * 20.32].filter((y) => y > bottom + 8);
-    return { capacitors, vrmFins, clips, usb, screws, pcie };
+    // Inductances des étages d'alimentation, entre le socket et les dissipateurs.
+    const chokes: { p: Vec3 }[] = [];
+    for (let i = 0; i < 8; i++) chokes.push({ p: [X + 4.5, cpuY + 39, cpuZ - 44 + i * 11] });
+    for (let i = 0; i < 6; i++) chokes.push({ p: [X + 4.5, cpuY - 28 + i * 11, cpuZ - 44] });
+    // Puces, broches et condensateurs audio : positions fixes, propres à ce modèle générique.
+    const chips: { p: Vec3 }[] = [[cpuY - 52, cpuZ + 10], [cpuY - 52, cpuZ - 26], [cpuY + 30, cpuZ + 52], [bottom + 30, BOARD.back + 40], [bottom + 22, BOARD.back + 96], [bottom + 96, front - 20]]
+      .filter(([y]) => y > bottom + 6)
+      .map(([y, z]) => ({ p: [X + 1.2, y, z] as Vec3 }));
+    const headers = Array.from({ length: 9 }, (_, i) => ({ p: [X + 4, bottom + 6, front - 24 - i * 14] as Vec3 }));
+    const audio = Array.from({ length: 5 }, (_, i) => ({ p: [X + 5, bottom + 14 + i * 9, BOARD.back + 16] as Vec3, r: [0, 0, HALF_PI] as Vec3 }));
+    const sata = [0, 1].map((i) => ({ p: [X + 6, bottom + 78 + i * 20, front - 5] as Vec3 }));
+    return { capacitors, vrmFins, clips, usb, screws, pcie, chokes, chips, headers, audio, sata };
   }, [board]);
 
   if (!board || !details || !build.motherboard) return null;
@@ -52,7 +63,13 @@ export function Motherboard({ build }: { build: Build }) {
       {/* Étages d'alimentation : dissipateurs à ailettes et condensateurs */}
       <Part g={rbox(22, 22, 100, 2)} m={heatsink} p={[X + 11, cpuY + 58, cpuZ - 5]} />
       <Repeat g={box(8, 22, 5)} m={heatsink} items={details.vrmFins} />
-      <Repeat g={cylinder(3.3, 3.3, 10, 10)} m={mat.dark} items={details.capacitors} />
+      <Repeat g={cylinder(2.6, 2.6, 9, 10)} m={mat.dark} items={details.capacitors.map((c) => ({ ...c, p: [c.p[0], c.p[1] + (c.p[1] > cpuY ? -11 : 0), c.p[2] + (c.p[1] > cpuY ? 0 : 11)] as Vec3 }))} />
+      <Repeat g={rbox(9, 9, 9, 1.2)} m={mat.slot} items={details.chokes} />
+      {details.chips.length > 0 && <Repeat g={box(2.4, 16, 16)} m={mat.dark} items={details.chips} />}
+      <Repeat g={box(8, 5, 11)} m={mat.dark} items={details.headers} />
+      {bottom < 0 && <Repeat g={cylinder(3, 3, 10, 10)} m={mat.gold} items={details.audio} />}
+      {bottom < 0 && <Repeat g={rbox(12, 16, 9, 1)} m={mat.dark} items={details.sata} />}
+      <Part g={rbox(9, 30, 8, 1)} m={mat.dark} p={[X + 4.5, cpuY - 64, front - 7]} shadow={false} />
 
       {/* Carénage des connecteurs arrière */}
       <Part g={rbox(40, 134, 40, 6)} m={mat.satin} p={[X + 20, cpuY + 10, BOARD.back + 21]} />
