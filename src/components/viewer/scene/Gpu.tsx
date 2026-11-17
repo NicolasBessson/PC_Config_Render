@@ -41,11 +41,13 @@ export function Gpu({ build }: { build: Build }) {
       if (z < z0 + 12 || z > z0 + length - 12) continue;
       for (const side of [-1, 1]) ribs.push({ p: [cx + side * width * 0.2, bottom - 0.6, z], r: [0, side * 0.6, 0] });
     }
-    return { x1, width, cx, length, z0, zc, top, bottom, fanRadius, fanZ, finHeight, fins, screws, ribs };
+    const vents: { p: Vec3; r: Vec3 }[] = [];
+    for (let z = z0 + length * 0.62; z < z0 + length - 14; z += 9) vents.push({ p: [x1 + 0.2, bottom + gpu.thickness * 0.2, z], r: [0.5, 0, 0] });
+    return { x1, width, cx, length, z0, zc, top, bottom, fanRadius, fanZ, finHeight, fins, screws, ribs, vents };
   }, [gpu]);
 
   if (!gpu || !shape || !build.gpu) return null;
-  const { x1, width, cx, length, z0, zc, top, bottom, fanRadius, fanZ, finHeight, fins, screws, ribs } = shape;
+  const { x1, width, cx, length, z0, zc, top, bottom, fanRadius, fanZ, finHeight, fins, screws, ribs, vents } = shape;
   const thickness = gpu.thickness;
   const bracketHeight = gpu.slots * SLOT_PITCH - 6;
   const bracketY = 28 - ((gpu.slots - 1) * SLOT_PITCH) / 2;
@@ -65,6 +67,11 @@ export function Gpu({ build }: { build: Build }) {
       {/* Carénage : dessous percé pour les ventilateurs, bandeau latéral, embout */}
       <Part g={panel(width, length, 3, fanZ.map((z) => ({ x: 0, y: z - zc, radius: fanRadius })), 4)} m={shroud} p={[cx, bottom + 1.5, zc]} r={[HALF_PI, 0, 0]} />
       <Part g={rbox(3, thickness * 0.42, length, 1.4)} m={shroud} p={[x1 - 1.5, bottom + thickness * 0.21, zc]} />
+      {/* Arêtes chanfreinées du carénage, côté vitre et côté carte mère */}
+      <Part g={rbox(9, 2.6, length - 6, 1.2)} m={shroud} p={[x1 - 4, bottom + 3.4, zc]} r={[0, 0, Math.PI / 4]} />
+      <Part g={rbox(9, 2.6, length - 6, 1.2)} m={shroud} p={[x1 - width + 4, bottom + 3.4, zc]} r={[0, 0, -Math.PI / 4]} />
+      {/* Ouïes obliques du bandeau latéral */}
+      <Repeat g={box(0.8, thickness * 0.24, 3)} m={mat.dark} items={vents} />
       <Part g={rbox(3.6, 6, length * 0.6, 1.2)} m={accent} p={[x1 - 1.2, bottom + thickness * 0.42, zc - length * 0.12]} shadow={false} />
       <Part g={rbox(3, 5, length, 1.2)} m={backplate} p={[x1 - 1.5, top - 5.2, zc]} shadow={false} />
       <Part g={rbox(width, thickness - 3, 4, 1.5)} m={shroud} p={[cx, (top + bottom) / 2, z0 + length - 2]} />
@@ -78,6 +85,7 @@ export function Gpu({ build }: { build: Build }) {
         <group key={z} position={[cx, bottom + 9, z]} rotation={[HALF_PI, 0, 0]}>
           <Rotor size={fanRadius * 2 + 8} speed={7} blades={11} />
           <mesh geometry={torus(fanRadius, 1.6, 40)} material={accent} position={[0, 0, 9]} />
+          <mesh geometry={torus(fanRadius + 3.5, 2.4, 40)} material={shroud} position={[0, 0, 7.5]} castShadow />
         </group>
       ))}
       {/* Équerre et sorties vidéo, visibles depuis l'arrière */}

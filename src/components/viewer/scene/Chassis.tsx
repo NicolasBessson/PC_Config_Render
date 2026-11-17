@@ -36,6 +36,8 @@ export function Chassis({ build, style, showPanel }: { build: Build; style: Styl
   const shroudY = f.bottom + 4 + shroudHeight / 2;
   const grommets = [150, 60, -40].filter((y) => y - 40 > f.shroudTop);
   const rearGrille = layout.fans.rearSize - 4;
+  // Ouïes du cache d'alimentation, au-dessus de l'alimentation.
+  const shroudVents = Array.from({ length: 9 }, (_, i) => ({ p: [cx - 20, f.shroudTop + 1.6, ANCHOR.back + 36 + i * 11] as Vec3 }));
   // Vis visibles à l'arrière : fixation de l'alimentation et du ventilateur.
   const half = layout.fans.rearSize / 2 - 7.5;
   const rearScrews: { p: Vec3; r: Vec3 }[] = [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sy]) => ({ p: [REAR_FAN.x + sx * half, REAR_FAN.y + sy * half, ANCHOR.back - 2.4], r: [HALF_PI, 0, 0] }));
@@ -110,6 +112,10 @@ export function Chassis({ build, style, showPanel }: { build: Build; style: Styl
         )}
       </group>
 
+      {/* Rails de fixation des ventilateurs frontaux */}
+      {[-1, 1].map((side) => (
+        <Part key={side} g={box(6, H - 60, 2)} m={mat.chassis} p={[cx + side * (layout.fans.frontSize / 2 - 7.5), cy + 8, f.frontFanZ + 13.5]} />
+      ))}
       {/* Plateau de la carte mère et passe-câbles */}
       <Part g={box(2, trayHeight, 376)} m={mat.chassis} p={[-104, f.shroudTop + trayHeight / 2, -38]} />
       {grommets.map((y) => (
@@ -135,6 +141,7 @@ export function Chassis({ build, style, showPanel }: { build: Build; style: Styl
           <Part g={panel(shroudLength, shroudHeight - 2, 3, [{ x: -(f.psu.z - shroudZ), y: f.psu.y - shroudY, w: 112, h: 60, r: 4 }], 1)} m={mat.satin} p={[f.right - 8, shroudY, shroudZ]} r={[0, HALF_PI, 0]} />
           <Part g={box(W - 10, shroudHeight - 2, 3)} m={mat.satin} p={[cx, shroudY, f.shroudFront]} />
           <Part g={rbox(46, 2.4, 18, 1)} m={mat.rubber} p={[f.right - 57, f.shroudTop + 1.6, 40]} shadow={false} />
+          <Repeat g={rbox(60, 0.8, 4, 0.4)} m={mat.dark} items={shroudVents} />
           {style === "rgb" && (
             <mesh geometry={rbox(3.5, 3.5, shroudLength - 40, 1.5)} position={[f.right - 14, f.shroudTop + 3.4, shroudZ]}>
               <Glow offset={0.6} />

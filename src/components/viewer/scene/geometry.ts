@@ -155,7 +155,7 @@ export function ramSpreader(height: number): THREE.BufferGeometry {
 }
 
 /** Tube souple passant par une série de points : câbles et tuyaux. */
-export function tube(points: [number, number, number][], radius: number): THREE.TubeGeometry {
+export function tube(points: [number, number, number][], radius: number, radialSegments = 10): THREE.TubeGeometry {
   const curve = new THREE.CatmullRomCurve3(points.map((p) => new THREE.Vector3(...p)), false, "catmullrom", 0.5);
-  return new THREE.TubeGeometry(curve, 36, radius, 10, false);
+  return new THREE.TubeGeometry(curve, 36, radius, radialSegments, false);
 }
