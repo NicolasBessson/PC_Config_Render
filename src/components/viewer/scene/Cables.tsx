@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import type * as THREE from "three";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { BOARD, GPU_BACK, GPU_TOP } from "../layout";
 import { Part, useScene, type Vec3 } from "./context";
 import { rbox, tube } from "./geometry";
@@ -44,7 +45,7 @@ export function Cables() {
   const { mat, layout } = useScene();
   const { board, gpu, cables, frame } = layout;
 
-  const { wires, combs } = useMemo(() => {
+  const { harness, combs } = useMemo(() => {
     const wires: THREE.TubeGeometry[] = [];
     const combs: Comb[] = [];
     if (board && cables.atx24) {
@@ -69,16 +70,17 @@ export function Cables() {
         combs.push({ p: [(x1 + 31 + drop) / 2 + 2, (GPU_TOP - 66 + floor + 34) / 2, zc + dz + 17], size: [10, 3.2, width] });
       }
     }
-    return { wires, combs };
+    // Tous les fils en un seul maillage : un seul appel de rendu, quel que soit leur nombre.
+    const harness = wires.length > 0 ? mergeGeometries(wires) : null;
+    wires.forEach((geometry) => geometry.dispose());
+    return { harness, combs };
   }, [board, gpu, cables, frame]);
 
-  useEffect(() => () => wires.forEach((geometry) => geometry.dispose()), [wires]);
+  useEffect(() => () => harness?.dispose(), [harness]);
 
   return (
     <group>
-      {wires.map((geometry, i) => (
-        <mesh key={i} geometry={geometry} material={mat.cable} castShadow />
-      ))}
+      {harness && <mesh geometry={harness} material={mat.cable} castShadow />}
       {combs.map((comb, i) => (
         <Part key={i} g={rbox(...comb.size, 1)} m={mat.dark} p={comb.p} shadow={false} />
       ))}
