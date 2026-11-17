@@ -9,7 +9,7 @@ Configurateur de PC : recommandation à partir d'un besoin, compatibilité, esti
 | Commande | Rôle |
 |---|---|
 | `npm run dev` | Serveur de développement (port 3000) |
-| `npm test` | Vitest : 66 tests (moteurs, ventilateurs, offres, correspondance configuration ↔ scène 3D, caméra) |
+| `npm test` | Vitest : 68 tests (moteurs, ventilateurs, offres, correspondance configuration ↔ scène 3D, caméra) |
 | `npm run e2e` | 10 tests navigateur (Playwright) sur un site déjà lancé ; `BASE_URL` pour l'adresse, `PW_CHROMIUM` pour un Chromium existant |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
@@ -108,6 +108,10 @@ Repère : il est ancré au coin haut-arrière côté carte mère (`ANCHOR`). La 
 Couleurs : celles du produit (`visual`) priment sur celles du style via `useTint` ; un produit sans `visual` retombe sur la palette du style. Seuls les produits réellement RGB (`rgb: true`, `fansRgb`) s'illuminent.
 
 Vue éclatée : bouton de la barre d'outils. Chaque catégorie se déplace selon `EXPLODE_OFFSET` (`scene/context.tsx`), animée dans `Pick` ; la vitre, les câbles et le faisceau d'alimentation sont retirés, les étiquettes affichées d'office, et la caméra prend la vue `eclatee` (absente du sélecteur de vues).
+
+Orientation : les cotes de la scène placent la façade côté +z, ce qui donnait un PC **en miroir** d'un vrai. `PcScene` applique donc une échelle négative en z : dans le monde, vu côté vitre, la façade est à droite et les connecteurs arrière à gauche. Conséquences : les vues de `camera.ts` ont la façade côté −z, et les textes dessinés dans les textures (étiquette d'alimentation, sérigraphie) sont écrits à l'envers pour se lire à l'endroit.
+
+Modèles 3D réels (`viewer/models.ts`, fichiers dans `public/models/`, chargés par `scene/GltfModel.tsx`) : Corsair 4000D Airflow et Corsair Vengeance LPX, créés par des tiers sur Sketchfab, licence CC BY 4.0. **Le crédit est obligatoire** : il figure dans la fiche du composant, le pied de page et le README ; tout nouveau modèle doit y être ajouté. Seule la licence « CC Attribution » convient (pas les variantes « NonCommercial »). Un boîtier doté d'un modèle impose ses repères à `frameFor` (`frame`, `psuX`), mesurés sur le fichier ; si le fichier ne se charge pas, la forme générique prend le relais. Pistes écartées : Noctua publie des fichiers officiels mais son site bloque les accès automatisés (à télécharger à la main) et ses conditions ne disent rien de la rediffusion ; GrabCAD est non commercial ; les modèles de BuildCores sont interdits de réutilisation ; sa base OpenDB est sous licence non commerciale à partage identique, donc à ne pas importer.
 
 Règle de conception : **toute décision sur ce qui est affiché se prend dans `layout.ts`**, pas dans les composants de `scene/`. C'est ce qui rend la correspondance configuration ↔ rendu testable sans navigateur (`layout.test.ts`). Les modèles sont génériques, aux cotes du catalogue ; le badge « Rendu illustratif · modèles génériques » doit rester affiché.
 

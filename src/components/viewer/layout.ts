@@ -1,5 +1,6 @@
 import { fanCountOf, type Build } from "@/lib/build";
 import type { Style } from "@/lib/catalog";
+import { CASE_MODELS, RAM_MODELS } from "./models";
 
 /*
  * Description de la scène 3D, déduite de la configuration.
@@ -61,11 +62,18 @@ export interface Frame {
   psu: { x: number; y: number; z: number; mount: "rear" | "front" };
   /** Emplacements d'extension à l'arrière. */
   slots: number;
+  /** Identifiant du modèle 3D réel du boîtier, s'il en existe un. */
+  model: string | null;
 }
 
 export function frameFor(pcCase: Build["case"]): Frame {
-  const { width, height, depth } = pcCase?.dimensionsMm ?? CASE;
-  const right = ANCHOR.tray + width, bottom = ANCHOR.top - height, front = ANCHOR.back + depth;
+  // Un modèle réel impose ses propres repères, mesurés sur le fichier.
+  const model = pcCase ? CASE_MODELS[pcCase.id] : undefined;
+  const nominal = pcCase?.dimensionsMm ?? CASE;
+  const right = model?.frame.right ?? ANCHOR.tray + nominal.width;
+  const bottom = model?.frame.bottom ?? ANCHOR.top - nominal.height;
+  const front = model?.frame.front ?? ANCHOR.back + nominal.depth;
+  const width = right - ANCHOR.tray, height = ANCHOR.top - bottom, depth = front - ANCHOR.back;
   const cx = ANCHOR.tray + width / 2;
   const shroud = pcCase?.visual?.shroud ?? true;
   const mount = pcCase?.visual?.psu ?? "rear";
@@ -74,12 +82,13 @@ export function frameFor(pcCase: Build["case"]): Frame {
     cx, cy: ANCHOR.top - height / 2, cz: ANCHOR.back + depth / 2,
     frontStyle: pcCase?.visual?.front ?? null,
     shroud,
-    shroudTop: shroud ? bottom + 104 : bottom + 4,
+    shroudTop: model?.frame.shroudTop ?? (shroud ? bottom + 104 : bottom + 4),
     shroudFront: front - 62,
     frontFanZ: front - 17,
     frontFanBack: front - 30,
-    psu: { x: Math.min(cx + 20, right - 6 - PSU_SIZE.width / 2), y: bottom + 47, z: mount === "rear" ? ANCHOR.back + 84 : front - 40 - PSU_SIZE.depth / 2, mount },
+    psu: { x: model?.psuX ?? Math.min(cx + 20, right - 6 - PSU_SIZE.width / 2), y: bottom + 47, z: mount === "rear" ? ANCHOR.back + 84 : front - 40 - PSU_SIZE.depth / 2, mount },
     slots: !pcCase || pcCase.formFactors.includes("ATX") ? 7 : 4,
+    model: model && pcCase ? pcCase.id : null,
   };
 }
 
@@ -115,7 +124,7 @@ export interface SceneLayout {
   cpu: boolean;
   gpu: GpuLayout | null;
   cooler: CoolerLayout | null;
-  ram: { modules: number; slots: number[]; height: number; rgb: boolean; color: string | null } | null;
+  ram: { modules: number; slots: number[]; height: number; rgb: boolean; color: string | null; model: string | null } | null;
   storage: boolean;
   psu: { wattage: number; color: string | null } | null;
   /** Ventilateurs de boîtier, hors refroidissement du processeur. `rgb: null` = selon le style. */
@@ -203,7 +212,7 @@ export function layoutScene(build: Build, style: Style): SceneLayout {
     cpu: Boolean(build.cpu),
     gpu: gpuLayout,
     cooler: coolerLayout,
-    ram: ram ? { modules: ram.modules, slots: ramSlots(ram.modules), height: ram.heightMm, rgb: ram.rgb, color: ram.visual?.spreader ?? null } : null,
+    ram: ram ? { modules: ram.modules, slots: ramSlots(ram.modules), height: ram.heightMm, rgb: ram.rgb, color: ram.visual?.spreader ?? null, model: RAM_MODELS[ram.id] ? ram.id : null } : null,
     storage: Boolean(build.storage),
     psu: psu ? { wattage: psu.wattage, color: psu.visual?.body ?? null } : null,
     fans: {

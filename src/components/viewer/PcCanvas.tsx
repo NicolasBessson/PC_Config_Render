@@ -155,7 +155,7 @@ export default function PcCanvas({ interactive = true, autoRotate = false, anima
         <ambientLight intensity={0.72 * exposure} />
         {/* Lumière principale, basse et latérale : elle entre par la vitre et porte les ombres. */}
         <directionalLight
-          position={[10, 4.2, 5.5]}
+          position={[10, 4.2, -5.5]}
           intensity={2.3 * exposure}
           castShadow={high}
           shadow-mapSize={[2048, 2048]}
@@ -169,16 +169,16 @@ export default function PcCanvas({ interactive = true, autoRotate = false, anima
           shadow-camera-near={1}
           shadow-camera-far={30}
         />
-        <directionalLight position={[-6, 6, -7]} intensity={0.7 * exposure} />
+        <directionalLight position={[-6, 6, 7]} intensity={0.7 * exposure} />
         <directionalLight position={[2, 9, 1]} intensity={0.5 * exposure} />
         {/* Studio photo : grande boîte à lumière au-dessus, bandes latérales, contre-jour froid. Aucun fichier externe. */}
         <Environment resolution={256} frames={1} environmentIntensity={0.85 * exposure}>
           <color attach="background" args={["#05060a"]} />
           <Lightformer form="rect" intensity={3.2} position={[0, 8, 1]} scale={[10, 6, 1]} rotation={[Math.PI / 2, 0, 0]} />
-          <Lightformer form="rect" intensity={2.6} position={[8, 2.5, 3]} scale={[2.2, 9, 1]} rotation={[0, -Math.PI / 2, 0]} />
-          <Lightformer form="rect" intensity={1.6} position={[8, 2.5, -4]} scale={[1.2, 9, 1]} rotation={[0, -Math.PI / 2, 0]} />
-          <Lightformer form="rect" intensity={1.1} position={[-3, 2, 8]} scale={[6, 6, 1]} color="#9dbcff" />
-          <Lightformer form="rect" intensity={0.9} position={[-2, 3, -8]} scale={[7, 5, 1]} rotation={[0, Math.PI, 0]} color="#c9d6ff" />
+          <Lightformer form="rect" intensity={2.6} position={[8, 2.5, -3]} scale={[2.2, 9, 1]} rotation={[0, -Math.PI / 2, 0]} />
+          <Lightformer form="rect" intensity={1.6} position={[8, 2.5, 4]} scale={[1.2, 9, 1]} rotation={[0, -Math.PI / 2, 0]} />
+          <Lightformer form="rect" intensity={1.1} position={[-3, 2, -8]} scale={[6, 6, 1]} rotation={[0, Math.PI, 0]} color="#9dbcff" />
+          <Lightformer form="rect" intensity={0.9} position={[-2, 3, 8]} scale={[7, 5, 1]} color="#c9d6ff" />
           <Lightformer form="ring" intensity={1.4} position={[-7, 4, 0]} scale={3} rotation={[0, Math.PI / 2, 0]} color="#ffe9d2" />
         </Environment>
         <PcScene animate={animate} {...scene} />

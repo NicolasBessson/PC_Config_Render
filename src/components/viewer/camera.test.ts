@@ -52,7 +52,7 @@ describe("vues de la caméra", () => {
 
   it("les vues montrent des faces différentes", () => {
     expect(VIEWS.cote.position[0]).toBeGreaterThan(Math.abs(VIEWS.cote.position[2]) * 5); // face à la vitre
-    expect(VIEWS.arriere.position[2]).toBeLessThan(-HALF.z); // derrière le boîtier
-    expect(VIEWS["trois-quarts"].position[2]).toBeGreaterThan(HALF.z); // devant
+    expect(VIEWS.arriere.position[2]).toBeGreaterThan(HALF.z); // derrière le boîtier
+    expect(VIEWS["trois-quarts"].position[2]).toBeLessThan(-HALF.z); // devant
   });
 });

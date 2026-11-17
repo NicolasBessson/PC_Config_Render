@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { SiteHeader } from "@/components/SiteHeader";
+import { ALL_MODEL_CREDITS } from "@/components/viewer/models";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,6 +22,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             PC Architect — projet en cours de conception. Prix indicatifs en CHF et benchmarks de démonstration, non vérifiés : à ne pas utiliser pour un achat.
           </p>
           <p>Le rendu 3D est illustratif ; seule la vérification de compatibilité fait foi.</p>
+          <p className="mt-2">
+            Modèles 3D de tiers, sous licence Creative Commons Attribution 4.0 :{" "}
+            {ALL_MODEL_CREDITS.map((credit, index) => (
+              <span key={credit.url}>
+                {index > 0 && " · "}
+                <a href={credit.url} target="_blank" rel="noreferrer" className="underline">
+                  «&nbsp;{credit.title}&nbsp;»
+                </a>{" "}
+                par {credit.author}
+              </span>
+            ))}
+            . Les marques citées appartiennent à leurs détenteurs.
+          </p>
         </footer>
       </body>
     </html>

@@ -111,7 +111,11 @@ export function PcScene({ build, style, lighting, showPanel = true, showLabels =
   return (
     <Ctx.Provider value={context}>
       {/* Le boîtier est centré sur le socle, posé sur ses pieds, quelles que soient ses dimensions. */}
-      <group scale={0.01} position={[0, 0.1, 0]}>
+      {/*
+        Échelle négative en z : les cotes de la scène placent la façade côté +z, ce qui donnait un PC en
+        miroir. Le retournement remet la façade à droite quand on regarde la vitre, comme en vrai.
+      */}
+      <group scale={[0.01, 0.01, -0.01]} position={[0, 0.1, 0]}>
         <group position={[-frame.cx, -(frame.bottom + ANCHOR.top), -frame.cz]}>
           <Chassis build={build} style={style} showPanel={showPanel && !exploded} />
           <Motherboard build={build} />

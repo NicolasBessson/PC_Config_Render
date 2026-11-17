@@ -121,7 +121,9 @@ export function pcbTexture() {
         ctx.fillRect(x + pin, y + h, 2, 3);
       }
     }
-    // Sérigraphie : repères génériques, aucun nom de marque.
+    // Sérigraphie : repères génériques, aucun nom de marque. Écrite à l'envers : la scène est retournée à l'affichage.
+    ctx.translate(1024, 0);
+    ctx.scale(-1, 1);
     ctx.fillStyle = "#fafafa";
     ctx.font = "600 13px ui-monospace, monospace";
     for (const label of ["PCIE_1", "DIMM_A2", "DIMM_B2", "M2_1", "CPU_FAN", "SYS_FAN1", "JFP1", "ATX_PWR", "CPU_PWR", "SATA_1", "JUSB3", "ARGB_1"]) {
@@ -146,6 +148,9 @@ export function finsTexture() {
 /** Étiquette d'alimentation générique : uniquement la puissance, aucun logo de marque. */
 export function psuLabelTexture(wattage: number, light: boolean) {
   return make(`psu-${wattage}-${light}`, 512, 256, (ctx) => {
+    // Dessinée à l'envers : la scène est retournée à l'affichage, le texte se lit alors à l'endroit.
+    ctx.translate(512, 0);
+    ctx.scale(-1, 1);
     ctx.fillStyle = light ? "#eceef1" : "#101216";
     ctx.fillRect(0, 0, 512, 256);
     ctx.fillStyle = "#2f6bff";

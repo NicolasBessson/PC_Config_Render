@@ -105,6 +105,15 @@ Boîtier moyen-tour générique modélisé en géométrie paramétrique, déclin
 - Deux niveaux de qualité (haute : ombres et halo lumineux ; légère), avec bascule automatique si la fluidité est insuffisante.
 - Si WebGL est indisponible, la page reste utilisable et affiche les données de la configuration.
 
+### Modèles 3D de tiers
+
+Deux produits utilisent un modèle 3D réel, créé par un tiers et publié sur Sketchfab sous licence [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/) :
+
+- « [Corsair 4000D Airflow (Free)](https://sketchfab.com/3d-models/corsair-4000d-airflow-free-34df3ba96cf94e71accdb5779c4b8694) » par Kirigami — repositionné et mis à l'échelle.
+- « [RAM Corsair Vengeance LPX](https://sketchfab.com/3d-models/ram-corsair-vengeance-lpx-ee11e1926e514075a70642ecb5dc5c2d) » par supahot — repositionné et mis à l'échelle.
+
+Ce ne sont pas des fichiers officiels des fabricants ; les marques appartiennent à leurs détenteurs. Les crédits figurent aussi dans le pied de page du site et dans la fiche de chaque composant. Les fichiers sont dans `public/models/`, le registre dans `src/components/viewer/models.ts`.
+
 ### API
 
 | Route | Rôle |

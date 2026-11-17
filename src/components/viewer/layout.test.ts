@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { resolveBuild, type BuildIds } from "@/lib/build";
 import { catalog } from "@/lib/catalog";
 import { ANCHOR, BOARD, CASE, frameFor, frontFanHeights, GPU_TOP, layoutScene } from "./layout";
+import { ALL_MODEL_CREDITS, CASE_MODELS, modelCredit, RAM_MODELS } from "./models";
 
 const BASE: BuildIds = {
   cpu: "r5-7600", gpu: "rtx-5070", motherboard: "b650-tomahawk", ram: "ddr5-32-vengeance",
@@ -53,7 +54,8 @@ describe("correspondance entre la configuration et la scène 3D", () => {
   it("donne au boîtier ses dimensions extérieures", () => {
     const generic = frameFor(null);
     expect(generic).toMatchObject({ width: CASE.width, height: CASE.height, depth: CASE.depth, cx: 0, cy: 0, cz: 0, shroud: true, slots: 7 });
-    for (const pcCase of catalog.case) {
+    // Les boîtiers dotés d'un modèle réel suivent les repères de ce modèle (test dédié plus bas).
+    for (const pcCase of catalog.case.filter((c) => !CASE_MODELS[c.id])) {
       const frame = frameFor(pcCase);
       expect(frame).toMatchObject(pcCase.dimensionsMm!);
       expect(frame.right - ANCHOR.tray).toBe(pcCase.dimensionsMm!.width);
@@ -69,6 +71,37 @@ describe("correspondance entre la configuration et la scène 3D", () => {
     // Boîtier mATX sans cache : alimentation à l'avant, quatre emplacements.
     expect(ap201).toMatchObject({ shroud: false, slots: 4 });
     expect(ap201.psu.mount).toBe("front");
+  });
+
+  it("un boîtier doté d'un modèle réel suit les repères de ce modèle", () => {
+    const pcCase = catalog.case.find((c) => c.id === "4000d-airflow")!;
+    const frame = frameFor(pcCase);
+    const model = CASE_MODELS["4000d-airflow"];
+    expect(frame.model).toBe("4000d-airflow");
+    expect(frame).toMatchObject(model.frame);
+    // Le modèle reste proche des dimensions annoncées par le fabricant (pieds et façade compris ou non).
+    expect(Math.abs(frame.width - pcCase.dimensionsMm!.width)).toBeLessThan(25);
+    expect(Math.abs(frame.depth - pcCase.dimensionsMm!.depth)).toBeLessThan(25);
+    // Le ventirad le plus haut admis par ce boîtier tient sous la vitre du modèle.
+    expect(BOARD.x + pcCase.coolerMaxHeightMm).toBeLessThanOrEqual(frame.right);
+    // L'alimentation reste sous le cache du modèle, donc en deçà de la vitre.
+    expect(frame.psu.x + 75).toBeLessThan(frame.right - 20);
+    expect(frameFor(null).model).toBeNull();
+  });
+
+  it("chaque modèle réel est crédité, et ses identifiants existent au catalogue", () => {
+    for (const id of Object.keys(CASE_MODELS)) expect(catalog.case.some((c) => c.id === id), id).toBe(true);
+    for (const id of Object.keys(RAM_MODELS)) expect(catalog.ram.some((r) => r.id === id), id).toBe(true);
+    for (const credit of ALL_MODEL_CREDITS) {
+      expect(credit.license).toBe("CC BY 4.0");
+      expect(credit.author.length).toBeGreaterThan(0);
+      expect(credit.url.startsWith("https://sketchfab.com/3d-models/")).toBe(true);
+    }
+    expect(modelCredit("4000d-airflow")?.author).toBe("Kirigami");
+    expect(modelCredit("ddr4-32-lpx")?.author).toBe("supahot");
+    expect(modelCredit("rtx-5070")).toBeNull();
+    expect(scene({ ram: "ddr4-32-lpx", motherboard: "b760m-ddr4", cpu: "i5-12400f" }).ram!.model).toBe("ddr4-32-lpx");
+    expect(scene().ram!.model).toBeNull();
   });
 
   it("reprend l'apparence propre à chaque produit", () => {

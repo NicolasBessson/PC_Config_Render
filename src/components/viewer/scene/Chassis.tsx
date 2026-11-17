@@ -1,10 +1,14 @@
 "use client";
 
+import { useMemo } from "react";
 import type { Build } from "@/lib/build";
 import type { Style } from "@/lib/catalog";
 import { ANCHOR, PSU_SIZE, REAR_FAN, SLOT_PITCH } from "../layout";
 import { Glow, Label, Part, Pick, Repeat, useScene, type Vec3 } from "./context";
+import * as THREE from "three";
+import { CASE_MODELS } from "../models";
 import { box, cylinder, panel, perforated, rbox, torus, type Hole } from "./geometry";
+import { GltfModel } from "./GltfModel";
 
 const HALF_PI = Math.PI / 2;
 
@@ -12,7 +16,7 @@ const HALF_PI = Math.PI / 2;
  * Boîtier générique aux dimensions extérieures du boîtier choisi : structure
  * en tôle, façade, vitre, cache d'alimentation. Il n'en reproduit pas le dessin exact.
  */
-export function Chassis({ build, style, showPanel }: { build: Build; style: Style; showPanel: boolean }) {
+function ParametricChassis({ build, style, showPanel }: { build: Build; style: Style; showPanel: boolean }) {
   const { mat, palette, layout } = useScene();
   const f = layout.frame;
   const { width: W, height: H, depth: D, cx, cy, cz } = f;
@@ -150,6 +154,32 @@ export function Chassis({ build, style, showPanel }: { build: Build; style: Styl
         </>
       )}
       {build.case && <Label category="case" name={build.case.name} position={[f.right, ANCHOR.top + 28, f.front - 70]} />}
+    </Pick>
+  );
+}
+
+const GLASS = /glass/i;
+
+/**
+ * Boîtier : le modèle 3D du produit réel lorsqu'il existe, sinon la forme
+ * générique. Le modèle est posé sur les repères de la scène (plateau, dessus,
+ * arrière) ; les axes du fichier sont permutés et mis à l'échelle en millimètres.
+ */
+export function Chassis(props: { build: Build; style: Style; showPanel: boolean }) {
+  const { layout } = useScene();
+  const model = layout.frame.model ? CASE_MODELS[layout.frame.model] : null;
+  const matrix = useMemo(() => {
+    if (!model) return null;
+    const u = model.unit;
+    // x du fichier = profondeur, z du fichier = largeur (vitre côté +z).
+    return new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 0, u), new THREE.Vector3(0, u, 0), new THREE.Vector3(u, 0, 0)).setPosition(...model.offset);
+  }, [model]);
+  if (!model || !matrix) return <ParametricChassis {...props} />;
+  const f = layout.frame;
+  return (
+    <Pick category="case">
+      <GltfModel file={model.file} matrix={matrix} hide={props.showPanel ? undefined : GLASS} fallback={null} />
+      {props.build.case && <Label category="case" name={props.build.case.name} position={[f.right, ANCHOR.top + 28, f.front - 70]} />}
     </Pick>
   );
 }

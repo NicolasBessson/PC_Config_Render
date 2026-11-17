@@ -8,6 +8,7 @@ import { describeComponent } from "@/lib/catalog/describe";
 import { checkBuild } from "@/lib/compat";
 import { DEFAULT_VIEW, VIEW_ORDER, VIEWS, type ViewId } from "./camera";
 import type { Quality } from "./PcCanvas";
+import { modelCredit } from "./models";
 import { LIGHT_COLORS, STYLE_ORDER, STYLES, type Lighting, type LightMode } from "./styles";
 
 // Le moteur 3D n'est chargé que sur les pages qui l'affichent, côté navigateur.
@@ -72,8 +73,8 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
         onSelect={toolbar && interactive ? setSelected : undefined}
       />
       {toolbar && selected && build[selected] && <ComponentCard build={build} category={selected} onClose={() => setSelected(null)} />}
-      <span className="pointer-events-none absolute left-3 top-3 rounded-full border border-line bg-black/50 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-muted backdrop-blur" title="Les modèles 3D sont génériques : ils reprennent les dimensions du catalogue, pas l'apparence exacte des produits.">
-        Rendu illustratif · modèles génériques
+      <span className="pointer-events-none absolute left-3 top-3 rounded-full border border-line bg-black/50 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-muted backdrop-blur" title="Rendu indicatif : la plupart des modèles 3D sont génériques, aux dimensions du catalogue. Quelques produits ont un modèle réel créé par un tiers, crédité dans leur fiche.">
+        Rendu illustratif
       </span>
       {toolbar && (
         <>
@@ -107,6 +108,7 @@ function ComponentCard({ build, category, onClose }: { build: Build; category: C
   const diagnostics = useMemo(() => checkBuild(build).diagnostics.filter((d) => d.involves.includes(category)), [build, category]);
   const worst = diagnostics.some((d) => d.status === "fail") ? "fail" : diagnostics.some((d) => d.status === "warn") ? "warn" : "ok";
   const issues = diagnostics.filter((d) => d.status !== "ok");
+  const credit = modelCredit(component.id);
   return (
     <aside className="absolute left-3 top-12 z-10 w-64 max-w-[calc(100%-1.5rem)] rounded-xl border border-line bg-black/75 p-3 text-xs backdrop-blur max-sm:top-20" aria-label="Composant sélectionné">
       <div className="flex items-start justify-between gap-2">
@@ -136,7 +138,17 @@ function ComponentCard({ build, category, onClose }: { build: Build; category: C
         )}
         {component.source && ". "}
         {component.priceDate === null && "Prix non relevé. "}
-        Modèle 3D générique, aux cotes du catalogue.
+        {credit ? (
+          <>
+            Modèle 3D : «&nbsp;
+            <a href={credit.url} target="_blank" rel="noreferrer" className="text-sky-300 underline">
+              {credit.title}
+            </a>
+            &nbsp;» par {credit.author}, licence {credit.license}. Ce n&apos;est pas un fichier officiel du fabricant.
+          </>
+        ) : (
+          "Modèle 3D générique, aux cotes du catalogue."
+        )}
       </p>
     </aside>
   );
