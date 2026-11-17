@@ -9,7 +9,7 @@ Configurateur de PC : recommandation à partir d'un besoin, compatibilité, esti
 | Commande | Rôle |
 |---|---|
 | `npm run dev` | Serveur de développement (port 3000) |
-| `npm test` | Vitest : 65 tests (moteurs, ventilateurs, offres, correspondance configuration ↔ scène 3D, caméra) |
+| `npm test` | Vitest : 66 tests (moteurs, ventilateurs, offres, correspondance configuration ↔ scène 3D, caméra) |
 | `npm run e2e` | 10 tests navigateur (Playwright) sur un site déjà lancé ; `BASE_URL` pour l'adresse, `PW_CHROMIUM` pour un Chromium existant |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
@@ -106,6 +106,8 @@ viewer/scene/context.tsx    Contexte de scène, Glow, Part, Repeat (instanciatio
 Repère : il est ancré au coin haut-arrière côté carte mère (`ANCHOR`). La carte mère, le GPU et le ventilateur arrière ne bougent pas ; la vitre, la façade et le fond suivent les dimensions du boîtier (`frameFor`, type `Frame`). `PcScene` recentre ensuite le tout sur le socle.
 
 Couleurs : celles du produit (`visual`) priment sur celles du style via `useTint` ; un produit sans `visual` retombe sur la palette du style. Seuls les produits réellement RGB (`rgb: true`, `fansRgb`) s'illuminent.
+
+Vue éclatée : bouton de la barre d'outils. Chaque catégorie se déplace selon `EXPLODE_OFFSET` (`scene/context.tsx`), animée dans `Pick` ; la vitre, les câbles et le faisceau d'alimentation sont retirés, les étiquettes affichées d'office, et la caméra prend la vue `eclatee` (absente du sélecteur de vues).
 
 Règle de conception : **toute décision sur ce qui est affiché se prend dans `layout.ts`**, pas dans les composants de `scene/`. C'est ce qui rend la correspondance configuration ↔ rendu testable sans navigateur (`layout.test.ts`). Les modèles sont génériques, aux cotes du catalogue ; le badge « Rendu illustratif · modèles génériques » doit rester affiché.
 

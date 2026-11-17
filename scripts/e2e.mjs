@@ -106,6 +106,10 @@ await test("visualiseur 3D : vues, vitre, fiche au clic et capture", async (page
   await page.getByLabel("Composant sélectionné").waitFor({ timeout: 5000 });
   const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Capture" }).click()]);
   expect(download.suggestedFilename().endsWith(".png"), "la capture doit produire une image");
+  // Vue éclatée : chaque pièce est nommée, puis tout revient en place.
+  await page.getByRole("button", { name: "Vue éclatée" }).click();
+  await page.locator(".viewer-stage").getByText("Refroidissement", { exact: true }).waitFor({ timeout: 5000 });
+  expect((await page.getByRole("button", { name: /la vitre/ }).count()) === 1, "le bouton de la vitre doit rester disponible");
   await page.getByRole("button", { name: "Réinitialiser" }).click();
   expect(await page.getByRole("button", { name: "Retirer la vitre" }).count(), "la réinitialisation doit remettre la vitre");
 });

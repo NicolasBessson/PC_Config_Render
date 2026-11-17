@@ -41,6 +41,15 @@ describe("vues de la caméra", () => {
     }
   });
 
+  it("la vue éclatée recule sans sortir des limites de zoom", () => {
+    const { position, target } = VIEWS.eclatee;
+    const distance = Math.hypot(...position.map((value, i) => value - target[i]));
+    const base = Math.hypot(...VIEWS["trois-quarts"].position.map((value, i) => value - VIEWS["trois-quarts"].target[i]));
+    expect(distance).toBeGreaterThan(base);
+    expect(distance).toBeLessThanOrEqual(CAMERA_LIMITS.maxDistance);
+    expect(VIEW_ORDER).not.toContain("eclatee"); // déclenchée par son bouton, pas par le sélecteur
+  });
+
   it("les vues montrent des faces différentes", () => {
     expect(VIEWS.cote.position[0]).toBeGreaterThan(Math.abs(VIEWS.cote.position[2]) * 5); // face à la vitre
     expect(VIEWS.arriere.position[2]).toBeLessThan(-HALF.z); // derrière le boîtier

@@ -37,6 +37,7 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
   const [showPanel, setShowPanel] = useState(true);
   const [showLabels, setShowLabels] = useState(false);
   const [selected, setSelected] = useState<Category | null>(null);
+  const [exploded, setExploded] = useState(false);
   const [view, setView] = useState<{ id: ViewId; nonce: number }>({ id: DEFAULT_VIEW, nonce: 0 });
   const touch = useSyncExternalStore(subscribeNever, isTouchDevice, () => false);
   /** Fluidité mesurée insuffisante : on allège, sauf si l'utilisateur a choisi lui-même. */
@@ -56,6 +57,7 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
   const reset = () => {
     goTo(DEFAULT_VIEW);
     setShowPanel(true);
+    setExploded(false);
   };
 
   return (
@@ -65,6 +67,7 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
         interactive={interactive} autoRotate={autoRotate} animate={animate}
         view={view.id} viewNonce={view.nonce} quality={quality}
         onDecline={choice ? undefined : () => setDeclined(true)}
+        exploded={exploded}
         selected={toolbar ? selected : null}
         onSelect={toolbar && interactive ? setSelected : undefined}
       />
@@ -83,6 +86,7 @@ export function Viewer({ build, style, lighting, toolbar = true, interactive = t
             <div className="flex max-w-full gap-0.5 overflow-x-auto rounded-full border border-line bg-black/60 p-1 text-xs backdrop-blur">
               <ToolButton onClick={reset}>Réinitialiser</ToolButton>
               <ToolButton active={!showPanel} onClick={() => setShowPanel((v) => !v)}>{showPanel ? "Retirer la vitre" : "Remettre la vitre"}</ToolButton>
+              <ToolButton active={exploded} onClick={() => { setExploded((v) => !v); goTo(exploded ? DEFAULT_VIEW : "eclatee"); }}>Vue éclatée</ToolButton>
               <ToolButton active={showLabels} onClick={() => setShowLabels((v) => !v)}>Étiquettes</ToolButton>
               <ToolButton onClick={() => setChoice(quality === "high" ? "low" : "high")}>Qualité : {quality === "high" ? "haute" : "légère"}</ToolButton>
               <ToolButton onClick={capture}>Capture</ToolButton>

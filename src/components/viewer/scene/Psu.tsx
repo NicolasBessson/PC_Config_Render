@@ -12,7 +12,7 @@ const BACK = ANCHOR.back;
 
 /** Alimentation générique : seule la puissance, issue du catalogue, figure sur l'étiquette. */
 export function Psu({ build }: { build: Build }) {
-  const { mat, palette, layout } = useScene();
+  const { mat, palette, layout, exploded } = useScene();
   const psu = layout.psu;
   const P = { ...layout.frame.psu, ...PSU_SIZE };
   const body = useTint(psu?.color, mat.tank, 0.4, 0.45);
@@ -43,7 +43,7 @@ export function Psu({ build }: { build: Build }) {
         <planeGeometry args={[122, 61]} />
       </mesh>
       <Repeat g={box(16, 10, 3)} m={mat.dark} items={sockets} />
-      {P.mount === "rear" && harness.map((geometry, i) => <mesh key={i} geometry={geometry} material={mat.cable} castShadow />)}
+      {P.mount === "rear" && !exploded && harness.map((geometry, i) => <mesh key={i} geometry={geometry} material={mat.cable} castShadow />)}
       {/* Face arrière : grille, interrupteur et prise secteur */}
       {P.mount === "rear" && (
         <>

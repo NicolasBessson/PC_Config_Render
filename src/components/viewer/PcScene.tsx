@@ -82,6 +82,8 @@ export interface PcSceneProps {
   selected?: Category | null;
   /** Fourni, il rend les composants cliquables. */
   onSelect?: (category: Category | null) => void;
+  /** Vue éclatée : les composants s'écartent du boîtier, la vitre et les câbles sont retirés. */
+  exploded?: boolean;
 }
 
 /*
@@ -89,15 +91,15 @@ export interface PcSceneProps {
  * Rendu ILLUSTRATIF : modèles génériques aux cotes et aux couleurs du
  * catalogue. Il ne remplace pas le moteur de compatibilité.
  */
-export function PcScene({ build, style, lighting, showPanel = true, showLabels = false, animate = true, selected = null, onSelect }: PcSceneProps) {
+export function PcScene({ build, style, lighting, showPanel = true, showLabels = false, animate = true, selected = null, onSelect, exploded = false }: PcSceneProps) {
   const palette = STYLES[style];
   const mat = useMemo(() => createMaterials(palette), [palette]);
   useEffect(() => () => disposeMaterials(mat), [mat]);
   const layout = useMemo(() => layoutScene(build, style), [build, style]);
   const moving = animate && lighting.animated;
   const context = useMemo(
-    () => ({ palette, lighting, animate: moving, mat, layout, labels: showLabels, selected, onSelect }),
-    [palette, lighting, moving, mat, layout, showLabels, selected, onSelect],
+    () => ({ palette, lighting, animate: moving, mat, layout, labels: showLabels, selected, onSelect, exploded }),
+    [palette, lighting, moving, mat, layout, showLabels, selected, onSelect, exploded],
   );
 
   const { frame, fans } = layout;
@@ -111,13 +113,13 @@ export function PcScene({ build, style, lighting, showPanel = true, showLabels =
       {/* Le boîtier est centré sur le socle, posé sur ses pieds, quelles que soient ses dimensions. */}
       <group scale={0.01} position={[0, 0.1, 0]}>
         <group position={[-frame.cx, -(frame.bottom + ANCHOR.top), -frame.cz]}>
-          <Chassis build={build} style={style} showPanel={showPanel} />
+          <Chassis build={build} style={style} showPanel={showPanel && !exploded} />
           <Motherboard build={build} />
           <Cooler build={build} />
           <Gpu build={build} />
           <Ram build={build} />
           <Psu build={build} />
-          <Cables />
+          {!exploded && <Cables />}
           <Pick category="case">
             <Fan position={[REAR_FAN.x, REAR_FAN.y, REAR_FAN.z]} axis="z" size={fans.rearSize} lit={caseLit} offset={0} />
             {frontFanHeights(fans.front, fans.frontSize).map((y, i) => (

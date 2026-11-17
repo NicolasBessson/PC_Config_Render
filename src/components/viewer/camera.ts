@@ -2,7 +2,7 @@
  * Vues prédéfinies de la caméra. Coordonnées en unités de scène
  * (1 unité = 100 mm), autour du centre du boîtier.
  */
-export type ViewId = "trois-quarts" | "cote" | "interieur" | "arriere";
+export type ViewId = "trois-quarts" | "cote" | "interieur" | "arriere" | "eclatee";
 
 export interface CameraView {
   label: string;
@@ -14,6 +14,8 @@ export const VIEWS: Record<ViewId, CameraView> = {
   "trois-quarts": { label: "3/4", position: [10.4, 2.7, 8], target: [0, -0.1, 0] },
   cote: { label: "Côté", position: [13.4, 0.5, 0.2], target: [0, -0.1, 0] },
   interieur: { label: "Intérieur", position: [7.6, 1.5, 1.6], target: [-0.3, 0.55, -0.45] },
+  // Recul et décalage vers la vitre : les pièces écartées restent dans le cadre. Hors du sélecteur de vues.
+  eclatee: { label: "Éclatée", position: [14.6, 4.2, 11.2], target: [1.5, -0.2, 0.2] },
   arriere: { label: "Arrière", position: [3.4, 2, -12.6], target: [0, -0.1, 0] },
 };
 

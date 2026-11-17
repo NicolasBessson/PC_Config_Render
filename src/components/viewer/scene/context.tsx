@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import { CATEGORY_LABELS, type Category } from "@/lib/catalog";
@@ -19,6 +19,8 @@ export interface SceneContext {
   labels: boolean;
   selected: Category | null;
   onSelect?: (category: Category | null) => void;
+  /** Vue éclatée : les composants s'écartent du boîtier. */
+  exploded: boolean;
 }
 
 export const Ctx = createContext<SceneContext | null>(null);
@@ -124,37 +126,73 @@ function Highlight({ target }: { target: React.RefObject<THREE.Group | null> }) 
   return <lineSegments ref={frame} geometry={unitEdges} material={highlightMaterial} raycast={() => null} />;
 }
 
-/** Rend un composant cliquable et l'entoure d'un cadre lumineux lorsqu'il est sélectionné. */
+/*
+ * Vue éclatée : déplacement de chaque catégorie, en millimètres. Les pièces
+ * sortent côté vitre, dans l'ordre inverse du montage.
+ */
+export const EXPLODE_OFFSET: Record<Category, Vec3> = {
+  case: [0, 0, 0],
+  motherboard: [70, 0, 0],
+  storage: [150, -30, 60],
+  cpu: [150, 0, 0],
+  ram: [190, 40, 90],
+  cooler: [330, 60, -20],
+  gpu: [260, -70, 20],
+  psu: [200, -40, -60],
+  fans: [60, 90, 120],
+};
+const goal = new THREE.Vector3();
+
+/** Rend un composant cliquable, l'entoure d'un cadre lorsqu'il est sélectionné, et l'anime en vue éclatée. */
 export function Pick({ category, children }: { category: Category; children: ReactNode }) {
-  const { selected, onSelect } = useScene();
+  const { selected, onSelect, exploded } = useScene();
   const group = useRef<THREE.Group>(null);
-  if (!onSelect) return <group>{children}</group>;
+  const invalidate = useThree((state) => state.invalidate);
+  useFrame((_, delta) => {
+    const node = group.current;
+    if (!node) return;
+    goal.set(...EXPLODE_OFFSET[category]).multiplyScalar(exploded ? 1 : 0);
+    if (node.position.distanceToSquared(goal) < 0.01) {
+      node.position.copy(goal);
+      return;
+    }
+    node.position.lerp(goal, 1 - Math.exp(-6 * Math.min(delta, 0.05)));
+    invalidate(); // nécessaire en rendu à la demande
+  });
+  const interactive = Boolean(onSelect);
   return (
     <>
       <group
         ref={group}
-        onClick={(event) => {
-          event.stopPropagation();
-          onSelect(selected === category ? null : category);
-        }}
-        onPointerOver={(event) => {
-          event.stopPropagation();
-          document.body.style.cursor = "pointer";
-        }}
-        onPointerOut={() => {
-          document.body.style.cursor = "";
-        }}
+        onClick={
+          interactive
+            ? (event) => {
+                event.stopPropagation();
+                onSelect?.(selected === category ? null : category);
+              }
+            : undefined
+        }
+        onPointerOver={
+          interactive
+            ? (event) => {
+                event.stopPropagation();
+                document.body.style.cursor = "pointer";
+              }
+            : undefined
+        }
+        onPointerOut={interactive ? () => void (document.body.style.cursor = "") : undefined}
       >
         {children}
       </group>
-      {selected === category && <Highlight target={group} />}
+      {interactive && selected === category && !exploded && <Highlight target={group} />}
     </>
   );
 }
 
 export function Label({ category, name, position }: { category: Category; name: string; position: Vec3 }) {
-  const { labels, selected } = useScene();
-  if (!labels && selected !== category) return null;
+  const { labels, selected, exploded } = useScene();
+  // En vue éclatée, chaque pièce est nommée d'office.
+  if (!labels && !exploded && selected !== category) return null;
   return (
     <Html position={position} center zIndexRange={[20, 0]} className="pointer-events-none select-none">
       <div className={`whitespace-nowrap rounded-md border px-2 py-1 text-[11px] leading-tight text-white shadow-lg backdrop-blur ${selected === category ? "border-sky-400 bg-sky-950/85" : "border-white/15 bg-black/75"}`}>
