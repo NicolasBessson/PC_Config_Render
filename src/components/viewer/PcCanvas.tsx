@@ -1,6 +1,6 @@
 "use client";
 
-import { Component, useEffect, useRef, useState, type ReactNode } from "react";
+import { Component, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, MeshReflectorMaterial, OrbitControls, PerformanceMonitor } from "@react-three/drei";
 import { Bloom, EffectComposer, N8AO, SMAA, ToneMapping, Vignette } from "@react-three/postprocessing";
@@ -40,6 +40,45 @@ class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   render() {
     return this.state.failed ? <ViewerFallback reason="Le modèle n'a pas pu être chargé." /> : this.props.children;
   }
+}
+
+/** Studio de repli, entièrement procédural : affiché pendant le chargement de l'image de studio, ou si elle manque. */
+function ProceduralStudio({ intensity }: { intensity: number }) {
+  return (
+    <Environment resolution={256} frames={1} environmentIntensity={intensity}>
+      <color attach="background" args={["#05060a"]} />
+      <Lightformer form="rect" intensity={3.2} position={[0, 8, 1]} scale={[10, 6, 1]} rotation={[Math.PI / 2, 0, 0]} />
+      <Lightformer form="rect" intensity={2.6} position={[8, 2.5, -3]} scale={[2.2, 9, 1]} rotation={[0, -Math.PI / 2, 0]} />
+      <Lightformer form="rect" intensity={1.6} position={[8, 2.5, 4]} scale={[1.2, 9, 1]} rotation={[0, -Math.PI / 2, 0]} />
+      <Lightformer form="rect" intensity={1.1} position={[-3, 2, -8]} scale={[6, 6, 1]} rotation={[0, Math.PI, 0]} color="#9dbcff" />
+      <Lightformer form="rect" intensity={0.9} position={[-2, 3, 8]} scale={[7, 5, 1]} color="#c9d6ff" />
+      <Lightformer form="ring" intensity={1.4} position={[-7, 4, 0]} scale={3} rotation={[0, Math.PI / 2, 0]} color="#ffe9d2" />
+    </Environment>
+  );
+}
+
+class EnvironmentBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
+}
+
+/** Image de studio servie depuis le site lui-même : aucun appel à un serveur tiers. */
+const STUDIO_HDRI = "/hdri/studio_small_03_1k.hdr";
+
+function StudioEnvironment({ intensity }: { intensity: number }) {
+  const fallback = <ProceduralStudio intensity={intensity} />;
+  return (
+    <EnvironmentBoundary fallback={fallback}>
+      <Suspense fallback={fallback}>
+        <Environment files={STUDIO_HDRI} environmentIntensity={intensity} />
+      </Suspense>
+    </EnvironmentBoundary>
+  );
 }
 
 type Controls = { target: THREE.Vector3; update(): void; addEventListener(type: "start", listener: () => void): void; removeEventListener(type: "start", listener: () => void): void };
@@ -152,7 +191,7 @@ export default function PcCanvas({ interactive = true, autoRotate = false, anima
       >
         <primitive attach="background" object={backdropTexture()} />
         {animate && onDecline && <PerformanceMonitor onDecline={onDecline} flipflops={2} />}
-        <ambientLight intensity={0.72 * exposure} />
+        <ambientLight intensity={0.15 * exposure} />
         {/* Lumière principale, basse et latérale : elle entre par la vitre et porte les ombres. */}
         <directionalLight
           position={[10, 4.2, -5.5]}
@@ -169,18 +208,10 @@ export default function PcCanvas({ interactive = true, autoRotate = false, anima
           shadow-camera-near={1}
           shadow-camera-far={30}
         />
-        <directionalLight position={[-6, 6, 7]} intensity={0.7 * exposure} />
-        <directionalLight position={[2, 9, 1]} intensity={0.5 * exposure} />
-        {/* Studio photo : grande boîte à lumière au-dessus, bandes latérales, contre-jour froid. Aucun fichier externe. */}
-        <Environment resolution={256} frames={1} environmentIntensity={0.85 * exposure}>
-          <color attach="background" args={["#05060a"]} />
-          <Lightformer form="rect" intensity={3.2} position={[0, 8, 1]} scale={[10, 6, 1]} rotation={[Math.PI / 2, 0, 0]} />
-          <Lightformer form="rect" intensity={2.6} position={[8, 2.5, -3]} scale={[2.2, 9, 1]} rotation={[0, -Math.PI / 2, 0]} />
-          <Lightformer form="rect" intensity={1.6} position={[8, 2.5, 4]} scale={[1.2, 9, 1]} rotation={[0, -Math.PI / 2, 0]} />
-          <Lightformer form="rect" intensity={1.1} position={[-3, 2, -8]} scale={[6, 6, 1]} rotation={[0, Math.PI, 0]} color="#9dbcff" />
-          <Lightformer form="rect" intensity={0.9} position={[-2, 3, 8]} scale={[7, 5, 1]} color="#c9d6ff" />
-          <Lightformer form="ring" intensity={1.4} position={[-7, 4, 0]} scale={3} rotation={[0, Math.PI / 2, 0]} color="#ffe9d2" />
-        </Environment>
+        <directionalLight position={[-6, 6, 7]} intensity={0.28 * exposure} />
+        <directionalLight position={[2, 9, 1]} intensity={0.2 * exposure} />
+        {/* Éclairage par l'image : une vraie photo de studio (Poly Haven, CC0) éclaire la scène et se reflète dans la vitre et les métaux. */}
+        <StudioEnvironment intensity={1.3 * exposure} />
         <PcScene animate={animate} {...scene} />
         {/* Socle : en qualité haute, sa surface reflète le PC de façon diffuse. */}
         <mesh position={[0, -2.67, 0]} receiveShadow>
@@ -203,7 +234,8 @@ export default function PcCanvas({ interactive = true, autoRotate = false, anima
             {/* Occlusion ambiante : assombrit les recoins et ancre les pièces les unes sur les autres. */}
             <N8AO aoRadius={0.42} distanceFalloff={0.8} intensity={1.5} quality="medium" halfRes color="#03040b" />
             <Bloom mipmapBlur intensity={0.7} luminanceThreshold={1.6} luminanceSmoothing={0.3} radius={0.72} />
-            <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+            {/* Rendu « neutre » : il conserve les teintes saturées de l'éclairage RGB, que les courbes filmiques délavent. */}
+            <ToneMapping mode={ToneMappingMode.NEUTRAL} />
             <Vignette offset={0.32} darkness={0.5} />
             <SMAA />
           </EffectComposer>

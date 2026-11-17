@@ -23,7 +23,7 @@ export function createMaterials(palette: StylePalette) {
     satin: standard({ color: palette.part, metalness: 0.2, roughness: 0.36, ...grain, bumpScale: 0.3 }),
     rubber: standard({ color: "#08090a", metalness: 0, roughness: 0.95, ...grain }),
     /** Verre trempé : vernis de surface et reflets marqués, comme une vraie vitre teintée. */
-    glass: new THREE.MeshPhysicalMaterial({ color: palette.glass, transparent: true, opacity: palette.glassOpacity, metalness: 0, roughness: 0.02, clearcoat: 1, clearcoatRoughness: 0.02, reflectivity: 0.7, specularIntensity: 1, envMapIntensity: 2.4, depthWrite: false }),
+    glass: new THREE.MeshPhysicalMaterial({ color: palette.glass, transparent: true, opacity: palette.glassOpacity, metalness: 0, roughness: 0.02, clearcoat: 1, clearcoatRoughness: 0.02, reflectivity: 0.5, specularIntensity: 1, envMapIntensity: 0.5, depthWrite: false }),
     pcb: standard({ color: palette.pcb, map: pcbTexture(), bumpMap: pcbTexture(), bumpScale: 0.5, metalness: 0.25, roughness: 0.62 }),
     heatsink: standard({ color: palette.heatsink, metalness: 0.85, roughness: 0.5, ...brushed }),
     fin: standard({ color: palette.fin, metalness: 0.88, roughness: 0.28 }),

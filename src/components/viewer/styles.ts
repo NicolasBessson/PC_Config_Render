@@ -51,7 +51,7 @@ export const STYLES: Record<Style, StylePalette> = {
   },
   blanc: {
     label: "Blanc", tagline: "Lumineux, composants blancs",
-    chassis: "#dfe2e6", part: "#f4f5f7", pcb: "#9aa2ad", heatsink: "#c3c8cf", fin: "#dfe2e6", cable: "#e6e8eb", blade: "#eef0f2", exposure: 0.5,
+    chassis: "#dfe2e6", part: "#f4f5f7", pcb: "#9aa2ad", heatsink: "#c3c8cf", fin: "#dfe2e6", cable: "#e6e8eb", blade: "#eef0f2", exposure: 0.21,
     glass: "#dfe9f5", glassOpacity: 0.1, front: "mesh",
     lit: { fans: true, strips: true, ram: false, cooler: false }, glow: 0.22,
     lighting: { mode: "fixed", color: "#dbeafe", color2: "#dbeafe", intensity: 1, animated: true }, swatch: "linear-gradient(135deg,#ffffff,#cfd4da)",

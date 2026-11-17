@@ -118,6 +118,8 @@ Sept produits utilisent un modèle 3D réel, créé par un tiers et publié sur 
 | AMD Ryzen 5 7600 | [AMD Ryzen 5 7600 CPU chip (AM5 socket)](https://sketchfab.com/3d-models/amd-ryzen-5-7600-cpu-chip-am5-socket-a05c2732e0b847c2967e2c9282abd5f9) | arsdever |
 | Samsung 990 Pro | [Samsung 990 PRO SSD](https://sketchfab.com/3d-models/samsung-990-pro-ssd-6ada64c9ba734e499978a084e68ec3df) | PolyDavid |
 
+L'éclairage de la scène utilise l'image de studio « [Studio Small 03](https://polyhaven.com/a/studio_small_03) » de Sergej Majboroda (Poly Haven, domaine public CC0), servie depuis `public/hdri/`.
+
 Ce ne sont pas des fichiers officiels des fabricants ; les marques appartiennent à leurs détenteurs. Les crédits figurent aussi dans le pied de page du site et dans la fiche de chaque composant. Les fichiers sont dans `public/models/`, le registre dans `src/components/viewer/models.ts`.
 
 ### API
