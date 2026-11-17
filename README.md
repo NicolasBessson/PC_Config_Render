@@ -107,10 +107,16 @@ Boîtier moyen-tour générique modélisé en géométrie paramétrique, déclin
 
 ### Modèles 3D de tiers
 
-Deux produits utilisent un modèle 3D réel, créé par un tiers et publié sur Sketchfab sous licence [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/) :
+Sept produits utilisent un modèle 3D réel, créé par un tiers et publié sur Sketchfab sous licence [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/). Tous sont repositionnés et mis à l'échelle ; le boîtier blanc est en outre reteinté.
 
-- « [Corsair 4000D Airflow (Free)](https://sketchfab.com/3d-models/corsair-4000d-airflow-free-34df3ba96cf94e71accdb5779c4b8694) » par Kirigami — repositionné et mis à l'échelle.
-- « [RAM Corsair Vengeance LPX](https://sketchfab.com/3d-models/ram-corsair-vengeance-lpx-ee11e1926e514075a70642ecb5dc5c2d) » par supahot — repositionné et mis à l'échelle.
+| Produit | Modèle | Auteur |
+|---|---|---|
+| Corsair 4000D Airflow, noir et blanc | [Corsair 4000D Airflow (Free)](https://sketchfab.com/3d-models/corsair-4000d-airflow-free-34df3ba96cf94e71accdb5779c4b8694) | Kirigami |
+| Corsair Vengeance LPX | [RAM Corsair Vengeance LPX](https://sketchfab.com/3d-models/ram-corsair-vengeance-lpx-ee11e1926e514075a70642ecb5dc5c2d) | supahot |
+| Intel Arc B580 | [Intel Arc B580 Graphics Card](https://sketchfab.com/3d-models/intel-arc-b580-graphics-card-3251ad158ee44a7e9802cb378b4d281a) | PolyDavid |
+| AMD Ryzen 7 9800X3D | [AMD 9800x3D CPU - SUPER LOW POLY](https://sketchfab.com/3d-models/amd-9800x3d-cpu-super-low-poly-3851621aed404adaa5b11efde67d5dc4) | PolyDavid |
+| AMD Ryzen 5 7600 | [AMD Ryzen 5 7600 CPU chip (AM5 socket)](https://sketchfab.com/3d-models/amd-ryzen-5-7600-cpu-chip-am5-socket-a05c2732e0b847c2967e2c9282abd5f9) | arsdever |
+| Samsung 990 Pro | [Samsung 990 PRO SSD](https://sketchfab.com/3d-models/samsung-990-pro-ssd-6ada64c9ba734e499978a084e68ec3df) | PolyDavid |
 
 Ce ne sont pas des fichiers officiels des fabricants ; les marques appartiennent à leurs détenteurs. Les crédits figurent aussi dans le pied de page du site et dans la fiche de chaque composant. Les fichiers sont dans `public/models/`, le registre dans `src/components/viewer/models.ts`.
 

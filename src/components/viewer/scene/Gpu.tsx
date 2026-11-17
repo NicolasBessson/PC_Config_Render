@@ -4,7 +4,10 @@ import { useMemo } from "react";
 import type { Build } from "@/lib/build";
 import { ANCHOR, BOARD, GPU_BACK, GPU_TOP, SLOT_PITCH } from "../layout";
 import { Glow, Label, Part, Pick, Repeat, useScene, useTint, type Vec3 } from "./context";
+import * as THREE from "three";
+import { GPU_MODELS } from "../models";
 import { box, cylinder, panel, rbox, torus } from "./geometry";
+import { GltfModel } from "./GltfModel";
 import { Rotor } from "./Fan";
 
 const HALF_PI = Math.PI / 2;
@@ -46,6 +49,17 @@ export function Gpu({ build }: { build: Build }) {
     return { x1, width, cx, length, z0, zc, top, bottom, fanRadius, fanZ, finHeight, fins, screws, ribs, vents };
   }, [gpu]);
 
+  const model = gpu?.model ? GPU_MODELS[gpu.model] : null;
+  // Modèle réel : longueur du fichier (z, équerre côté +z) vers l'arrière du boîtier, hauteur (y) en s'éloignant
+  // de la carte mère, épaisseur (x, ventilateurs côté +x) vers le bas. Chaque axe est mis à la cote du catalogue.
+  const matrix = useMemo(() => {
+    if (!gpu || !model) return null;
+    const kl = gpu.length / model.size.length, kh = (gpu.width - 4) / model.size.height, kt = gpu.thickness / model.size.thickness;
+    return new THREE.Matrix4()
+      .makeBasis(new THREE.Vector3(0, -kt, 0), new THREE.Vector3(kh, 0, 0), new THREE.Vector3(0, 0, -kl))
+      .setPosition(BOARD.x + 4 - kh * model.edges.boardY, GPU_TOP + kt * model.edges.backplateX, GPU_BACK + kl * model.edges.bracketZ);
+  }, [gpu, model]);
+
   if (!gpu || !shape || !build.gpu) return null;
   const { x1, width, cx, length, z0, zc, top, bottom, fanRadius, fanZ, finHeight, fins, screws, ribs, vents } = shape;
   const thickness = gpu.thickness;
@@ -53,8 +67,8 @@ export function Gpu({ build }: { build: Build }) {
   const bracketY = 28 - ((gpu.slots - 1) * SLOT_PITCH) / 2;
   const connectorZ = zc + length * 0.18;
 
-  return (
-    <Pick category="gpu">
+  const generic = (
+    <>
       {/* Plaque arrière, avec son ouverture de ventilation */}
       <Part g={rbox(width, 2.6, length, 1.2)} m={backplate} p={[cx, top - 1.3, zc]} />
       <Part g={box(width - 34, 0.6, length * 0.2)} m={mat.dark} p={[cx, top + 0.1, z0 + length * 0.85]} shadow={false} />
@@ -97,6 +111,11 @@ export function Gpu({ build }: { build: Build }) {
       {/* Connecteur d'alimentation */}
       <Part g={rbox(9, 9, gpu.connector === "8pin" ? 13 * gpu.cables : 24, 1)} m={mat.dark} p={[x1 - 4.5, top - 8.5, connectorZ]} shadow={false} />
 
+    </>
+  );
+  return (
+    <Pick category="gpu">
+      {model && matrix ? <GltfModel file={model.file} matrix={matrix} fallback={generic} /> : generic}
       <Label category="gpu" name={`${build.gpu.chipset} · ${build.gpu.lengthMm} mm`} position={[x1 + 8, (top + bottom) / 2, z0 + length - 34]} />
     </Pick>
   );

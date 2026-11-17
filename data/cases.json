@@ -63,6 +63,69 @@
     }
   },
   {
+    "id": "4000d-airflow-white",
+    "brand": "Corsair",
+    "name": "4000D Airflow (blanc)",
+    "style": "blanc",
+    "formFactors": [
+      "ATX",
+      "mATX",
+      "ITX"
+    ],
+    "gpuMaxLengthMm": 360,
+    "coolerMaxHeightMm": 170,
+    "radiators": {
+      "front": [
+        240,
+        280,
+        360
+      ],
+      "top": [
+        240,
+        280
+      ]
+    },
+    "psuFormFactor": "ATX",
+    "priceChf": 95,
+    "priceDate": null,
+    "verified": false,
+    "specUrl": "https://www.corsair.com/us/en/p/pc-cases/cc-9011201-ww/4000d-airflow-tempered-glass-mid-tower-atx-case-white-cc-9011201-ww",
+    "dimensionsMm": {
+      "width": 230,
+      "height": 466,
+      "depth": 453
+    },
+    "visual": {
+      "front": "mesh",
+      "shroud": true,
+      "psu": "rear",
+      "frontFans": 1,
+      "frontFanSize": 120,
+      "rearFanSize": 120,
+      "fansRgb": false
+    },
+    "verifiedAt": "2026-11-16",
+    "source": {
+      "label": "Corsair — fiche produit",
+      "url": "https://www.corsair.com/us/en/p/pc-cases/cc-9011201-ww/4000d-airflow-tempered-glass-mid-tower-atx-case-white-cc-9011201-ww"
+    },
+    "unconfirmed": [
+      "formFactors",
+      "psuFormFactor",
+      "visual.psu"
+    ],
+    "fanSlots": {
+      "front": {
+        "120": 3,
+        "140": 2
+      },
+      "top": {
+        "120": 2,
+        "140": 2
+      }
+    }
+  },
+  {
     "id": "h5-flow-white",
     "brand": "NZXT",
     "name": "H5 Flow 2022 (blanc)",

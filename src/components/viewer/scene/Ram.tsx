@@ -17,8 +17,8 @@ import { GltfModel } from "./GltfModel";
 const LPX_SCALE = 133 / 4.569;
 function lpxMatrix(y: number, z: number) {
   const k = LPX_SCALE;
-  const matrix = new THREE.Matrix4().makeBasis(new THREE.Vector3(-k, 0, 0), new THREE.Vector3(0, 0, k), new THREE.Vector3(0, k, 0));
-  return matrix.setPosition(BOARD.x - 0.538 * k, y + 1.0365 * k, z - 1.522 * k);
+  const matrix = new THREE.Matrix4().makeBasis(new THREE.Vector3(-k, 0, 0), new THREE.Vector3(0, 0, -k), new THREE.Vector3(0, k, 0));
+  return matrix.setPosition(BOARD.x - 0.538 * k, y + 1.0365 * k, z + 1.522 * k);
 }
 
 /** Barrettes de mémoire : une par module du kit, dans les emplacements recommandés. */

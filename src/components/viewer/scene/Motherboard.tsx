@@ -4,7 +4,10 @@ import { useMemo } from "react";
 import type { Build } from "@/lib/build";
 import { ANCHOR, BOARD, RAM_SLOT_Z } from "../layout";
 import { Glow, Label, Part, Pick, Repeat, useScene, useTint, type Vec3 } from "./context";
+import * as THREE from "three";
+import { CPU_MODELS, STORAGE_MODELS } from "../models";
 import { box, cylinder, rbox } from "./geometry";
+import { GltfModel } from "./GltfModel";
 
 const X = BOARD.x;
 const { cpuY, cpuZ } = BOARD;
@@ -44,6 +47,23 @@ export function Motherboard({ build }: { build: Build }) {
     const sata = [0, 1].map((i) => ({ p: [X + 6, bottom + 78 + i * 20, front - 5] as Vec3 }));
     return { capacitors, vrmFins, clips, usb, screws, pcie, chokes, chips, headers, audio, sata };
   }, [board]);
+
+  const cpuModel = layout.cpuModel ? CPU_MODELS[layout.cpuModel] : null;
+  const storageModel = layout.storageModel ? STORAGE_MODELS[layout.storageModel] : null;
+  // Puce à plat dans le fichier (épaisseur en y) : redressée contre la carte mère, mise à 40 mm de côté.
+  const cpuMatrix = useMemo(() => {
+    if (!cpuModel) return null;
+    const k = 40 / cpuModel.side;
+    // Rotation par quarts de tour dans le plan de la carte, selon l'orientation du marquage dans le fichier.
+    const angle = (cpuModel.turn * Math.PI) / 2, c = Math.round(Math.cos(angle)), s = Math.round(Math.sin(angle));
+    return new THREE.Matrix4().makeBasis(new THREE.Vector3(0, k * c, k * s), new THREE.Vector3(k, 0, 0), new THREE.Vector3(0, -k * s, k * c)).setPosition(X + 5.5, cpuY, cpuZ);
+  }, [cpuModel]);
+  // SSD M.2 : longueur du fichier (z) le long de la carte, 80 mm.
+  const storageMatrix = useMemo(() => {
+    if (!storageModel) return null;
+    const k = 80 / storageModel.length;
+    return new THREE.Matrix4().makeBasis(new THREE.Vector3(0, k, 0), new THREE.Vector3(k, 0, 0), new THREE.Vector3(0, 0, k)).setPosition(X + 2.5, 64, cpuZ + 34);
+  }, [storageModel]);
 
   if (!board || !details || !build.motherboard) return null;
   const { height, depth, bottom, front } = board;
@@ -109,12 +129,22 @@ export function Motherboard({ build }: { build: Build }) {
 
       <Label category="motherboard" name={build.motherboard.name} position={[X + 14, bottom + 52, front - 30]} />
      </Pick>
-      <Pick category={build.storage ? "storage" : "motherboard"}>
-        <Part g={rbox(5, 24, 86, 2)} m={heatsink} p={[X + 2.5, 64, cpuZ + 34]} />
+      {/* Avec un SSD réel, le dissipateur reste sur la carte mère : la vue éclatée dévoile alors le SSD. */}
+      <Pick category={build.storage && !storageModel ? "storage" : "motherboard"}>
+        <Part g={rbox(5, 24, 86, 2)} m={heatsink} p={[X + 7, 64, cpuZ + 34]} />
       </Pick>
-      {layout.cpu && !layout.cooler && (
+      {storageModel && storageMatrix && (
+        <Pick category="storage">
+          <GltfModel file={storageModel.file} matrix={storageMatrix} />
+        </Pick>
+      )}
+      {layout.cpu && (cpuModel || !layout.cooler) && (
         <Pick category="cpu">
-          <Part g={rbox(5, 38, 38, 1.5)} m={mat.nickel} p={[X + 6.5, cpuY, cpuZ]} />
+          {cpuModel && cpuMatrix ? (
+            <GltfModel file={cpuModel.file} matrix={cpuMatrix} fallback={<Part g={rbox(5, 38, 38, 1.5)} m={mat.nickel} p={[X + 6.5, cpuY, cpuZ]} />} />
+          ) : (
+            <Part g={rbox(5, 38, 38, 1.5)} m={mat.nickel} p={[X + 6.5, cpuY, cpuZ]} />
+          )}
         </Pick>
       )}
       {build.cpu && <Label category="cpu" name={build.cpu.name} position={[X + 30, cpuY - 72, cpuZ - 30]} />}

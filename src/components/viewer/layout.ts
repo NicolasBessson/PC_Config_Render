@@ -1,6 +1,6 @@
 import { fanCountOf, type Build } from "@/lib/build";
 import type { Style } from "@/lib/catalog";
-import { CASE_MODELS, RAM_MODELS } from "./models";
+import { CASE_MODELS, CPU_MODELS, GPU_MODELS, RAM_MODELS, STORAGE_MODELS } from "./models";
 
 /*
  * Description de la scène 3D, déduite de la configuration.
@@ -105,6 +105,8 @@ export interface GpuLayout {
   connector: "8pin" | "12v-2x6";
   cables: number;
   colors: { shroud: string; accent: string; backplate: string } | null;
+  /** Identifiant du modèle 3D réel de la carte, s'il en existe un. */
+  model: string | null;
 }
 
 export type CoolerLayout =
@@ -122,6 +124,9 @@ export interface SceneLayout {
   frame: Frame;
   board: { formFactor: keyof typeof BOARD_SIZE; height: number; depth: number; bottom: number; front: number; colors: { pcb: string; heatsink: string; accent: string } | null } | null;
   cpu: boolean;
+  /** Modèles 3D réels du processeur et du SSD, s'ils existent. */
+  cpuModel: string | null;
+  storageModel: string | null;
   gpu: GpuLayout | null;
   cooler: CoolerLayout | null;
   ram: { modules: number; slots: number[]; height: number; rgb: boolean; color: string | null; model: string | null } | null;
@@ -164,6 +169,7 @@ export function layoutScene(build: Build, style: Style): SceneLayout {
       connector: gpu.power.connector,
       cables: gpu.power.count,
       colors: gpu.visual ? { shroud: gpu.visual.shroud, accent: gpu.visual.accent, backplate: gpu.visual.backplate } : null,
+      model: GPU_MODELS[gpu.id] ? gpu.id : null,
     };
   }
 
@@ -210,6 +216,8 @@ export function layoutScene(build: Build, style: Style): SceneLayout {
     frame,
     board,
     cpu: Boolean(build.cpu),
+    cpuModel: build.cpu && CPU_MODELS[build.cpu.id] ? build.cpu.id : null,
+    storageModel: build.storage && STORAGE_MODELS[build.storage.id] ? build.storage.id : null,
     gpu: gpuLayout,
     cooler: coolerLayout,
     ram: ram ? { modules: ram.modules, slots: ramSlots(ram.modules), height: ram.heightMm, rgb: ram.rgb, color: ram.visual?.spreader ?? null, model: RAM_MODELS[ram.id] ? ram.id : null } : null,

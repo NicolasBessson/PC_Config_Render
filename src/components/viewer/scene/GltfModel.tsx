@@ -15,7 +15,9 @@ class ModelBoundary extends Component<{ fallback: ReactNode; children: ReactNode
   }
 }
 
-function Loaded({ file, matrix, hide }: { file: string; matrix: THREE.Matrix4; hide?: RegExp }) {
+const BODY = /body|plastic|dust/i;
+
+function Loaded({ file, matrix, hide, tint }: { file: string; matrix: THREE.Matrix4; hide?: RegExp; tint?: string }) {
   // Pas de décodeur Draco : il serait téléchargé depuis un serveur externe.
   const { scene } = useGLTF(file, false);
   const object = useMemo(() => {
@@ -26,9 +28,17 @@ function Loaded({ file, matrix, hide }: { file: string; matrix: THREE.Matrix4; h
       if (!mesh.isMesh) return;
       mesh.castShadow = true;
       mesh.receiveShadow = true;
+      // Variante de teinte : la carrosserie reçoit sa propre copie du matériau, recolorée.
+      const material = mesh.material as THREE.MeshStandardMaterial;
+      if (tint && BODY.test(material.name ?? "")) {
+        const recolored = material.clone();
+        recolored.color.set(tint);
+        recolored.map = null;
+        mesh.material = recolored;
+      }
     });
     return copy;
-  }, [scene]);
+  }, [scene, tint]);
   useMemo(() => {
     object.traverse((node) => {
       const mesh = node as THREE.Mesh;
@@ -55,11 +65,11 @@ function Loaded({ file, matrix, hide }: { file: string; matrix: THREE.Matrix4; h
  * Modèle 3D d'un produit réel, placé dans la scène par une matrice (axes,
  * échelle, position). `hide` masque les matériaux dont le nom correspond.
  */
-export function GltfModel({ file, matrix, hide, fallback = null }: { file: string; matrix: THREE.Matrix4; hide?: RegExp; fallback?: ReactNode }) {
+export function GltfModel({ file, matrix, hide, tint, fallback = null }: { file: string; matrix: THREE.Matrix4; hide?: RegExp; tint?: string; fallback?: ReactNode }) {
   return (
     <ModelBoundary fallback={fallback}>
       <Suspense fallback={fallback}>
-        <Loaded file={file} matrix={matrix} hide={hide} />
+        <Loaded file={file} matrix={matrix} hide={hide} tint={tint} />
       </Suspense>
     </ModelBoundary>
   );

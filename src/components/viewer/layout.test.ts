@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { resolveBuild, type BuildIds } from "@/lib/build";
 import { catalog } from "@/lib/catalog";
 import { ANCHOR, BOARD, CASE, frameFor, frontFanHeights, GPU_TOP, layoutScene } from "./layout";
-import { ALL_MODEL_CREDITS, CASE_MODELS, modelCredit, RAM_MODELS } from "./models";
+import { ALL_MODEL_CREDITS, CASE_MODELS, CPU_MODELS, GPU_MODELS, modelCredit, RAM_MODELS, STORAGE_MODELS } from "./models";
 
 const BASE: BuildIds = {
   cpu: "r5-7600", gpu: "rtx-5070", motherboard: "b650-tomahawk", ram: "ddr5-32-vengeance",
@@ -92,6 +92,11 @@ describe("correspondance entre la configuration et la scène 3D", () => {
   it("chaque modèle réel est crédité, et ses identifiants existent au catalogue", () => {
     for (const id of Object.keys(CASE_MODELS)) expect(catalog.case.some((c) => c.id === id), id).toBe(true);
     for (const id of Object.keys(RAM_MODELS)) expect(catalog.ram.some((r) => r.id === id), id).toBe(true);
+    for (const id of Object.keys(GPU_MODELS)) expect(catalog.gpu.some((g) => g.id === id), id).toBe(true);
+    for (const id of Object.keys(CPU_MODELS)) expect(catalog.cpu.some((c) => c.id === id), id).toBe(true);
+    for (const id of Object.keys(STORAGE_MODELS)) expect(catalog.storage.some((c) => c.id === id), id).toBe(true);
+    expect(ALL_MODEL_CREDITS.length).toBeGreaterThanOrEqual(6);
+    expect(new Set(ALL_MODEL_CREDITS.map((credit) => credit.url)).size).toBe(ALL_MODEL_CREDITS.length);
     for (const credit of ALL_MODEL_CREDITS) {
       expect(credit.license).toBe("CC BY 4.0");
       expect(credit.author.length).toBeGreaterThan(0);
@@ -102,6 +107,15 @@ describe("correspondance entre la configuration et la scène 3D", () => {
     expect(modelCredit("rtx-5070")).toBeNull();
     expect(scene({ ram: "ddr4-32-lpx", motherboard: "b760m-ddr4", cpu: "i5-12400f" }).ram!.model).toBe("ddr4-32-lpx");
     expect(scene().ram!.model).toBeNull();
+    // La scène sait quels composants ont un modèle réel.
+    const real = scene({ cpu: "r7-9800x3d", gpu: "arc-b580", storage: "990pro-2tb", case: "4000d-airflow-white" });
+    expect(real).toMatchObject({ cpuModel: "r7-9800x3d", storageModel: "990pro-2tb" });
+    expect(real.gpu!.model).toBe("arc-b580");
+    expect(real.frame.model).toBe("4000d-airflow-white");
+    expect(CASE_MODELS["4000d-airflow-white"].tint).toBeDefined();
+    expect(CASE_MODELS["4000d-airflow"].tint).toBeUndefined();
+    expect(scene()).toMatchObject({ cpuModel: "r5-7600", storageModel: null });
+    expect(scene().gpu!.model).toBeNull();
   });
 
   it("reprend l'apparence propre à chaque produit", () => {
